@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/games/starward/`, built to `library/dist/starward-v4.html` |
+| Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v5.html` |
+| Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/dist/starward-v4.html` (the live page still shows a name) |
 | Starward | v3 (2026-10-11), walkable map | https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg (current version of that page) | `library/games/starward/legacy/v3.html` |
 | Starward | v2 (2026-10-10), first Starward | same page, in its version history | not kept as a file |
 | The Inner Flame | v1 (2026-10-10) | https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6 | `library/games/inner-flame/legacy/v1.html` |

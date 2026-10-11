@@ -3,6 +3,7 @@
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/starward/` (see claude/game-library.md)
 
 ## Versions
+- v5 (2026-10-11): https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw. Same game as v4 with no personal names; the title screen says "An original space adventure". New page, so its high score board started empty.
 - v4 (2026-10-11): https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV. Rebuilt from the Game Library as separate, reusable files. Adds adaptive difficulty for typing, math, and word puzzles; questions are chosen when they appear so they match his current level.
 - v3 (2026-10-11): https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg (current version of that page). Walkable Lumina map, three challenges per rocket part, fresh questions every game, fewer instructions. Source kept as `games/starward/legacy/v3.html`.
 - v2 (2026-10-10): same page as v3, in its version history. First Starward: new names and story, rocket parts, falling-word flights, fill-in-the-blank puzzles, songs, high scores.

@@ -1,9 +1,9 @@
 {
   "id": "starward",
-  "title": "Starward v4",
-  "version": 4,
+  "title": "Starward v5",
+  "version": 5,
   "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
-  "output": "dist/starward-v4.html",
+  "output": "dist/starward-v5.html",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
     "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@500;700&display=swap"
@@ -71,6 +71,7 @@
   "releases": [
     { "version": 2, "date": "2026-10-10", "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg", "notes": "First Starward: new names and story, rocket parts on Lumina, falling-word flights, fill-in-the-blank puzzles, songs, high scores. Kept in that page's version history (version 1 of the page)." },
     { "version": 3, "date": "2026-10-11", "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg", "notes": "Walkable Lumina map, three challenges per rocket part, fresh questions every game, fewer instructions. Current version of that page. Single-file source: games/starward/legacy/v3.html" },
-    { "version": 4, "date": "2026-10-11", "url": "https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV", "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level." }
+    { "version": 4, "date": "2026-10-11", "url": "https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV", "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level." },
+    { "version": 5, "date": "2026-10-11", "url": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw", "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". New page, so its high score board starts empty." }
   ]
 }
