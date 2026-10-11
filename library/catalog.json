@@ -360,6 +360,16 @@
    "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
+   "path": "build/qr.py",
+   "layer": "Build",
+   "bytes": 9260,
+   "usedBy": [],
+   "about": "Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the release page. Checks that the finished card scans back to the right link.",
+   "provides": "",
+   "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js (colors and icon shapes are copied from these)",
+   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs: pip install \"qrcode[pil]\" opencv-python-headless\nExits 1 if the card does not scan back to the release link."
+  },
+  {
    "path": "content/questions/blanks.js",
    "layer": "Content",
    "bytes": 6531,

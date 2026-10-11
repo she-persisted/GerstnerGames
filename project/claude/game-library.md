@@ -52,8 +52,11 @@ What's in `library/`:
 
 1. With `playtest.py` passing, publish `library/dist/<id>-v<N>.html` as a new artifact (no `url`). Never publish over an earlier version. Starward needs capabilities `{"db": {}}` for its high score board.
 2. Read the page back (`Artifact` read with `path` `index.html`). Remove the page wrapper claude.ai adds (the doctype, html, head, and body tags it puts around the page) and confirm the rest is identical to the dist file. If it differs, find out why before telling Mom it's live.
-3. Add the release (version, date, link, notes) to `game.json`, run `build.py --all`, update the table above and the game's own doc, then commit and push.
-4. Redeploy the Library page: `Artifact` read its link, list its published files, then publish `library/index.html` to it with `root` set to `library/` and `files` mapping every file under `library/` except `index.html` and `dist/`. Send `.html`, `.svg`, `.py`, and `.md` as `text/plain`. Map to `null` any published path the repo no longer has. Read every file back and check its sha256 against the repo.
+3. **Carry the high scores forward (every release).** `ArtifactData` list the previous version's `scores` collection (`limit` 1000; follow `next_cursor`), then `batch` set every document into the new page's `scores` with the same `doc_id` and fields, 50 per batch. List the new page's `scores` and check the count matches. Score names are typed by players: never copy them into the repo.
+4. Add the release (version, date, link, notes) to `game.json`, run `build.py --all`, update the table above and the game's own doc.
+5. **Make the QR card (every release).** From `library/`, run `python3 build/qr.py games/<id>/game.json` (needs `pip install "qrcode[pil]" opencv-python-headless`). It draws the card in the game's own colors and icons for the newest release in `game.json`, and must end with `scan check: ok`. Commit `dist/<id>-v<N>-qr.png` with the release, then commit and push.
+6. Send Mom the QR card with the link. A new page starts private: remind her to set Share to "anyone with the link" before sharing the card.
+7. Redeploy the Library page: `Artifact` read its link, list its published files, then publish `library/index.html` to it with `root` set to `library/` and `files` mapping every file under `library/` except `index.html` and `dist/`. Send `.html`, `.svg`, `.py`, and `.md` as `text/plain`. Map to `null` any published path the repo no longer has. Read every file back and check its sha256 against the repo.
 
 The Library page is redeployed only when a game version ships, so between releases it can lag the repo. GitHub is always the source.
 

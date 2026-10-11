@@ -62,6 +62,10 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - An arcade-style high score board sits on the home screen: one list for everyone, no logins, and players type a name at the end. [asked]
 - The board ranks one combined score. [asked] Starward v4's formula: puzzle points by difficulty (100 easy, 140 medium, 180 hard; 25 if the answer was shown), plus 20 × words per minute, plus 5 × accuracy percent. [built]
 - The shared board only takes scores from people who can edit the page. With a public link, that means only Mom's account, so everyone else's scores save on their own computer. Each version's page has its own board. [limit]
+- High scores carry over to every new version: when a version ships, its page's board starts with all the scores from the previous version's page. Only shared-board scores can be carried; scores saved on one computer stay with that version's page. [asked]
+
+## Sharing
+- Every new version ships with a QR card that opens it, styled with the game's own colors and icons (`library/build/qr.py`), checked to scan before it's sent to Mom. [asked]
 
 ## Technical defaults that worked
 - Source lives in the Game Library as separate files: shared engines in kit/, art and music in assets/, questions and words in content/, game-only parts in games/<id>/. Every file starts with a header saying what it does, what it provides, and what it needs. [asked]
