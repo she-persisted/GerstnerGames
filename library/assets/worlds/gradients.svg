@@ -1,0 +1,5 @@
+<!-- @file assets/worlds/gradients.svg
+     @about Ground gradients for side-view worlds. Their colors come from --ground-a and --ground-b, so each world recolors them in worlds.css. Place inside an inline SVG's <defs>.
+     @requires assets/worlds/worlds.css -->
+<linearGradient id="gGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="stop-a"/><stop offset=".6" class="stop-b"/></linearGradient>
+<linearGradient id="gPlanet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="stop-a"/><stop offset=".35" class="stop-b"/></linearGradient>

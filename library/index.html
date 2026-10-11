@@ -1,0 +1,1994 @@
+<title>Child I's Game Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@500;700&display=swap">
+<style>
+/* ==== site/page.css ==== */
+/**
+ * @file site/page.css
+ * @about Look of the Game Library page: light and dark themes, game cards with version lists, the flow map, night-sky character tiles, the song list, and the file browser.
+ * @requires nothing
+ */
+/* Layout: one reading column up to 1080px on a quiet paper page; characters sit on small night-sky tiles so they look the way they do in the games. */
+:root{
+  --paper:#f5f4fa; --panel:#ffffff; --ink:#1c1938; --muted:#5e5a7d; --line:#dcd8ec; --chip:#ebe8f6; --code-bg:#f0eef8;
+  --accent:#b8481a; --accent-soft:#fbe7dc; --violet:#5a43c9; --on-accent:#ffffff;
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Lexend","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Atkinson Hyperlegible Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#0f0d22; --panel:#17143a; --ink:#ecebfa; --muted:#a9a6cc; --line:#2c2856; --chip:#221e4a; --code-bg:#0b0a1c; --accent:#ff9a5c; --accent-soft:#3a2117; --violet:#a796ff; --on-accent:#2a1100; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --paper:#0f0d22; --panel:#17143a; --ink:#ecebfa; --muted:#a9a6cc; --line:#2c2856; --chip:#221e4a; --code-bg:#0b0a1c; --accent:#ff9a5c; --accent-soft:#3a2117; --violet:#a796ff; --on-accent:#2a1100; color-scheme:dark; }
+
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-body)}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:32px 72px;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.6rem,2rem + 3vw,4.2rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:clamp(1.6rem,1.3rem + 1.2vw,2.1rem);font-weight:800;margin-bottom:14px}
+h3{font-size:1.45rem;font-weight:800}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--chip);padding:.08em .4em;border-radius:6px;overflow-wrap:anywhere}
+section{scroll-margin-top:64px}
+
+.masthead{display:flex;flex-direction:column;gap:10px;max-width:68ch}
+.kicker{margin:0;font:700 .85rem/1 var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{margin:0;font-size:1.12rem;color:var(--muted);max-width:60ch}
+.stats{margin:4px 0 0;font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.jump{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:3;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);padding-block:10px;margin-block:-10px}
+.jump::-webkit-scrollbar{display:none}
+.jump a{flex:none;font:600 .9rem var(--f-body);color:var(--ink);text-decoration:none;padding:.35em .8em;border-radius:999px;border:1px solid var(--line)}
+.jump a:hover{border-color:var(--accent);color:var(--accent)}
+.sub{margin:-4px 0 16px;color:var(--muted);max-width:66ch}
+
+/* Games */
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.game{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.game p{margin:0;color:var(--muted)}
+.game .src{font-size:.85rem;color:var(--muted)}
+.versions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.versions li{display:grid;grid-template-columns:2.8em 6.4em minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:.55em 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.versions .v{font:700 1rem var(--f-display);color:var(--accent)}
+.versions .d{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.versions a{font-weight:600;color:var(--violet);text-decoration:none;white-space:nowrap}
+.versions a:hover{text-decoration:underline}
+.versions .same{font-size:.8rem;color:var(--muted);white-space:nowrap}
+@media (max-width:560px){ .versions li{grid-template-columns:2.6em minmax(0,1fr) auto} .versions .d{display:none} }
+
+/* Flow map */
+.flowmap{display:grid;grid-template-columns:minmax(0,1.35fr) 28px minmax(0,1fr) 28px minmax(0,.8fr) 28px minmax(0,1fr);align-items:center;gap:8px}
+.stack{display:flex;flex-direction:column;gap:10px;min-width:0}
+.node{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.node h3{font-size:1.15rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.node h3 span{font:600 .78rem var(--f-mono);color:var(--muted);white-space:nowrap}
+.node p{margin:0;font-size:.88rem;color:var(--muted)}
+.node.game-node{border-color:var(--accent);background:var(--accent-soft)}
+.node.out{border-style:dashed}
+.node a{color:var(--violet);font-weight:600;text-decoration:none;font-size:.9rem}
+.node a:hover{text-decoration:underline}
+.names{display:flex;flex-wrap:wrap;gap:4px}
+.names span{font:500 .74rem var(--f-mono);background:var(--chip);padding:.1em .45em;border-radius:5px}
+.arrow{display:grid;place-items:center;color:var(--muted)}
+.arrow svg{width:22px;height:22px;fill:currentColor}
+@media (max-width:860px){
+  .flowmap{grid-template-columns:minmax(0,1fr)}
+  .arrow svg{transform:rotate(90deg)}
+}
+
+/* Characters: night-sky tiles reuse the games' own color names */
+.cast-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.tile{margin:0;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.stagebox{--void:#0d0a24;--starlight:#f1efff;--ember:#ff8740;--ember-gold:#ffcb5e;--dust:#aaa5d8;--good:#63e0a6;background:radial-gradient(120% 90% at 60% 0%,#251f5c,#0d0a24 72%);color:#f1efff;border:1px solid #271f5e}
+.tile .art{display:block;width:100%;height:170px;padding:14px 10px 0;box-sizing:border-box;overflow:visible}
+.robot-tile,.rocket-tile{grid-column:span 2;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center}
+.robot-tile .art{height:270px}
+.rocket-tile .art{height:240px}
+figcaption{padding:12px 14px 14px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.name{margin:0;font:800 1.1rem var(--f-display);display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.stagebox code{background:rgba(255,255,255,.08);color:#cfcbf3;font-size:.7rem}
+.ctl{font-size:.85rem;color:#cfcbf3;display:flex;justify-content:space-between}
+input[type=range]{width:100%;accent-color:#ffcb5e}
+.faces{display:flex;flex-wrap:wrap;gap:6px}
+.faces button{font:600 .82rem var(--f-body);border-radius:999px;border:1px solid #3a3378;background:transparent;color:#f1efff;padding:.35em .8em;cursor:pointer}
+.faces button[aria-pressed="true"]{background:#ffcb5e;color:#2a1100;border-color:#ffcb5e}
+.check{font-size:.85rem;color:#cfcbf3;display:flex;gap:8px;align-items:center}
+.selects{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
+.selects label{display:flex;flex-direction:column;gap:3px;font-size:.72rem;color:#aaa5d8;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.selects select{font:600 .85rem var(--f-body);border-radius:10px;border:1px solid #3a3378;padding:.4em .55em;background:#17143a;color:#f1efff;text-transform:none;letter-spacing:0}
+@media (max-width:900px){ .cast-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .cast-grid{grid-template-columns:minmax(0,1fr)} .robot-tile,.rocket-tile{grid-column:auto;grid-template-columns:minmax(0,1fr)} }
+
+/* Songs */
+.songs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:10px}
+.song{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.song .play{width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer}
+.song .play svg{width:14px;height:14px}
+.song .play[aria-pressed="true"]{background:var(--violet)}
+.song b{font-family:var(--f-display);font-size:1.1rem}
+.song p{margin:2px 0 0;font-size:.86rem;color:var(--muted)}
+
+/* Files */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.filters button{font:600 .85rem var(--f-body);padding:.35em .85em;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.filters button span{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:.3em}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filters button[aria-pressed="true"] span{color:inherit;opacity:.7}
+.folder{margin-top:18px}
+.folder h3{font:600 .9rem var(--f-mono);color:var(--muted);margin-bottom:4px}
+.frow{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:minmax(0,15rem) minmax(0,1fr) 4.5rem;gap:12px;align-items:baseline;padding:.55em .7em;border-radius:10px;cursor:pointer}
+.frow:hover{background:var(--chip)}
+.frow:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.frow .path{font:600 .84rem var(--f-mono);overflow-wrap:anywhere}
+.frow .about{font-size:.9rem;color:var(--muted)}
+.frow .size{font:500 .78rem var(--f-mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.fdetail{margin:2px 0 10px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0;display:flex;flex-direction:column;gap:10px;min-width:0}
+.fdetail dl{margin:0;display:grid;grid-template-columns:6.5rem minmax(0,1fr);gap:4px 12px;font-size:.88rem}
+.fdetail dt{color:var(--muted);font-weight:600}
+.fdetail dd{margin:0;overflow-wrap:anywhere}
+.notes{margin:0;white-space:pre-wrap;font:500 .8rem/1.5 var(--f-mono);color:var(--muted)}
+.showcode{align-self:flex-start;font:600 .85rem var(--f-body);padding:.4em .9em;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.code{margin:0;max-height:420px;overflow:auto;background:var(--code-bg);border-radius:10px;padding:12px 14px;font:500 .78rem/1.55 var(--f-mono);white-space:pre;tab-size:2}
+.used{display:flex;flex-wrap:wrap;gap:4px}
+.used span{font-size:.75rem;padding:.1em .55em;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+@media (max-width:640px){ .frow{grid-template-columns:minmax(0,1fr) auto} .frow .about{grid-column:1 / -1;grid-row:2} .fdetail dl{grid-template-columns:minmax(0,1fr)} }
+
+/* Steps */
+.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:12px;max-width:70ch}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:12px;align-items:baseline}
+.steps li::before{content:counter(s);font:800 1.4rem var(--f-display);color:var(--accent)}
+.steps b{font-weight:600}
+
+:is(button,a,select,input):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* ==== assets/characters/characters.css ==== */
+/**
+ * @file assets/characters/characters.css
+ * @about Colors, faces, and animations for every character: the robot (worried, brave, happy, surprised, thinking faces; chest spark that grows with courage), Sunny, Rigel, Professor Kepler, flames, and the hop, walk, tremble, blink, and wag motions.
+ * @requires kit/base.css
+ */
+:root{
+  --metal:#c3cdea; --metal-shade:#7684b4; --copper:#e0915a; --glass:#151036; --cheek:#ff8fa8;
+  --fur:#211b29; --curl:#4f4566; --tan:#c7773d; --iris:#6b4428; --snow:#fbf7f2; --nose:#0c0809; --tongue:#ff8fa8; --toe:#c9c2d6; --collar:#8b5cf6;
+  --peng:#203457; --beak:#ffa94d; --scarf:#e2577a; --stone:#8f8378; --stone-sh:#6d6259; --moss:#86b85c; --lens:#e8d9a8; --scope:#b9a27a;
+  --c-robot:#9fd2ff; --c-dog:#ffb46e; --c-peng:#8fe6ff; --c-rock:#b9d98a; --c-flame:#ffcb5e;
+}
+
+/* Robot parts */
+.m{fill:var(--metal)}.m-shade{fill:var(--metal-shade)}.m-edge{fill:none;stroke:var(--metal-shade);stroke-width:1.5}
+.cu{fill:var(--copper)}.glass,.face{fill:var(--glass)}
+.arm{fill:none;stroke:var(--metal-shade);stroke-width:6;stroke-linecap:round}
+.panel{stroke:var(--metal-shade);stroke-width:1.5;stroke-linecap:round;fill:none}
+.glint{fill:none;stroke:var(--starlight);stroke-opacity:.5;stroke-width:1.6;stroke-linecap:round}
+.eye{fill:var(--snow)}.pupil{fill:var(--void)}.spark{fill:var(--snow)}
+.happy-eye{fill:none;stroke:var(--snow);stroke-width:2.8;stroke-linecap:round}
+.brow,.mouth{fill:none;stroke:var(--c-robot);stroke-width:2.2;stroke-linecap:round}
+.mouth-grin{fill:var(--c-robot);stroke:none}
+.cheeks circle{fill:var(--cheek);opacity:.75}
+.antenna{stroke:var(--metal-shade);stroke-width:2.5;stroke-linecap:round}
+.bulb{fill:var(--c-robot);transition:fill .8s}
+.robot[data-face="surprised"] .bulb{fill:var(--ember-gold)}
+.lit .bulb{fill:var(--ember-gold);filter:drop-shadow(0 0 4px var(--ember))}
+
+/* Robot faces. Base mood comes from courage (.brave); short reactions use data-face="happy | surprised | think". */
+.robot .eyes-happy,.robot .eyes-wide,.robot .eyes-think,.robot .brow-brave,.robot .brow-up,.robot .brow-think,.robot .mouth-smile,.robot .mouth-grin,.robot .mouth-o,.robot .mouth-hmm,.robot .cheeks{display:none}
+.robot.brave .brow-worried,.robot.brave .mouth-wobble{display:none}
+.robot.brave .brow-brave,.robot.brave .mouth-smile{display:inline}
+.robot[data-face] .eyes-normal,.robot[data-face] .brow-worried,.robot[data-face] .brow-brave,.robot[data-face] .mouth-wobble,.robot[data-face] .mouth-smile{display:none}
+.robot[data-face="happy"] :is(.eyes-happy,.brow-brave,.mouth-grin,.cheeks){display:inline}
+.robot[data-face="surprised"] :is(.eyes-wide,.brow-up,.mouth-o){display:inline}
+.robot[data-face="think"] :is(.eyes-think,.brow-think,.mouth-hmm){display:inline}
+
+/* Chest spark: grows with --warm (0 to 1), full flame once .lit */
+.ember{transform-box:fill-box;transform-origin:50% 100%;transform:scale(calc(.4 + var(--warm,.08) * .55));opacity:calc(.45 + var(--warm,.08) * .45);transition:transform 1s,opacity 1s}
+.lit .ember{transform:scale(1.1);opacity:1}
+.lit .chest-flame{filter:drop-shadow(0 0 5px var(--ember))}
+.lit .glass{fill:#3a1a10}
+
+/* Sunny */
+.fur{fill:var(--fur)}.fur-c{fill:var(--fur);stroke:var(--curl);stroke-width:.9}
+.curl{fill:none;stroke:var(--curl);stroke-width:1.1;stroke-linecap:round}
+.white{fill:var(--snow)}.tan{fill:var(--tan)}.iris{fill:var(--iris)}.nose{fill:var(--nose)}.tongue{fill:var(--tongue)}
+.toe{stroke:var(--toe);stroke-width:.9;stroke-linecap:round}
+.dog-line{fill:none;stroke:var(--nose);stroke-width:1;stroke-linecap:round}
+.collar{fill:none;stroke:var(--collar);stroke-width:3.4;stroke-linecap:round}
+
+/* Rigel and Professor Kepler */
+.peng-dark{fill:var(--peng)}.beak{fill:var(--beak)}.scarf{fill:var(--scarf)}
+.bubble{fill:var(--c-peng);fill-opacity:.12;stroke:var(--c-peng);stroke-opacity:.75;stroke-width:1.2}
+.stone{fill:var(--stone)}.stone-sh{fill:var(--stone-sh)}.moss{fill:var(--moss)}
+.crack{fill:none;stroke:var(--stone-sh);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rock-eye{fill:var(--void)}
+.specs{fill:var(--lens);fill-opacity:.14;stroke:var(--lens);stroke-width:1.2}
+
+/* Flames */
+.f-outer{fill:var(--ember)}.f-mid{fill:var(--ember-gold)}.f-core{fill:var(--snow)}
+
+/* Motion */
+.char{opacity:0;transform:translateY(14px) scale(.7);transform-box:fill-box;transform-origin:50% 100%;transition:opacity .6s ease,transform .8s cubic-bezier(.3,1.5,.5,1)}
+.char.in{opacity:1;transform:none}
+.hop{transform-box:fill-box;transform-origin:50% 100%}
+.hop.go{animation:hop .5s ease}
+.hop.jolt{animation:jolt .45s ease}
+.walking .hop{animation:walk .34s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:none}40%{transform:translateY(-10px)}}
+@keyframes jolt{0%,100%{transform:none}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes walk{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-1.5deg)}75%{transform:translateY(-4px) rotate(1.5deg)}}
+.tremble{transform-box:fill-box;transform-origin:50% 100%;animation:tremble .24s linear infinite}
+@keyframes tremble{0%,100%{transform:rotate(calc(var(--fear,.9) * -1.6deg))}50%{transform:rotate(calc(var(--fear,.9) * 1.6deg))}}
+.eyes{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,95%,100%{transform:scaleY(1)}97%{transform:scaleY(.12)}}
+.flicker{transform-box:fill-box;transform-origin:50% 100%;animation:flick .3s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1,1)}to{transform:scale(.92,1.08)}}
+.tail{transform-box:fill-box;transform-origin:0% 100%;animation:wag .45s ease-in-out infinite alternate}
+@keyframes wag{from{transform:rotate(-14deg)}to{transform:rotate(12deg)}}
+.sparkles use{fill:var(--ember-gold);transform-box:fill-box;transform-origin:center;animation:twinkle 1.6s ease-in-out infinite}
+.sparkles g:nth-child(2) use{animation-delay:-.5s}.sparkles g:nth-child(3) use{animation-delay:-1.1s}
+@keyframes twinkle{0%,100%{transform:scale(.3);opacity:.2}50%{transform:scale(1);opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .tremble,.flicker,.tail,.sparkles use,.hop.go,.hop.jolt,.walking .hop,.eyes{animation:none !important}
+  .char{transition:none !important}
+}
+</style>
+<!-- @file site/page.html
+     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.
+     @requires site/page.css, catalog.json -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <!-- @file assets/fx/defs.svg
+     @about Shared shapes referenced with <use>: the flame (flamePath, base at 0,0, 40 units tall) and the four-point twinkle star (spark4). Place inside an inline SVG's <defs>.
+     @requires nothing -->
+<path id="flamePath" d="M0 0 C-11 0 -15 -10 -10 -19 C-6 -26 -1 -29 0 -40 C5 -31 15 -24 13 -12 C12 -4 7 0 0 0 Z"/>
+<path id="spark4" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z"/>
+
+</defs></svg>
+<div class="wrap">
+  <header class="masthead">
+    <p class="kicker">Child I Fun</p>
+    <h1>Game Library</h1>
+    <p class="lede">Every game Child I and Mom design is built from the pieces on this page. Each piece is its own readable file, so any game can be changed later and any character, song, or engine can go into the next game.</p>
+    <p class="stats" id="stats"></p>
+  </header>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#games">Games</a><a href="#fit">How it fits</a><a href="#cast">Characters</a><a href="#songs">Music</a><a href="#files">Files</a><a href="#later">Changing a game</a>
+  </nav>
+
+  <section id="games" aria-labelledby="h-games">
+    <h2 id="h-games">Games</h2>
+    <div class="games" id="gameList"></div>
+  </section>
+
+  <section id="fit" aria-labelledby="h-fit">
+    <h2 id="h-fit">How it fits together</h2>
+    <p class="sub">Shared pieces on the left. Each game adds its own story and screens, the build joins everything into one page, and every version is published as its own page.</p>
+    <div class="flowmap" id="flowmap"></div>
+  </section>
+
+  <section id="cast" aria-labelledby="h-cast">
+    <h2 id="h-cast">Characters</h2>
+    <div class="cast-grid">
+      <figure class="tile stagebox robot-tile">
+        <svg class="art" viewBox="-70 -212 140 222" aria-label="The robot hero">
+          <g class="robot tremble" id="galleryRobot"><!-- @file assets/characters/robot-side.svg
+     @about The tall robot hero, side view, standing at (0, 0) and about 200 units tall. Contains every face (worried, brave, happy, surprised, thinking); characters.css picks which one shows from the robot's class and data-face. Place inside <g class="robot" id="robot">.
+     @requires assets/characters/characters.css, assets/fx/defs.svg -->
+<path d="M-23 -108 C-38 -96 -41 -82 -36 -66" class="arm"/>
+<path d="M23 -108 C38 -96 41 -82 36 -66" class="arm"/>
+<circle cx="-36" cy="-64" r="5.5" class="cu"/><circle cx="36" cy="-64" r="5.5" class="cu"/>
+<rect x="-17" y="-62" width="7" height="58" rx="3.5" class="m-shade"/>
+<rect x="10" y="-62" width="7" height="58" rx="3.5" class="m-shade"/>
+<circle cx="-13.5" cy="-32" r="5" class="cu"/><circle cx="13.5" cy="-32" r="5" class="cu"/>
+<rect x="-27" y="-7" width="20" height="7" rx="3.5" class="m"/>
+<rect x="7" y="-7" width="20" height="7" rx="3.5" class="m"/>
+<rect x="-25" y="-122" width="50" height="64" rx="12" class="m"/>
+<rect x="-25" y="-122" width="50" height="64" rx="12" class="m-edge"/>
+<path d="M-15 -72 H15 M-15 -66 H6" class="panel"/>
+<circle cx="0" cy="-95" r="12.5" class="cu"/>
+<circle cx="0" cy="-95" r="9.5" class="glass"/>
+<g class="chest-flame" transform="translate(0,-87.5)"><g class="ember"><g class="flicker"><use href="#flamePath" class="f-outer" transform="scale(.36)"/><use href="#flamePath" class="f-mid" transform="scale(.22)"/></g></g></g>
+<path d="M-5.5 -100.5 A7 7 0 0 1 1 -102.5" class="glint"/>
+<rect x="-4" y="-140" width="8" height="19" class="m-shade"/>
+<path d="M-4 -134 H4 M-4 -128 H4" class="panel"/>
+<circle cx="-23" cy="-157" r="4" class="cu"/><circle cx="23" cy="-157" r="4" class="cu"/>
+<rect x="-23" y="-176" width="46" height="38" rx="14" class="m"/>
+<rect x="-23" y="-176" width="46" height="38" rx="14" class="m-edge"/>
+<path d="M0 -176 V-195" class="antenna"/>
+<circle cx="0" cy="-198.5" r="4.5" class="bulb"/>
+<rect x="-18" y="-171" width="36" height="28" rx="10" class="face"/>
+<g class="eyes-normal"><g class="eyes">
+  <circle cx="-8" cy="-158" r="6.6" class="eye"/><circle cx="8" cy="-158" r="6.6" class="eye"/>
+  <circle cx="-7" cy="-159.4" r="3.3" class="pupil"/><circle cx="9" cy="-159.4" r="3.3" class="pupil"/>
+  <circle cx="-5.8" cy="-160.8" r="1.1" class="spark"/><circle cx="10.2" cy="-160.8" r="1.1" class="spark"/>
+</g></g>
+<g class="eyes-happy"><path d="M-13.5 -156 Q-8 -164 -2.5 -156 M2.5 -156 Q8 -164 13.5 -156" class="happy-eye"/></g>
+<g class="eyes-wide">
+  <circle cx="-8.5" cy="-158" r="8" class="eye"/><circle cx="8.5" cy="-158" r="8" class="eye"/>
+  <circle cx="-8.5" cy="-158" r="2.6" class="pupil"/><circle cx="8.5" cy="-158" r="2.6" class="pupil"/>
+  <circle cx="-7.4" cy="-159.4" r="1" class="spark"/><circle cx="9.6" cy="-159.4" r="1" class="spark"/>
+</g>
+<g class="eyes-think">
+  <circle cx="-8" cy="-158" r="6.6" class="eye"/><circle cx="8" cy="-158" r="6.6" class="eye"/>
+  <circle cx="-5.6" cy="-161" r="3.1" class="pupil"/><circle cx="10.4" cy="-161" r="3.1" class="pupil"/>
+</g>
+<path d="M-14 -165.5 L-4.5 -168.5 M14 -165.5 L4.5 -168.5" class="brow brow-worried"/>
+<path d="M-14 -168.5 L-4.5 -166.5 M14 -168.5 L4.5 -166.5" class="brow brow-brave"/>
+<path d="M-14 -169 Q-9 -173.5 -4 -170 M4 -170 Q9 -173.5 14 -169" class="brow brow-up"/>
+<path d="M-14 -167.5 L-4 -167.5 M4 -170.5 Q9 -174 14 -169.5" class="brow brow-think"/>
+<path d="M-6 -147 q1.5 -1.8 3 0 t3 0 t3 0 t3 0" class="mouth mouth-wobble"/>
+<path d="M-6 -148 Q0 -143 6 -148" class="mouth mouth-smile"/>
+<path d="M-7 -151 H7 Q6.4 -144 0 -144 Q-6.4 -144 -7 -151 Z" class="mouth mouth-grin"/>
+<circle cx="0" cy="-147.5" r="3" class="mouth mouth-o"/>
+<path d="M-4.5 -146.5 L5 -148.5" class="mouth mouth-hmm"/>
+<g class="cheeks"><circle cx="-14" cy="-150" r="2.6"/><circle cx="14" cy="-150" r="2.6"/></g>
+</g>
+        </svg>
+        <figcaption>
+          <p class="name">The Keeper <code>assets/characters/robot-side.svg</code></p>
+          <label class="ctl" for="courage">Courage <span id="courageVal">30%</span></label>
+          <input type="range" id="courage" min="0" max="100" value="30">
+          <div class="faces" role="group" aria-label="Face">
+            <button type="button" data-face="" aria-pressed="true">Calm</button>
+            <button type="button" data-face="happy" aria-pressed="false">Happy</button>
+            <button type="button" data-face="surprised" aria-pressed="false">Surprised</button>
+            <button type="button" data-face="think" aria-pressed="false">Thinking</button>
+          </div>
+          <label class="check"><input type="checkbox" id="litBox"> Everlight in his chest</label>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-36 -74 72 80" aria-label="Sunny the puppy"><g id="galleryPuppy"></g></svg>
+        <figcaption><p class="name">Sunny <code>assets/characters/puppy.js</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-24 -54 48 58" aria-label="Rigel the penguin"><!-- @file assets/characters/penguin.svg
+     @about Rigel the penguin in a bubble helmet and a pink scarf. Stands at (0, 0), about 48 units tall.
+     @requires assets/characters/characters.css -->
+<ellipse cx="-6" cy="-1.6" rx="5" ry="2.3" class="beak"/>
+<ellipse cx="6" cy="-1.6" rx="5" ry="2.3" class="beak"/>
+<ellipse cx="-12" cy="-16" rx="3.6" ry="9" transform="rotate(20 -12 -16)" class="peng-dark"/>
+<ellipse cx="12" cy="-16" rx="3.6" ry="9" transform="rotate(-20 12 -16)" class="peng-dark"/>
+<ellipse cx="0" cy="-17" rx="12.5" ry="16" class="peng-dark"/>
+<ellipse cx="0" cy="-14" rx="8" ry="11.5" class="white"/>
+<circle cx="0" cy="-33" r="10" class="peng-dark"/>
+<ellipse cx="0" cy="-31.5" rx="7" ry="5.8" class="white"/>
+<circle cx="-3.2" cy="-33" r="1.7" class="nose"/><circle cx="3.2" cy="-33" r="1.7" class="nose"/>
+<path d="M-2.6 -30.2 L2.6 -30.2 L0 -26.6Z" class="beak"/>
+<path d="M-9.5 -24.5 Q0 -20.5 9.5 -24.5 L9.5 -21 Q0 -17 -9.5 -21Z" class="scarf"/>
+<path d="M5 -21.5 L9 -13 L5.5 -12.5 L3 -20Z" class="scarf"/>
+<circle cx="0" cy="-33" r="15" class="bubble"/>
+<path d="M-9.5 -41 A11.5 11.5 0 0 1 -2 -45.5" class="glint"/>
+</svg>
+        <figcaption><p class="name">Rigel <code>assets/characters/penguin.svg</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-34 -56 68 62" aria-label="Professor Kepler"><!-- @file assets/characters/kepler.svg
+     @about Professor Kepler, the mossy rock with tiny round glasses. Sits at (0, 0), about 52 units tall.
+     @requires assets/characters/characters.css -->
+<ellipse cx="-25" cy="-14" rx="5" ry="6" class="stone-sh"/>
+<ellipse cx="25" cy="-14" rx="5" ry="6" class="stone-sh"/>
+<path d="M-24 0 C-28 -14 -24 -34 -12 -44 C-2 -52 12 -50 20 -40 C28 -30 28 -12 24 0 Z" class="stone"/>
+<path d="M8 -46 C18 -42 27 -30 25 -12 C25 -6 24 -2 24 0 L15 0 C19 -14 19 -30 8 -46Z" class="stone-sh"/>
+<path d="M-15 -41 C-9 -50 4 -53 15 -46 C11 -42 5 -44 1 -41 C-4 -44 -10 -39 -15 -41Z" class="moss"/>
+<circle cx="-18" cy="-36" r="2.4" class="moss"/><circle cx="17" cy="-41" r="1.8" class="moss"/>
+<path d="M-17 -15 l5 -4 l3 3 M12 -9 l4 -3" class="crack"/>
+<ellipse cx="-7" cy="-28" rx="3.6" ry="3.2" class="rock-eye"/>
+<ellipse cx="7" cy="-28" rx="3.6" ry="3.2" class="rock-eye"/>
+<path d="M-11.2 -28.4 Q-7 -32.6 -2.8 -28.4 Z M2.8 -28.4 Q7 -32.6 11.2 -28.4 Z" class="stone"/>
+<path d="M-11 -28.3 H-3 M3 -28.3 H11" class="crack"/>
+<g class="specs"><circle cx="-7" cy="-28" r="5.2"/><circle cx="7" cy="-28" r="5.2"/><path d="M-1.8 -28.5 H1.8" fill="none"/></g>
+<path d="M-5 -18 Q0 -14.5 5 -18" class="crack"/>
+</svg>
+        <figcaption><p class="name">Professor Kepler <code>assets/characters/kepler.svg</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox rocket-tile">
+        <svg class="art" id="rocketArt" viewBox="-38 -112 76 144" aria-label="The rocket"></svg>
+        <figcaption>
+          <p class="name">Rocket <code>assets/rocket/rocket.js</code></p>
+          <div class="selects" id="rocketControls"></div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="songs" aria-labelledby="h-songs">
+    <h2 id="h-songs">Music</h2>
+    <p class="sub">Every song is written as notes in a small file and played by <code>kit/music.js</code>. No recordings, nothing copyrighted.</p>
+    <div class="songs" id="songList"></div>
+  </section>
+
+  <section id="files" aria-labelledby="h-files">
+    <h2 id="h-files">Files</h2>
+    <div class="filters" id="layerFilters" role="group" aria-label="Show files from"></div>
+    <div class="filelist" id="fileList"></div>
+  </section>
+
+  <section id="later" aria-labelledby="h-later">
+    <h2 id="h-later">Changing a game later</h2>
+    <ol class="steps">
+      <li><b>Ask in the project.</b> In a new chat in the Child I Fun project, say which game to change and how.</li>
+      <li><b>Claude restores the library.</b> Every file on this page is read back in one step.</li>
+      <li><b>Only the right files change.</b> Claude edits the pieces involved, rebuilds the game, and play-tests it.</li>
+      <li><b>A new version gets its own page.</b> Earlier versions keep working exactly as they were.</li>
+      <li><b>This library is updated.</b> It always holds the newest source and a link to every version.</li>
+    </ol>
+  </section>
+</div>
+<script type="application/json" id="catalog">{
+ "files": [
+  {
+   "path": "README.md",
+   "layer": "Docs",
+   "bytes": 4647,
+   "usedBy": [],
+   "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/characters.css",
+   "layer": "Assets",
+   "bytes": 6252,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Colors, faces, and animations for every character: the robot (worried, brave, happy, surprised, thinking faces; chest spark that grows with courage), Sunny, Rigel, Professor Kepler, flames, and the hop, walk, tremble, blink, and wag motions.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/kepler.svg",
+   "layer": "Assets",
+   "bytes": 1231,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Professor Kepler, the mossy rock with tiny round glasses. Sits at (0, 0), about 52 units tall.",
+   "provides": "",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/penguin.svg",
+   "layer": "Assets",
+   "bytes": 1142,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Rigel the penguin in a bubble helmet and a pink scarf. Stands at (0, 0), about 48 units tall.",
+   "provides": "",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/portraits.js",
+   "layer": "Assets",
+   "bytes": 2478,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Small round head portraits of the robot, Sunny, Rigel, and Professor Kepler, used in the friends bar and on helper buttons.",
+   "provides": "Kit.art.portraits { robot, dog, peng, rock } (SVG markup strings, viewBox -16 -16 32 32)",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/puppy.js",
+   "layer": "Assets",
+   "bytes": 3711,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Sunny, the fluffy magic puppy (black, white, and tan curls, floppy ears, star collar, sparkles, wagging tail). Built in code so the curls stay even. Sits at (0, 0), about 66 units tall.",
+   "provides": "Kit.art.puppy() -> SVG markup string",
+   "requires": "assets/characters/characters.css, assets/fx/defs.svg",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/robot-side.svg",
+   "layer": "Assets",
+   "bytes": 3836,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "The tall robot hero, side view, standing at (0, 0) and about 200 units tall. Contains every face (worried, brave, happy, surprised, thinking); characters.css picks which one shows from the robot's class and data-face. Place inside <g class=\"robot\" id=\"robot\">.",
+   "provides": "",
+   "requires": "assets/characters/characters.css, assets/fx/defs.svg",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/robot-topdown.js",
+   "layer": "Assets",
+   "bytes": 2619,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The robot drawn small on a canvas for walkable maps: legs swing and arms pump while walking, eyes look the way he's heading, and his chest glows brighter with courage.",
+   "provides": "Kit.art.drawRobotTop(ctx, x, y, t, motion, { tokens, glow })",
+   "requires": "kit/canvas.js",
+   "notes": "motion = { moving, phase, fx, fy } from kit/topdown-map.js; glow = 0 to 1 chest brightness.\ntokens needs: metal, metalShade, copper, glass, snow, void, cRobot"
+  },
+  {
+   "path": "assets/fx/defs.svg",
+   "layer": "Assets",
+   "bytes": 437,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Shared shapes referenced with <use>: the flame (flamePath, base at 0,0, 40 units tall) and the four-point twinkle star (spark4). Place inside an inline SVG's <defs>.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/icons/icons.js",
+   "layer": "Assets",
+   "bytes": 2175,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Simple filled icons used on buttons so the game needs fewer words: back, go, retry, rocket, check, eye, music note, play, stop, and a shovel.",
+   "provides": "Kit.art.icons { back, go, retry, rocket, check, eye, note, play, stop, shovel } (SVG markup strings)",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/map/lumina-map.js",
+   "layer": "Assets",
+   "bytes": 7966,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Art for the top-down map of Lumina: dusty ground with craters, rocks, and glowing mushrooms, dotted paths, Comet Crater, the Old Observatory, Glowworm Grove, the Sleepy Village, the launch pad, gold star beacons with progress dots, and the glowing launch ring.",
+   "provides": "Kit.art.luminaMap { makeDecor, drawGround, drawPaths, drawCrater, drawObservatory, drawGrove, drawVillage, drawPad, drawBeacon, drawPadRing }",
+   "requires": "kit/canvas.js",
+   "notes": "Every draw function takes the canvas context first and a tokens object T (colors read from CSS) last.\nT needs: void, gold, good, cPeng, stoneSh, metalShade, wall, roof, win, leaf, trunk, dome, scope"
+  },
+  {
+   "path": "assets/music/corona.js",
+   "layer": "Assets",
+   "bytes": 763,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Corona Blaze\": a fast, driving adventure tune for the fiery nebula and the tower climb. 128 bpm, A minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.corona",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/glacia.js",
+   "layer": "Assets",
+   "bytes": 713,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Glacia Twinkle\": a high, icy, plucked tune for the frozen planet. 92 bpm, E major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.glacia",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/lumina.js",
+   "layer": "Assets",
+   "bytes": 690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Lumina in the Dark\": a slow, soft music-box tune for the sleeping home world. 74 bpm, A minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.lumina",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/meridian.js",
+   "layer": "Assets",
+   "bytes": 708,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Meridian Stargazer\": a thoughtful, wandering tune for the stony planet of the old stargazer. 88 bpm, G minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.meridian",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/nimbus.js",
+   "layer": "Assets",
+   "bytes": 690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Nimbus Bounce\": a bouncy square-wave tune for the cotton-candy cloud planet. 120 bpm, D major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.nimbus",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/reborn.js",
+   "layer": "Assets",
+   "bytes": 680,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Lumina Reborn\": the happy ending tune when the Everlight comes home. 108 bpm, C major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.reborn",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/theme.js",
+   "layer": "Assets",
+   "bytes": 675,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Starward Theme\": the cheerful main tune for the title screen and flights. 104 bpm, C major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.theme",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/rocket/rocket.css",
+   "layer": "Assets",
+   "bytes": 1853,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Rocket motion and display: liftoff rise, hover bob, launch rumble, engine flame stretch, plus the rocket previews in the side panel (build progress, part slots, finished ship).",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/rocket/rocket.js",
+   "layer": "Assets",
+   "bytes": 6690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "The buildable rocket. Data for every part choice and paint color, plus a drawing function that renders any combination (missing parts can show as dashed outlines, and one part can be highlighted).",
+   "provides": "Kit.art.rocket { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, ENGINE_COLORS, svg(config, options), box(innerSvg, cls), partIcons }",
+   "requires": "assets/fx/defs.svg (unless options.plainFlame)",
+   "notes": "config  = { nose, fins, boost, engine, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: show engine flames, face: robot peeking out, plainFlame: no <use> refs (for images) }\nDrawing space: viewBox -38 -112 76 144, base of the rocket at y = 0."
+  },
+  {
+   "path": "assets/worlds/corona.svg",
+   "layer": "Assets",
+   "bytes": 672,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The Corona Nebula scenery: a tall three-floor tower whose windows light up as data-floors goes from 1 to 3, in a 400 by 260 scene. Shows when the scene's data-world is \"corona\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/glacia.svg",
+   "layer": "Assets",
+   "bytes": 439,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Glacia scenery: clusters of ice spikes on both sides of a 400 by 260 scene. Shows when the scene's data-world is \"glacia\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/gradients.svg",
+   "layer": "Assets",
+   "bytes": 549,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Ground gradients for side-view worlds. Their colors come from --ground-a and --ground-b, so each world recolors them in worlds.css. Place inside an inline SVG's <defs>.",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/lumina-planet.svg",
+   "layer": "Assets",
+   "bytes": 3693,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Lumina seen from the side as a small round planet that turns under the robot. Five places sit around it: launch pad (0 degrees), Comet Crater (72), Old Observatory (144), Glowworm Grove (216), Sleepy Village (288). Rotate #spin to walk between them. Windows and glowworms light up when the world is \"luminaLit\".",
+   "provides": "",
+   "requires": "assets/worlds/gradients.svg, assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/meridian.svg",
+   "layer": "Assets",
+   "bytes": 904,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Meridian scenery: carved standing stones and an old brass telescope on a tripod, in a 400 by 260 scene. Shows when the scene's data-world is \"meridian\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css, assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/nimbus.svg",
+   "layer": "Assets",
+   "bytes": 508,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Nimbus scenery: puffy pink clouds on both sides of a 400 by 260 scene. Shows when the scene's data-world is \"nimbus\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/plain-ground.svg",
+   "layer": "Assets",
+   "bytes": 355,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A wide curved hill for side-view planets, drawn in a 400 by 260 scene. Colored by the current world.",
+   "provides": "",
+   "requires": "assets/worlds/gradients.svg, assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/worlds.css",
+   "layer": "Assets",
+   "bytes": 5279,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Colors and scenery rules for every side-view world (Lumina dark and lit, Nimbus, Glacia, Meridian, Corona): sky, ground, planet in the sky, which scenery shows, buildings, ice, stones, the tower windows, and the Everlight flame.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": "Set data-world on the .scene element to switch worlds. Add .flying to drop the ground away during flights."
+  },
+  {
+   "path": "build/build.py",
+   "layer": "Build",
+   "bytes": 8462,
+   "usedBy": [],
+   "about": "Assembles a game (or the library page) from its separate files into one self-contained web page, checks that every file's",
+   "provides": "",
+   "requires": "are loaded first, and writes catalog.json, the list of every file and what it does.",
+   "notes": "Usage, from the library folder:\n  python3 build/build.py games/starward/game.json   build one game into dist/\n  python3 build/build.py site/site.json            build the library page (index.html)\n  python3 build/build.py --catalog                 rewrite catalog.json from the file headers\n  python3 build/build.py --all                     catalog, every buildable game, then the library page\n\nA game.json lists: title, output, fonts, styles (CSS in order), body (HTML with <!-- @include path --> lines),\nscripts (shared Kit modules, assets, and content, in load order), and parts (the game's own files, which share one scope)."
+  },
+  {
+   "path": "build/playtest.py",
+   "layer": "Build",
+   "bytes": 17377,
+   "usedBy": [],
+   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward start to finish (map, puzzles, digging, flights, the brave words, the ending and high score). Must pass before every commit that changes library/.",
+   "provides": "",
+   "requires": "build/build.py",
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+  },
+  {
+   "path": "content/questions/blanks.js",
+   "layer": "Content",
+   "bytes": 6531,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "46 fill-in-the-blank sentences about space, robots, and science for ages 8 to 10, each tagged easy (1), medium (2), or hard (3). ___ marks the blank.",
+   "provides": "Kit.questions.banks.blanks",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/earth.js",
+   "layer": "Content",
+   "bytes": 3808,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "21 Earth and geography questions (continents, oceans, mountains, deserts, famous places), each tagged easy (1), medium (2), or hard (3).",
+   "provides": "Kit.questions.banks.earth",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/math.js",
+   "layer": "Content",
+   "bytes": 8599,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Math question generators that make new problems every time: space word problems, missing numbers, place value, rounding, and number patterns. Each takes a level from 1 to 5. Level 1 is early second grade, 3 is third grade, 5 is fourth grade.",
+   "provides": "Kit.questions.gens { word, missing, place, round, pattern }",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": "Number ranges by level:\n  add       1: 1-10        2: 10-60      3: 100-450     4: 150-900     5: 1,000-5,000\n  subtract  1: within 20   2: within 100 3: within 1,000 (bigger gaps at 4) 5: within 10,000\n  multiply  1: x2, x5, x10 2: up to 5x5  3: up to 9x9   4: 1 digit x 2 digits   5: 2 digits x 2 digits\n  divide    matches multiply (always comes out even)"
+  },
+  {
+   "path": "content/questions/odd-one-out.js",
+   "layer": "Content",
+   "bytes": 2119,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Generator for \"which one does not belong?\" puzzles: three things from one group and one sneaky outsider. Level 1 mixes very different groups (tools and planets); level 3 is trickier (the Moon among planets).",
+   "provides": "Kit.questions.gens.odd",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/planet-order.js",
+   "layer": "Content",
+   "bytes": 1392,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Generator for planet-order questions. Level 1 asks about Earth's neighbors, level 2 about any planet, level 3 asks \"which planet is fifth from the Sun?\"",
+   "provides": "Kit.questions.gens.order, Kit.questions.PLANETS",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/riddles.js",
+   "layer": "Content",
+   "bytes": 6176,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "36 STEM-leaning riddles for ages 8 to 10, each tagged easy (1), medium (2), or hard (3). The clue is what a helper friend says when asked.",
+   "provides": "Kit.questions.banks.riddles",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/scramble.js",
+   "layer": "Content",
+   "bytes": 3070,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "48 science and space words to unscramble, from 4 to 7 letters. Longer words are harder, so games choose the length from the player's level.",
+   "provides": "Kit.questions.banks.scramble (each item has len)",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/space.js",
+   "layer": "Content",
+   "bytes": 3739,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "17 space riddles (planets, stars, comets, rovers), each tagged easy (1), medium (2), or hard (3). Each has two clues: one for a sniff hint and one for a ponder hint.",
+   "provides": "Kit.questions.banks.space",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/words/typing-words.js",
+   "layer": "Content",
+   "bytes": 1651,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Word lists for typing practice, sorted by length: short words, five-letter words, longer words, short phrases, cozy \"home\" words, and digging words.",
+   "provides": "Kit.words { short, five, long, phrases, home, dig }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "games/inner-flame/game.json",
+   "layer": "Games",
+   "bytes": 632,
+   "usedBy": [
+    "The Inner Flame"
+   ],
+   "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/inner-flame/legacy/v1.html",
+   "layer": "Games",
+   "bytes": 79242,
+   "usedBy": [
+    "The Inner Flame"
+   ],
+   "about": "Original single-file source, kept unchanged so this version can always be rebuilt or edited.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/boot.js",
+   "layer": "Games",
+   "bytes": 1958,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starts Starward: connects each story step type to its screen, resumes saved games, turns on Enter-to-continue, and keeps the game going through live page updates.",
+   "provides": "",
+   "requires": "kit/flow.js, games/starward/story.js, games/starward/screens.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/game.css",
+   "layer": "Games",
+   "bytes": 1280,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward-only layout: switching between the side view and the walkable map, the high score board over the scene on the title screen, hiding the cast during flights, and the level badges on the ending.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/game.json",
+   "layer": "Games",
+   "bytes": 3151,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/legacy/v3.html",
+   "layer": "Games",
+   "bytes": 174676,
+   "usedBy": [],
+   "about": "Original single-file source, kept unchanged so this version can always be rebuilt or edited.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/lumina.js",
+   "layer": "Games",
+   "bytes": 7942,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging), choosing each rocket part's style, and building and painting the ship at the launch pad.",
+   "provides": "",
+   "requires": "kit/topdown-map.js, kit/typing-challenges.js, assets/map/lumina-map.js, assets/characters/robot-topdown.js, games/starward/scene.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/scene.html",
+   "layer": "Games",
+   "bytes": 4189,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's page layout: the top bar (courage, friends, music and sound), the scene window (side-view worlds, characters, rocket, walkable map, falling words), and the side panel. Lines like @include pull in art files when the game is built.",
+   "provides": "",
+   "requires": "assets/fx/defs.svg, assets/worlds/*.svg, assets/characters/*.svg",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/scene.js",
+   "layer": "Games",
+   "bytes": 6868,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.",
+   "provides": "",
+   "requires": "kit/starfield.js, kit/music.js, kit/audio.js, assets/characters/puppy.js, assets/characters/portraits.js, assets/rocket/rocket.js, games/starward/state.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/screens.js",
+   "layer": "Games",
+   "bytes": 11914,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here.",
+   "provides": "",
+   "requires": "kit/puzzle-ui.js, kit/flight.js, kit/typing-challenges.js, kit/jukebox.js, kit/scoreboard.js, games/starward/lumina.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/state.js",
+   "layer": "Games",
+   "bytes": 7744,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's settings and save data: storage keys, places on Lumina, worlds and their songs, the cast, flight tuning, the adaptive skill levels, the puzzle plan for each playthrough, and the question chooser that matches the player's level.",
+   "provides": "",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js, kit/adaptive.js, assets/rocket/rocket.js, assets/icons/icons.js, content/words/typing-words.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/story.js",
+   "layer": "Games",
+   "bytes": 5528,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's story, in order: every line, every world change, every friend, puzzle, flight, and song. To change the story, edit this list. Step types: world, say, appear, join, explore, build, puzzle, song, fly, flame, end.",
+   "provides": "",
+   "requires": "games/starward/state.js",
+   "notes": "say:    { who: narrator | robot | dog | peng | rock | flame, x: text or (names) => text, face?: happy | surprised | think }\npuzzle: { set: nimbus | glacia | meridian | corona, n: 0 to 2 }   question kinds come from makePlan() in state.js\nfly:    { to: place name, leg: f1 to f5 (see LEGS in state.js) } or { vow: true } for the brave words"
+  },
+  {
+   "path": "kit/adaptive.js",
+   "layer": "Kit",
+   "bytes": 2495,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Adaptive difficulty. Tracks how the player is doing in each skill and moves that skill's level up or down. Levels are remembered on that computer for that game.",
+   "provides": "Kit.adaptive.create({ key, skills, onChange }) -> { level(skill), record(skill, outcome), adjust(skill, delta), snapshot() }",
+   "requires": "kit/util.js",
+   "notes": "skills: { name: { min, max, start } }, for example { math: { min: 1, max: 5, start: 3 } }\nrecord(skill, outcome) rules:\n  \"clean\"    solved on the first try with no hints. Two in a row: level up.\n  \"ok\"       solved after one miss or with a hint. Level stays the same.\n  \"struggle\" solved after two or more misses. Two in a row: level down.\n  \"gaveup\"   needed \"Show me\". Level down right away.\nadjust(skill, +1 or -1) changes a level directly (typing rounds use this).\nonChange(skill, newLevel, delta) runs whenever a level actually changes."
+  },
+  {
+   "path": "kit/audio.js",
+   "layer": "Kit",
+   "bytes": 4285,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Sound effects made in code (no audio files): beeps, chimes, whooshes, a woof. Also unlocks sound on the first click or key press, which browsers require.",
+   "provides": "Kit.audio { ctx, noiseBuffer, tone, noise, sfx, enabled, setEnabled, onFirstGesture }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/base.css",
+   "layer": "Kit",
+   "bytes": 8228,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Core look shared by every game: color and font tokens, the one-screen layout (top bar, scene, side panel), buttons, text boxes, choice tiles, title text, and toasts. Single dark space theme by design.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/canvas.js",
+   "layer": "Kit",
+   "bytes": 1584,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Tiny canvas drawing shortcuts used by map art and top-down characters: circles, ovals, rounded boxes, glows, stars, and fog holes.",
+   "provides": "Kit.draw { circle, ellipse, rr, glow, star4, hole }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/flight.js",
+   "layer": "Kit",
+   "bytes": 7732,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The speed-typing round: words fall like shooting stars and must be typed before they reach the bottom. Missed words are not retyped. Also the 3, 2, 1, Liftoff countdown and the accuracy goal bar.",
+   "provides": "Kit.flight { run(options) -> stop, countdown(options) -> Promise<boolean>, goalBar(pct, id, goal), starRow(n, results) }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js",
+   "notes": "run options:\n  arena      element the words fall through (position: absolute; inset: 0)\n  panel      element for the typing display\n  head       HTML shown at the top of the panel\n  words      list of words or short phrases, in order\n  timing     { base, per, slow }: seconds to fall = (base + per * letters) * slow\n  maxFalling how many words can be on screen at once (default 2)\n  alive()    returns false once the player has left this screen\n  onCatch()  called when a word is finished (for effects)\n  onEnd(result) result = { hits, misses, caught, n, typeMs, typeChars, acc, res }"
+  },
+  {
+   "path": "kit/flow.js",
+   "layer": "Kit",
+   "bytes": 1682,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Runs a game's story as a list of steps (say a line, show a puzzle, fly, and so on). Each step type has a handler. Also holds the cleanup for whatever screen is showing, so leaving a screen always stops its timers and key listeners.",
+   "provides": "Kit.flow.create({ steps, handlers, beforeStep }) -> { go, next, step, token, alive, bump, setCleanup, cleanupNow, replay }",
+   "requires": "nothing",
+   "notes": "A handler returns true when its step is instant (change world, add a friend); the flow then moves straight to the next step.\ntoken() and alive(t) let slow actions (countdowns, walks) check they still belong to the current screen.\nreplay(upto, { type: fn }) re-applies instant steps when resuming a saved game."
+  },
+  {
+   "path": "kit/jukebox.css",
+   "layer": "Kit",
+   "bytes": 1109,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for the jukebox song list and the \"New song!\" title.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/jukebox.js",
+   "layer": "Kit",
+   "bytes": 2252,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A list of collected songs with play and stop buttons. Songs not found yet show as locked.",
+   "provides": "Kit.jukebox.render(el, { order, songs, owned, where, music, icons, onTurnOn, fallback })",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js",
+   "notes": "order     song ids in display order\nsongs     Kit.songs (each has a title)\nowned()   ids the player has collected; the first id in order is always owned\nwhere(id) where the song is found, shown under its title\nmusic     the player made by Kit.music.create\nicons     { note, play, stop } HTML\nonTurnOn  called if pressing play had to switch music back on\nfallback  song id to return to when a playing song is stopped (default: the first in order)"
+  },
+  {
+   "path": "kit/music.js",
+   "layer": "Kit",
+   "bytes": 4293,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Plays looping background songs that are written as data and synthesized in code (no audio files, nothing copyrighted).",
+   "provides": "Kit.music.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }",
+   "requires": "kit/audio.js",
+   "notes": "Song format (see assets/music/*.js):\n  title     name shown in jukeboxes\n  bpm       tempo; each step is an eighth note\n  root      MIDI note number of the key (60 = middle C)\n  lead      32 steps: semitones above root, or null for a rest\n  chords    4 chords (one per 8 steps), each a list of semitone offsets\n  bass      8 steps: 1 = chord root, 2 = root an octave up, 0 = rest\n  kick, hat 8 steps of 1 or 0 (optional drums)\n  optional: wave, oct, pluck, leadVol, leadLen, pad, padWave, bassWave, bassVol, bassLen, hatVol"
+  },
+  {
+   "path": "kit/puzzle-ui.css",
+   "layer": "Kit",
+   "bytes": 2851,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/puzzle-ui.js",
+   "layer": "Kit",
+   "bytes": 7981,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Shows one question with an answer box, helper buttons, and feedback. Works with every question kind in kit/questions.js (riddles, fill in the blank, scrambles, number patterns, odd one out, math).",
+   "provides": "Kit.puzzleUI { render(panel, question, options), blankHTML }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js",
+   "notes": "options:\n  head        HTML above the question (place name, progress dots)\n  leave       function for a \"walk away\" back button (optional)\n  helpers     [{ key, type: \"scan\" | \"clue\" | \"peek\" | \"clue2\", label, iconHtml, color, who, onUse }] in display order\n              scan = show how many letters; clue = show question.clue; peek = reveal a letter; clue2 = show question.clue2\n  icons       { check, eye, back } HTML\n  nextHtml    HTML for the Next button shown after a correct answer\n  showAfter   wrong answers before \"Show me\" appears (default 3)\n  onHint(type), onWrong(tries), onWin({ shown, tries, hints, spell }), onDone()"
+  },
+  {
+   "path": "kit/questions.js",
+   "layer": "Kit",
+   "bytes": 4321,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The question system: banks of written questions, generators that make new ones on the fly, a picker that matches the player's level and avoids repeats across games, and the answer checker.",
+   "provides": "Kit.questions { addBank, banks, gens, KIND, createPicker, judge, scrambled }",
+   "requires": "kit/util.js",
+   "notes": "Question shape: { id, kind, q, a: [accepted answers; the first is the one shown], clue, clue2?, d (difficulty 1 easy, 2 medium, 3 hard), seq?, tiles?, eq?, len? }\nBanks live in content/questions/*.js and register with addBank(name, kind, idPrefix, rows), rows = [id, d, question, answers, clue, clue2?].\nGenerators live in content/questions/*.js too: Kit.questions.gens.name = level => question."
+  },
+  {
+   "path": "kit/scoreboard.css",
+   "layer": "Kit",
+   "bytes": 2019,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Arcade look for the high score board, the name entry box, and the end-of-game score card.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/scoreboard.js",
+   "layer": "Kit",
+   "bytes": 3713,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Arcade-style high score board. Uses the page's shared database when it's available and falls back to scores saved on this computer. Draws into every element marked data-scoreboard.",
+   "provides": "Kit.scoreboard.create({ storeKey, collection, size }) -> { init(), render(), save(entry) -> rank, all() }",
+   "requires": "kit/util.js",
+   "notes": "The published page must declare capabilities: { db: {} } for the shared board.\nEntry shape: { name, score, at (ISO date), ...any extra fields }"
+  },
+  {
+   "path": "kit/starfield.js",
+   "layer": "Kit",
+   "bytes": 2271,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A twinkling starfield on a canvas that can streak into warp speed during flights.",
+   "provides": "Kit.starfield.create(canvas, { color, count }) -> { boost(), warp(on), pause(on) }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/topdown-map.js",
+   "layer": "Kit",
+   "bytes": 9196,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A walkable top-down map on a canvas. The player moves with arrow keys, WASD, or by clicking; walking into a place triggers it. Includes fog with light holes, particle bursts, speech bubbles, and an arrow-key hint until the player first moves.",
+   "provides": "Kit.topdownMap.create(options) -> map { start(pos), stop(), on, busy, pos, say(text, ms), burst(x, y, color, n), stepOutOf(site) }",
+   "requires": "kit/ui.js, kit/canvas.js",
+   "notes": "options:\n  canvas, width, height       map size in map units (the canvas scales to fit)\n  speed, enterRadius          walking speed (units per second) and how close counts as \"arrived\"\n  bounds                      { minX, maxX, minY, maxY } where the player can walk\n  sites                       [{ id, x, y }] places that trigger onArrive\n  drawWorld(c, t)             draw ground and places (map units)\n  drawPlayer(c, x, y, t, m)   draw the player; m = { moving, phase, fx, fy }\n  drawAbove(c, t)             draw things that sit above the fog (beacons)\n  fog                         { rgb: \"r,g,b\", alpha(), holes(pos) -> [{ x, y, r, a }] } (optional)\n  onArrive(site), onMove(), showHint() -> boolean\n  colors                      { light, dark } for bubbles and the arrow-key hint\n  font                        font family for speech bubbles"
+  },
+  {
+   "path": "kit/typing-challenges.js",
+   "layer": "Kit",
+   "bytes": 3959,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Two untimed typing challenges. dig: type the words written on clumps of dirt to dig something up. line: type one sentence exactly (like a brave promise).",
+   "provides": "Kit.typing { dig(panel, options) -> stop, line(panel, options) -> stop }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js",
+   "notes": "dig options:  { head, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }\nline options: { text, onDone(stats, doneEl) }    doneEl is an empty .actions element for the Next button\nstats = { hits, misses, ms, chars }"
+  },
+  {
+   "path": "kit/typing.css",
+   "layer": "Kit",
+   "bytes": 4942,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for typing challenges: falling word chips, the countdown, the big word display, the accuracy goal bar, the caught-star row, and the dirt clumps for digging.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/ui.js",
+   "layer": "Kit",
+   "bytes": 2710,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Shared screen helpers: the main Next button, progress dots, toasts, focus, Enter-to-continue, and reading theme colors for canvas drawing.",
+   "provides": "Kit.ui { reduced, focusSoon, bindPrimary, nextBtn, pips, toaster, enterAdvances, tokens, blurActive }",
+   "requires": "kit/util.js",
+   "notes": ""
+  },
+  {
+   "path": "kit/util.js",
+   "layer": "Kit",
+   "bytes": 2648,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Small helpers every game uses: finding elements, random picks, answer matching, and safe browser storage.",
+   "provides": "Kit.util { $, wait, shuffle, sample, pick, rint, clamp, esc, norm, squash, lev, cleanName, store }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "site/page.css",
+   "layer": "Library page",
+   "bytes": 10906,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Look of the Game Library page: light and dark themes, game cards with version lists, the flow map, night-sky character tiles, the song list, and the file browser.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "site/page.html",
+   "layer": "Library page",
+   "bytes": 5211,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.",
+   "provides": "",
+   "requires": "site/page.css, catalog.json",
+   "notes": ""
+  },
+  {
+   "path": "site/page.js",
+   "layer": "Library page",
+   "bytes": 9613,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.",
+   "provides": "",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js",
+   "notes": ""
+  },
+  {
+   "path": "site/site.json",
+   "layer": "Library page",
+   "bytes": 1006,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, music, and engines as the games so they can be previewed live.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  }
+ ],
+ "games": [
+  {
+   "id": "inner-flame",
+   "title": "The Inner Flame",
+   "version": 1,
+   "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
+   "legacy": "games/inner-flame/legacy/v1.html",
+   "releases": [
+    {
+     "version": 1,
+     "date": "2026-10-10",
+     "url": "https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6",
+     "notes": "Original game, designed by Child I by voice."
+    }
+   ],
+   "source": "games/inner-flame",
+   "fileCount": 0
+  },
+  {
+   "id": "starward",
+   "title": "Starward v4",
+   "version": 4,
+   "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
+   "output": "dist/starward-v4.html",
+   "body": "games/starward/scene.html",
+   "releases": [
+    {
+     "version": 2,
+     "date": "2026-10-10",
+     "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg",
+     "notes": "First Starward: new names and story, rocket parts on Lumina, falling-word flights, fill-in-the-blank puzzles, songs, high scores. Kept in that page's version history (version 1 of the page)."
+    },
+    {
+     "version": 3,
+     "date": "2026-10-11",
+     "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg",
+     "notes": "Walkable Lumina map, three challenges per rocket part, fresh questions every game, fewer instructions. Current version of that page. Single-file source: games/starward/legacy/v3.html"
+    },
+    {
+     "version": 4,
+     "date": "2026-10-11",
+     "url": "https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV",
+     "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level."
+    }
+   ],
+   "source": "games/starward",
+   "fileCount": 53
+  }
+ ]
+}
+</script>
+<script>
+/* ==== kit/util.js ==== */
+/**
+ * @file kit/util.js
+ * @about Small helpers every game uses: finding elements, random picks, answer matching, and safe browser storage.
+ * @provides Kit.util { $, wait, shuffle, sample, pick, rint, clamp, esc, norm, squash, lev, cleanName, store }
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const sample = (arr, n) => shuffle(arr.slice()).slice(0, n);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // Lowercase, drop punctuation and a leading "a / an / the / mount" so "The Moon" matches "moon".
+  const norm = s => String(s).toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim()
+    .replace(/^(a|an|the|your|my|its|his|her|mount|mt) /, "");
+  const squash = s => norm(s).replace(/ /g, "");
+
+  // Edit distance between two words. Used to forgive one small spelling slip.
+  function lev(a, b) {
+    const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+    let prev = Array.from({ length: n + 1 }, (x, i) => i);
+    for (let i = 1; i <= m; i++) {
+      const cur = [i];
+      for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[n];
+  }
+
+  // Tidy a typed name: letters, numbers, spaces, apostrophes, hyphens; capital first letter.
+  const cleanName = (v, max = 14) => {
+    const t = String(v || "").replace(/[^A-Za-z0-9 '\-]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
+    return t ? t[0].toUpperCase() + t.slice(1) : "";
+  };
+
+  // Browser storage that never throws (private windows and previews can block it).
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) { /* storage blocked */ } }
+  };
+
+  Kit.util = { $, wait, shuffle, sample, pick, rint, clamp, esc, norm, squash, lev, cleanName, store };
+})(window.Kit = window.Kit || {});
+/* ==== kit/audio.js ==== */
+/**
+ * @file kit/audio.js
+ * @about Sound effects made in code (no audio files): beeps, chimes, whooshes, a woof. Also unlocks sound on the first click or key press, which browsers require.
+ * @provides Kit.audio { ctx, noiseBuffer, tone, noise, sfx, enabled, setEnabled, onFirstGesture }
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  let ac = null, noiseBuf = null, enabled = true, gestured = false;
+  const waiting = [];
+
+  function ctx() {
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (ac.state === "suspended") ac.resume().catch(() => {});
+    return ac;
+  }
+
+  // Half a second of white noise, reused for whooshes, digging, and hi-hats.
+  function noiseBuffer(a) {
+    if (!noiseBuf) {
+      noiseBuf = a.createBuffer(1, Math.floor(a.sampleRate * .5), a.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    return noiseBuf;
+  }
+
+  // One note. f = pitch in Hz, d = length in seconds, v = volume, at = delay, f2 = slide to this pitch.
+  function tone(f, d = .12, type = "sine", v = .06, at = 0, f2) {
+    if (!enabled) return; const a = ctx(); if (!a) return;
+    const t = a.currentTime + at, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .03);
+  }
+
+  // A filtered noise sweep from f0 to f1 Hz.
+  function noise(f0, f1, dur, vol) {
+    if (!enabled) return; const a = ctx(); if (!a) return;
+    const t = a.currentTime, src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = noiseBuffer(a); f.type = "bandpass"; f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .03); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    src.connect(f).connect(g).connect(a.destination); src.start(t); src.stop(t + dur + .05);
+  }
+
+  const sfx = {
+    key: () => tone(1200, .035, "triangle", .018),
+    miss: () => tone(180, .09, "sine", .045),
+    word: () => { tone(660, .09, "triangle", .055); tone(990, .12, "triangle", .055, .07); },
+    lost: () => tone(420, .3, "sine", .04, 0, 160),
+    right: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .2, "triangle", .065, i * .08)),
+    wrong: () => { tone(262, .14, "sine", .06); tone(196, .22, "sine", .06, .12); },
+    join: () => [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, .22, "square", .03, i * .09)),
+    found: () => [784, 988, 1175, 1568].forEach((f, i) => tone(f, .25, "triangle", .06, i * .07)),
+    woof: () => { tone(430, .11, "sawtooth", .04, 0, 190); tone(410, .13, "sawtooth", .04, .17, 170); },
+    hint: () => [880, 1175, 1568].forEach((f, i) => tone(f, .12, "sine", .04, i * .05)),
+    beep: () => tone(660, .14, "square", .04),
+    liftoff: () => { tone(990, .4, "square", .04); noise(300, 2400, .8, .14); },
+    dig: () => noise(900, 220, .25, .12),
+    arrive: () => tone(740, .12, "triangle", .05),
+    levelup: () => [659, 880, 1319].forEach((f, i) => tone(f, .18, "square", .03, i * .07)),
+    song: () => [523, 784, 659, 1047].forEach((f, i) => tone(f, .3, "sine", .05, i * .1)),
+    flame: () => [262, 330, 392, 523, 659, 784].forEach((f, i) => tone(f, .55, "sine", .05, i * .12))
+  };
+
+  function gesture() {
+    if (gestured) return;
+    gestured = true; ctx();
+    document.removeEventListener("pointerdown", gesture, true);
+    document.removeEventListener("keydown", gesture, true);
+    waiting.splice(0).forEach(fn => { try { fn(); } catch (e) { /* keep going */ } });
+  }
+  document.addEventListener("pointerdown", gesture, true);
+  document.addEventListener("keydown", gesture, true);
+
+  Kit.audio = {
+    ctx, noiseBuffer, tone, noise, sfx,
+    get enabled() { return enabled; },
+    setEnabled(v) { enabled = !!v; },
+    onFirstGesture(fn) { if (gestured) fn(); else waiting.push(fn); }
+  };
+})(window.Kit = window.Kit || {});
+/* ==== kit/music.js ==== */
+/**
+ * @file kit/music.js
+ * @about Plays looping background songs that are written as data and synthesized in code (no audio files, nothing copyrighted).
+ * @provides Kit.music.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }
+ * @requires kit/audio.js
+ *
+ * Song format (see assets/music/*.js):
+ *   title     name shown in jukeboxes
+ *   bpm       tempo; each step is an eighth note
+ *   root      MIDI note number of the key (60 = middle C)
+ *   lead      32 steps: semitones above root, or null for a rest
+ *   chords    4 chords (one per 8 steps), each a list of semitone offsets
+ *   bass      8 steps: 1 = chord root, 2 = root an octave up, 0 = rest
+ *   kick, hat 8 steps of 1 or 0 (optional drums)
+ *   optional: wave, oct, pluck, leadVol, leadLen, pad, padWave, bassWave, bassVol, bassLen, hatVol
+ */
+(function (Kit) {
+  "use strict";
+  function create(songs) {
+    let bus = null, cur = null, want = "theme", step = 0, nextT = 0, timer = 0, unlocked = false, on = true;
+    const m2f = m => 440 * Math.pow(2, (m - 69) / 12);
+    const out = a => { if (!bus) { bus = a.createGain(); bus.gain.value = .5; bus.connect(a.destination); } return bus; };
+
+    function note(a, freq, t, dur, wave, vol, atk, rel, pluck) {
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = wave; o.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(.0001, t);
+      if (pluck) { g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur); }
+      else { const s = Math.max(t + atk, t + dur - rel); g.gain.linearRampToValueAtTime(vol, t + atk); g.gain.setValueAtTime(vol, s); g.gain.linearRampToValueAtTime(.0001, t + dur); }
+      o.connect(g).connect(out(a)); o.start(t); o.stop(t + dur + .05);
+    }
+    function kick(a, t) {
+      const o = a.createOscillator(), g = a.createGain();
+      o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(48, t + .14);
+      g.gain.setValueAtTime(.3, t); g.gain.exponentialRampToValueAtTime(.0001, t + .2);
+      o.connect(g).connect(out(a)); o.start(t); o.stop(t + .22);
+    }
+    function hat(a, t, v) {
+      const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+      s.buffer = Kit.audio.noiseBuffer(a); f.type = "highpass"; f.frequency.value = 7000;
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + .05);
+      s.connect(f).connect(g).connect(out(a)); s.start(t); s.stop(t + .06);
+    }
+    function playStep(a, s, i, t, sd) {
+      const ch = s.chords[Math.floor(i / 8) % s.chords.length], k = i % 8;
+      if (k === 0 && s.pad) ch.forEach(n => note(a, m2f(s.root - 12 + n), t, sd * 8, s.padWave || "sine", s.pad, .3, .6));
+      const b = s.bass && s.bass[k];
+      if (b) note(a, m2f(s.root - 24 + ch[0] + (b === 2 ? 12 : 0)), t, sd * (s.bassLen || 1.6), s.bassWave || "triangle", s.bassVol || .09, .01, .08);
+      const l = s.lead[i];
+      if (l != null) note(a, m2f(s.root + (s.oct || 0) + l), t, sd * (s.leadLen || 1.5), s.wave || "triangle", s.leadVol || .05, .01, .1, s.pluck);
+      if (s.kick && s.kick[k]) kick(a, t);
+      if (s.hat && s.hat[k]) hat(a, t, s.hatVol || .02);
+    }
+    // Schedules notes a little ahead of time so playback stays smooth.
+    function tick() {
+      const a = Kit.audio.ctx(); if (!cur || !a) return;
+      const sd = 60 / cur.bpm / 2;
+      if (nextT < a.currentTime - .05) nextT = a.currentTime + .05;
+      while (nextT < a.currentTime + .15) { playStep(a, cur, step, nextT, sd); nextT += sd; step = (step + 1) % 32; }
+    }
+    function start(id) {
+      const a = Kit.audio.ctx(), s = songs[id]; if (!a || !s) return;
+      if (cur === s && timer) return;
+      cur = s; step = 0; nextT = a.currentTime + .1;
+      if (!timer) timer = setInterval(tick, 25);
+    }
+    function stop() { cur = null; if (timer) clearInterval(timer); timer = 0; }
+
+    return {
+      set(id) { want = id; if (on && unlocked) start(id); },
+      unlock() { if (unlocked) return; unlocked = true; if (on) start(want); },
+      setEnabled(v) { on = !!v; if (on) { if (unlocked) start(want); } else stop(); },
+      get enabled() { return on; },
+      get want() { return want; }
+    };
+  }
+  Kit.music = { create };
+})(window.Kit = window.Kit || {});
+/* ==== assets/icons/icons.js ==== */
+/**
+ * @file assets/icons/icons.js
+ * @about Simple filled icons used on buttons so the game needs fewer words: back, go, retry, rocket, check, eye, music note, play, stop, and a shovel.
+ * @provides Kit.art.icons { back, go, retry, rocket, check, eye, note, play, stop, shovel } (SVG markup strings)
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  art.icons = {
+    back: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 5.3a1 1 0 0 1 0 1.4L9.4 12l5.3 5.3a1 1 0 1 1-1.4 1.4l-6-6a1 1 0 0 1 0-1.4l6-6a1 1 0 0 1 1.4 0z"/></svg>`,
+    go: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.3 5.3a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 1 1-1.4-1.4l5.3-5.3-5.3-5.3a1 1 0 0 1 0-1.4z"/></svg>`,
+    retry: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a7 7 0 1 1-6.6 4.7 1 1 0 1 1 1.9.6A5 5 0 1 0 12 7H9.5l1.2 1.3a1 1 0 0 1-1.4 1.4L6.3 6.7a1 1 0 0 1 0-1.4l3-3a1 1 0 0 1 1.4 1.4L9.4 5H12z"/></svg>`,
+    rocket: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c3 2 5 6 5 10l2 3v4l-3-2h-8l-3 2v-4l2-3c0-4 2-8 5-10zm0 7a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2 10h4l-2 3z"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 16.2 5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z"/></svg>`,
+    eye: `<svg viewBox="0 0 24 24" aria-hidden="true" style="width:20px;height:20px;fill:currentColor"><path d="M12 5c5 0 9 4.5 10 7-1 2.5-5 7-10 7S3 14.5 2 12c1-2.5 5-7 10-7zm0 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>`,
+    note: `<svg class="note-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5A3.5 3.5 0 1 1 7 15.3V4l12-2v13.5a3.5 3.5 0 1 1-2-3.2V6.4L9 7.7z"/></svg>`,
+    play: `<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5 L12 7 L3 12.5 Z" fill="currentColor"/></svg>`,
+    stop: `<svg viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="2.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>`,
+    shovel: `<svg class="shovel" viewBox="0 0 48 48" aria-hidden="true"><path d="M30 6l12 12-4 4-3-3-9 9 3 5c1 2 0 4-1 5l-4 4c-3 3-9 3-13-1s-4-10-1-13l4-4c1-1 3-2 5-1l5 3 9-9-3-3z" fill="#b9a27a"/></svg>`
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/characters/puppy.js ==== */
+/**
+ * @file assets/characters/puppy.js
+ * @about Sunny, the fluffy magic puppy (black, white, and tan curls, floppy ears, star collar, sparkles, wagging tail). Built in code so the curls stay even. Sits at (0, 0), about 66 units tall.
+ * @provides Kit.art.puppy() -> SVG markup string
+ * @requires assets/characters/characters.css, assets/fx/defs.svg
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  art.puppy = function () {
+    const C = (x, y, r, c) => `<circle cx="${x}" cy="${y}" r="${r}" class="${c}"/>`;
+    // A ring of small circles makes the curly fur edge.
+    const ring = (cx, cy, rx, ry, a0, a1, n, r, c) => { let s = ""; for (let i = 0; i < n; i++) { const a = (a0 + (a1 - a0) * i / (n - 1)) * Math.PI / 180; s += C((cx + rx * Math.cos(a)).toFixed(1), (cy + ry * Math.sin(a)).toFixed(1), r, c); } return s; };
+    const curl = (x, y) => `<path d="M${x} ${y} q1.8 -2.2 3.6 0" class="curl"/>`;
+    let s = "";
+    s += `<g class="tail">${C(17, -12, 6.4, "fur-c")}${C(23, -20, 6.2, "fur-c")}${C(26.5, -28.5, 5.6, "fur-c")}${C(25, -37, 5, "fur-c")}${curl(20, -21)}${curl(23, -30)}</g>`;
+    s += `<ellipse cx="0" cy="-21" rx="17" ry="18" class="fur"/>` + ring(0, -21, 17, 18, -60, 240, 15, 5.6, "fur-c") + `<ellipse cx="0" cy="-21" rx="15" ry="16" class="fur"/>`;
+    s += curl(-14, -26) + curl(-15, -12) + curl(10, -28) + curl(11, -12);
+    s += `<ellipse cx="0" cy="-19" rx="9.5" ry="12" class="white"/>` + ring(0, -19, 9.5, 12, 25, 155, 6, 3, "white");
+    s += `<rect x="-11.5" y="-14" width="7.5" height="11" rx="3.2" class="tan"/><rect x="4" y="-14" width="7.5" height="11" rx="3.2" class="tan"/>`;
+    s += `<ellipse cx="-7.7" cy="-2.8" rx="5.9" ry="3.5" class="white"/><ellipse cx="7.7" cy="-2.8" rx="5.9" ry="3.5" class="white"/>`;
+    s += `<path d="M-9.6 -1.2 v-1.8 M-5.8 -1.2 v-1.8 M5.8 -1.2 v-1.8 M9.6 -1.2 v-1.8" class="toe"/>`;
+    s += `<path d="M-11.5 -34 Q0 -29 11.5 -34" class="collar"/><g transform="translate(0,-29.5) scale(.95)"><use href="#spark4" class="star"/></g>`;
+    s += `<circle cx="0" cy="-49" r="16" class="fur"/>` + ring(0, -49, 16, 16, 195, 345, 8, 5.6, "fur-c") + `<circle cx="0" cy="-49" r="14.5" class="fur"/>`;
+    const ear = sx => C(15 * sx, -54, 6.4, "fur-c") + C(18.5 * sx, -46.5, 6.4, "fur-c") + C(19.5 * sx, -38.5, 6, "fur-c") + C(18.5 * sx, -31, 5.2, "fur-c") + C(16 * sx, -25.5, 4.2, "fur-c") + curl(17.5 * sx - 1.8, -45) + curl(18 * sx - 1.8, -35);
+    s += ear(-1) + ear(1);
+    s += C(-10.5, -42.5, 3.6, "tan") + C(10.5, -42.5, 3.6, "tan");
+    s += `<path d="M0 -64 C3.2 -59 3.6 -52 3.2 -46 L-3.2 -46 C-3.6 -52 -3.2 -59 0 -64Z" class="white"/>`;
+    s += `<ellipse cx="0" cy="-40.5" rx="10" ry="7.2" class="white"/>` + ring(0, -40.5, 10, 7.2, 25, 155, 6, 2.6, "white");
+    s += `<ellipse cx="-6.6" cy="-57" rx="2.7" ry="1.9" class="tan"/><ellipse cx="6.6" cy="-57" rx="2.7" ry="1.9" class="tan"/>`;
+    const eye = x => C(x, -50.5, 3.8, "iris") + C(x, -50.3, 2.4, "nose") + C(x + 1.2, -51.9, 1.25, "white") + C(x - 1.1, -49.3, .55, "white");
+    s += eye(-6.6) + eye(6.6);
+    s += `<ellipse cx="0" cy="-44.8" rx="4" ry="2.9" class="nose"/><ellipse cx="-1.1" cy="-45.7" rx="1.3" ry=".65" class="white" opacity=".6"/>`;
+    s += `<path d="M0 -41.9 V-39.6 M-3.8 -39.8 Q0 -37.4 3.8 -39.8" class="dog-line"/><path d="M-2 -39 Q0 -34.4 2 -39 Z" class="tongue"/>`;
+    s += curl(-11, -60) + curl(7, -61) + curl(-2.2, -65.5);
+    s += `<g class="sparkles"><g transform="translate(-26,-62) scale(.8)"><use href="#spark4"/></g><g transform="translate(25,-66) scale(.65)"><use href="#spark4"/></g><g transform="translate(-28,-24) scale(.55)"><use href="#spark4"/></g></g>`;
+    return s;
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/rocket/rocket.js ==== */
+/**
+ * @file assets/rocket/rocket.js
+ * @about The buildable rocket. Data for every part choice and paint color, plus a drawing function that renders any combination (missing parts can show as dashed outlines, and one part can be highlighted).
+ * @provides Kit.art.rocket { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, ENGINE_COLORS, svg(config, options), box(innerSvg, cls), partIcons }
+ * @requires assets/fx/defs.svg (unless options.plainFlame)
+ *
+ * config  = { nose, fins, boost, engine, paint } (any can be missing)
+ * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: show engine flames, face: robot peeking out, plainFlame: no <use> refs (for images) }
+ * Drawing space: viewBox -38 -112 76 144, base of the rocket at y = 0.
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  const FLAME_D = "M0 0 C-11 0 -15 -10 -10 -19 C-6 -26 -1 -29 0 -40 C5 -31 15 -24 13 -12 C12 -4 7 0 0 0 Z";
+  const SPARK_D = "M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z";
+
+  const PARTS = {
+    nose: { name: "Nose Cone", options: [["point", "Pointy"], ["dome", "Round dome"], ["star", "Star tip"]] },
+    fins: { name: "Fins", options: [["classic", "Classic"], ["swept", "Swept wings"], ["bolt", "Lightning"]] },
+    boost: { name: "Boosters", options: [["one", "One big booster"], ["two", "Twin boosters"], ["three", "Triple boosters"]] },
+    engine: { name: "Star Engine", options: [["gold", "Sun gold"], ["blue", "Comet blue"], ["pink", "Nova pink"], ["green", "Aurora green"]] }
+  };
+  const PART_ORDER = ["nose", "fins", "boost", "engine"];
+  const PAINTS = {
+    silver: { label: "Silver Streak", hull: "#c9d3ee", trim: "#ff8740" },
+    red: { label: "Rocket Red", hull: "#ff6b6b", trim: "#fff3e6" },
+    blue: { label: "Sky Blue", hull: "#5aa9ff", trim: "#ffcb5e" },
+    purple: { label: "Galaxy Purple", hull: "#9b7bff", trim: "#8fe6ff" },
+    green: { label: "Comet Green", hull: "#4fd18b", trim: "#203457" }
+  };
+  const PAINT_ORDER = ["silver", "red", "blue", "purple", "green"];
+  const ENGINE_COLORS = { gold: ["#fff1b8", "#ffa53d"], blue: ["#d9f7ff", "#4b8bff"], pink: ["#ffd3ec", "#ff4f9a"], green: ["#d8ffe8", "#2fbf71"] };
+
+  function svg(c, o = {}) {
+    const P = PAINTS[c.paint] || PAINTS.silver, hull = P.hull, trim = P.trim;
+    const G = `fill="none" stroke="#8d88c8" stroke-width="1.4" stroke-dasharray="3 3"`;
+    const HL = `fill="rgba(255,203,94,.22)" stroke="#ffcb5e" stroke-width="1.8" stroke-dasharray="3 3"`;
+    const part = (key, has, full, ghost) => has ? full : (o.hl === key ? ghost.replaceAll(G, HL) : (o.ghost ? ghost : ""));
+    const finPath = {
+      classic: ["M-14 -38 L-27 -10 L-27 -5 L-14 -14 Z", "M14 -38 L27 -10 L27 -5 L14 -14 Z"],
+      swept: ["M-14 -44 Q-34 -30 -30 -3 L-14 -16 Z", "M14 -44 Q34 -30 30 -3 L14 -16 Z"],
+      bolt: ["M-14 -42 L-24 -30 L-19 -28 L-30 -5 L-14 -18 Z", "M14 -42 L24 -30 L19 -28 L30 -5 L14 -18 Z"]
+    };
+    const noseP = { point: "M-14 -72 Q-12 -90 0 -102 Q12 -90 14 -72 Z", dome: "M-14 -72 C-14 -85 -8 -92 0 -92 C8 -92 14 -85 14 -72 Z", star: "M-14 -72 Q-12 -90 0 -102 Q12 -90 14 -72 Z" };
+    const nozX = { one: [0], two: [-7, 7], three: [-10, 0, 10] };
+    const nozW = { one: 9, two: 5, three: 3.6 };
+    const noz = (b, x) => { const w = nozW[b]; return `M${x - w} -12 L${x + w} -12 L${x + w + (b === "one" ? 3 : 1.6)} 0 L${x - w - (b === "one" ? 3 : 1.6)} 0 Z`; };
+    const flameMarkup = (fillOuter, fillInner) => o.plainFlame
+      ? `<path d="${FLAME_D}" fill="${fillOuter}"/><g transform="scale(.55)"><path d="${FLAME_D}" fill="${fillInner}"/></g>`
+      : `<use href="#flamePath" fill="${fillOuter}"/><use href="#flamePath" fill="${fillInner}" transform="scale(.55)"/>`;
+    let s = "";
+    if (o.flame) {
+      const b = c.boost || "one", e = ENGINE_COLORS[c.engine] || ENGINE_COLORS.gold, w = b === "one" ? .55 : b === "two" ? .36 : .26;
+      s += `<g class="rflame">` + nozX[b].map(x => `<g transform="translate(${x},-1) scale(${w},-.6)"><g class="flicker">${flameMarkup(e[1], e[0])}</g></g>`).join("") + `</g>`;
+    }
+    const fp = finPath[c.fins] || finPath.classic;
+    s += part("fins", c.fins, fp.map(d => `<path d="${d}" fill="${trim}" stroke="rgba(0,0,0,.28)" stroke-width="1"/>`).join(""), finPath.classic.map(d => `<path d="${d}" ${G}/>`).join(""));
+    const b = c.boost;
+    s += part("boost", b, (nozX[b] || []).map(x => `<path d="${noz(b, x)}" fill="#5b6390" stroke="rgba(0,0,0,.3)" stroke-width="1"/><rect x="${x - nozW[b]}" y="-12" width="${nozW[b] * 2}" height="3" fill="${trim}"/>`).join(""), `<path d="${noz("one", 0)}" ${G}/>`);
+    s += `<path d="M-14 -72 H14 V-18 Q14 -11 7 -11 H-7 Q-14 -11 -14 -18 Z" fill="${hull}" stroke="rgba(0,0,0,.28)" stroke-width="1.2"/>`;
+    s += `<rect x="-14" y="-31" width="28" height="5" fill="${trim}"/>`;
+    s += `<path d="M-8 -66 V-37" stroke="#ffffff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round"/>`;
+    s += `<circle cx="0" cy="-52" r="8.2" fill="${trim}"/><circle cx="0" cy="-52" r="6.2" fill="#151036"/>`;
+    if (o.face) s += `<circle cx="-2.4" cy="-52.6" r="1.6" fill="#fbf7f2"/><circle cx="2.4" cy="-52.6" r="1.6" fill="#fbf7f2"/><path d="M-1.8 -49.4 Q0 -48.2 1.8 -49.4" stroke="#9fd2ff" stroke-width="1" fill="none" stroke-linecap="round"/>`;
+    s += part("engine", c.engine, `<circle cx="0" cy="-19" r="3.6" fill="${(ENGINE_COLORS[c.engine] || ENGINE_COLORS.gold)[1]}"/>`, `<circle cx="0" cy="-19" r="3.6" ${G}/>`);
+    const starTip = o.plainFlame ? `<g transform="translate(0,-106) scale(1.25)"><path d="${SPARK_D}" fill="#ffcb5e"/></g>` : `<g transform="translate(0,-106) scale(1.25)"><use href="#spark4" fill="#ffcb5e"/></g>`;
+    s += part("nose", c.nose, `<path d="${noseP[c.nose] || noseP.point}" fill="${trim}" stroke="rgba(0,0,0,.28)" stroke-width="1"/>` + (c.nose === "star" ? starTip : ""), `<path d="${noseP.point}" ${G}/>`);
+    return s;
+  }
+  const box = (inner, cls = "") => `<svg class="${cls}" viewBox="-38 -112 76 144" aria-hidden="true">${inner}</svg>`;
+
+  // Small part silhouettes for the "parts found" slots. Fill and stroke are set by the game.
+  const partIcons = {
+    nose: `<svg viewBox="-16 -16 32 32"><path d="M-9 12 Q-8 -2 0 -14 Q8 -2 9 12 Z" class="pi"/></svg>`,
+    fins: `<svg viewBox="-16 -16 32 32"><path d="M-4 -12 L-14 10 L-4 4 Z M4 -12 L14 10 L4 4 Z" class="pi"/></svg>`,
+    boost: `<svg viewBox="-16 -16 32 32"><path d="M-8 -8 L8 -8 L12 10 L-12 10 Z" class="pi"/></svg>`,
+    engine: `<svg viewBox="-16 -16 32 32"><circle r="9" class="pi"/><circle r="4" class="pi2"/></svg>`
+  };
+
+  art.rocket = { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, ENGINE_COLORS, svg, box, partIcons };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/theme.js ==== */
+/**
+ * @file assets/music/theme.js
+ * @about "Starward Theme": the cheerful main tune for the title screen and flights. 104 bpm, C major. Song format is described in kit/music.js.
+ * @provides Kit.songs.theme
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).theme = {
+    title: "Starward Theme", bpm: 104, root: 60, wave: "triangle", leadVol: .05, pad: .022,
+    lead: [0,_,4,7, 12,_,11,7, 9,_,7,4, 7,_,_,_, 5,_,9,12, 14,_,12,9, 11,_,7,2, 7,_,_,_],
+    chords: [[0,4,7],[-3,0,4],[-7,-3,0],[-5,-1,2]], bass: [1,0,0,1,1,0,1,0], hat: [0,0,1,0,0,0,1,0], kick: [1,0,0,0,1,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/lumina.js ==== */
+/**
+ * @file assets/music/lumina.js
+ * @about "Lumina in the Dark": a slow, soft music-box tune for the sleeping home world. 74 bpm, A minor. Song format is described in kit/music.js.
+ * @provides Kit.songs.lumina
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).lumina = {
+    title: "Lumina in the Dark", bpm: 74, root: 57, oct: 12, wave: "sine", pluck: true, leadLen: 6, leadVol: .06, pad: .03, bassWave: "sine", bassVol: .07,
+    lead: [12,_,_,_, 10,_,7,_, 8,_,_,_, 7,_,_,_, 5,_,_,_, 7,_,3,_, 2,_,_,_, 3,_,_,_],
+    chords: [[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]], bass: [1,0,0,0,0,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/nimbus.js ==== */
+/**
+ * @file assets/music/nimbus.js
+ * @about "Nimbus Bounce": a bouncy square-wave tune for the cotton-candy cloud planet. 120 bpm, D major. Song format is described in kit/music.js.
+ * @provides Kit.songs.nimbus
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).nimbus = {
+    title: "Nimbus Bounce", bpm: 120, root: 62, wave: "square", leadVol: .026, leadLen: .8, pad: .015,
+    lead: [0,4,7,4, 9,7,4,_, 2,7,11,7, 14,11,7,_, 9,_,7,9, 11,9,7,4, 5,7,9,7, 4,2,0,_],
+    chords: [[0,4,7],[-5,-1,2],[-3,0,4],[-7,-3,0]], bass: [1,0,2,0,1,0,2,0], hat: [0,1,0,1,0,1,0,1], kick: [1,0,0,0,1,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/glacia.js ==== */
+/**
+ * @file assets/music/glacia.js
+ * @about "Glacia Twinkle": a high, icy, plucked tune for the frozen planet. 92 bpm, E major. Song format is described in kit/music.js.
+ * @provides Kit.songs.glacia
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).glacia = {
+    title: "Glacia Twinkle", bpm: 92, root: 64, oct: 12, wave: "sine", pluck: true, leadLen: 3, leadVol: .055, pad: .025, bassWave: "sine", hatVol: .01,
+    lead: [0,7,12,16, 12,7,4,7, 2,9,14,9, 4,9,12,_, 0,7,12,19, 16,12,7,12, 9,12,16,14, 12,_,_,_],
+    chords: [[0,4,7],[-3,0,4],[-7,-3,0],[-5,-1,2]], bass: [1,0,0,0,0,0,1,0], hat: [0,0,0,1,0,0,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/meridian.js ==== */
+/**
+ * @file assets/music/meridian.js
+ * @about "Meridian Stargazer": a thoughtful, wandering tune for the stony planet of the old stargazer. 88 bpm, G minor. Song format is described in kit/music.js.
+ * @provides Kit.songs.meridian
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).meridian = {
+    title: "Meridian Stargazer", bpm: 88, root: 55, oct: 12, wave: "triangle", leadVol: .055, pad: .025,
+    lead: [7,_,5,3, 5,_,_,_, 2,3,5,7, 9,_,_,_, 10,_,9,7, 5,_,3,2, 3,_,2,0, 0,_,_,_],
+    chords: [[0,3,7],[-7,-3,0],[-2,2,5],[0,3,7]], bass: [1,0,0,1,0,0,1,0], hat: [0,0,1,0,0,0,1,0], kick: [1,0,0,0,0,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/corona.js ==== */
+/**
+ * @file assets/music/corona.js
+ * @about "Corona Blaze": a fast, driving adventure tune for the fiery nebula and the tower climb. 128 bpm, A minor. Song format is described in kit/music.js.
+ * @provides Kit.songs.corona
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).corona = {
+    title: "Corona Blaze", bpm: 128, root: 57, oct: 12, wave: "sawtooth", leadVol: .022, leadLen: 1.2, pad: .02, padWave: "triangle", bassVol: .07, bassLen: .9,
+    lead: [0,_,3,7, 12,_,10,7, 8,_,7,5, 3,_,_,_, 3,_,7,10, 15,_,14,12, 10,_,12,14, 12,_,_,_],
+    chords: [[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]], bass: [1,1,1,1,1,1,1,2], hat: [0,1,0,1,0,1,0,1], kick: [1,0,0,0,1,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/reborn.js ==== */
+/**
+ * @file assets/music/reborn.js
+ * @about "Lumina Reborn": the happy ending tune when the Everlight comes home. 108 bpm, C major. Song format is described in kit/music.js.
+ * @provides Kit.songs.reborn
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).reborn = {
+    title: "Lumina Reborn", bpm: 108, root: 60, wave: "triangle", leadVol: .05, pad: .028,
+    lead: [12,_,11,12, 14,_,12,_, 11,_,9,7, 7,_,_,_, 9,_,11,12, 16,_,14,12, 12,_,11,9, 12,_,_,_],
+    chords: [[0,4,7],[-5,-1,2],[-3,0,4],[-7,-3,0]], bass: [1,0,1,0,1,0,2,0], hat: [0,1,0,1,0,1,0,1], kick: [1,0,0,0,1,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== library: parts share one scope ==== */
+(() => {
+"use strict";
+/* ==== site/page.js ==== */
+/**
+ * @file site/page.js
+ * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.
+ * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js
+ */
+const { $, esc } = Kit.util;
+const CAT = JSON.parse($("#catalog").textContent);
+const FILES = CAT.files, GAMES = CAT.games;
+const R = Kit.art.rocket, ICON = Kit.art.icons;
+const kb = n => (n < 1024 ? `${n} B` : `${(n / 1024).toFixed(n < 10240 ? 1 : 0)} KB`);
+const base = p => p.split("/").pop().replace(/\.[a-z]+$/, "");
+const ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.3 5.3a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 1 1-1.4-1.4l4.3-4.3H4a1 1 0 1 1 0-2h13.6l-4.3-4.3a1 1 0 0 1 0-1.4z"/></svg>`;
+
+/* Header numbers */
+$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · 4 characters`;
+
+/* Games and versions */
+$("#gameList").innerHTML = GAMES.map(g => {
+  const rel = [...(g.releases || [])].reverse();
+  return `<article class="game">
+    <h3>${esc(g.title.replace(/ v\d+$/, ""))}</h3>
+    <span class="src">${g.legacy ? "One legacy file" : `${g.fileCount} source files`} in <code>${esc(g.source)}</code></span>
+    <p>${esc(g.about)}</p>
+    <ol class="versions">${rel.map((r, i) => {
+      const sameAsNewer = i > 0 && r.url && rel.slice(0, i).some(x => x.url === r.url);
+      const link = !r.url ? "" : sameAsNewer ? `<span class="same">page history</span>` : `<a href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>`;
+      return `<li><span class="v">v${r.version}</span><span class="d">${esc(r.date)}</span><span class="n">${esc(r.notes)}</span>${link}</li>`;
+    }).join("")}</ol>
+  </article>`;
+}).join("");
+
+/* Flow map, built from the catalog so it always matches the files */
+(function flowMap() {
+  const names = (layer, re) => [...new Set(FILES.filter(f => f.layer === layer && re.test(f.path) && !f.path.includes("/legacy/")).map(f => base(f.path)))];
+  const count = layer => FILES.filter(f => f.layer === layer).length;
+  const chip = list => `<div class="names">${list.map(n => `<span>${esc(n)}</span>`).join("")}</div>`;
+  const sw = GAMES.find(g => g.id === "starward") || GAMES[0];
+  const latest = GAMES.map(g => { const r = [...(g.releases || [])].sort((a, b) => b.version - a.version)[0]; return r && r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(g.title.replace(/ v\d+$/, ""))} v${r.version}</a>` : ""; }).join("");
+  $("#flowmap").innerHTML = `
+    <div class="stack">
+      <div class="node"><h3>Content <span>${count("Content")} files</span></h3><p>Questions tagged easy to hard, question generators, word lists</p>${chip(names("Content", /\.js$/))}</div>
+      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(names("Assets", /\.(js|svg)$/).filter(n => !/^(theme|lumina|nimbus|glacia|meridian|corona|reborn|gradients|defs|plain-ground)$/.test(n)).concat(["7 songs"]))}</div>
+      <div class="node"><h3>Kit <span>${count("Kit")} files</span></h3><p>Engines any game can use</p>${chip(names("Kit", /\.js$/))}</div>
+    </div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node game-node"><h3>${esc(sw.title.replace(/ v\d+$/, ""))}'s own parts</h3><p>Story, settings, screens, and layout. Only this game uses them.</p>${chip(FILES.filter(f => f.path.startsWith(sw.source + "/") && !f.path.includes("/legacy/") && !f.path.endsWith(".json")).map(f => base(f.path)))}</div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node"><h3>Build</h3><p>Joins every piece into one page and checks that nothing loads out of order.</p>${chip(["build.py"])}</div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node out"><h3>Published pages</h3><p>Each version is its own page.</p>${latest}</div>`;
+})();
+
+/* Characters */
+$("#galleryPuppy").innerHTML = Kit.art.puppy();
+const robot = $("#galleryRobot");
+function setCourage(v) {
+  robot.style.setProperty("--warm", (v / 100).toFixed(2));
+  robot.style.setProperty("--fear", (1 - v / 100).toFixed(2));
+  robot.classList.toggle("brave", v >= 55);
+  $("#courageVal").textContent = v + "%";
+}
+$("#courage").addEventListener("input", e => setCourage(+e.target.value));
+setCourage(30);
+document.querySelectorAll(".faces button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".faces button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  if (b.dataset.face) robot.dataset.face = b.dataset.face; else delete robot.dataset.face;
+}));
+$("#litBox").addEventListener("change", e => robot.classList.toggle("lit", e.target.checked));
+
+/* Rocket builder */
+const rocketCfg = { nose: "star", fins: "swept", boost: "two", engine: "gold", paint: "purple" };
+const rocketField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${rocketCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
+$("#rocketControls").innerHTML = R.PART_ORDER.map(k => rocketField(k, R.PARTS[k].name, [["", "Not found yet"], ...R.PARTS[k].options])).join("")
+  + rocketField("paint", "Paint", R.PAINT_ORDER.map(p => [p, R.PAINTS[p].label]));
+function drawRocket() { $("#rocketArt").innerHTML = R.svg(rocketCfg, { flame: true, face: true, ghost: true }); }
+$("#rocketControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; rocketCfg[s.dataset.k] = s.value || undefined; drawRocket(); });
+drawRocket();
+
+/* Songs */
+const player = Kit.music.create(Kit.songs);
+player.setEnabled(false);
+let playing = null;
+const songFile = id => FILES.find(f => f.path === `assets/music/${id}.js`) || {};
+function renderSongs() {
+  $("#songList").innerHTML = Object.keys(Kit.songs).map(id => {
+    const s = Kit.songs[id], on = playing === id, about = (songFile(id).about || "").replace(/^"[^"]*":\s*/, "").replace(/ Song format is described in kit\/music\.js\.$/, "");
+    return `<div class="song"><button type="button" class="play" data-song="${id}" aria-pressed="${on}" aria-label="${on ? "Stop" : "Play"} ${esc(s.title)}">${on ? ICON.stop : ICON.play}</button>
+      <div><b>${esc(s.title)}</b><p>${esc(about)}</p><p><code>assets/music/${id}.js</code></p></div></div>`;
+  }).join("");
+}
+$("#songList").addEventListener("click", e => {
+  const b = e.target.closest("[data-song]"); if (!b) return;
+  const id = b.dataset.song;
+  if (playing === id) { player.setEnabled(false); playing = null; }
+  else { Kit.audio.ctx(); player.set(id); player.setEnabled(true); player.unlock(); playing = id; }
+  renderSongs();
+  const again = $(`[data-song="${id}"]`); if (again) again.focus();
+});
+renderSongs();
+
+/* File browser */
+const LAYERS = ["All", "Kit", "Assets", "Content", "Games", "Build", "Library page", "Docs"];
+let layer = "All";
+function renderFilters() {
+  $("#layerFilters").innerHTML = LAYERS.map(l => {
+    const n = l === "All" ? FILES.length : FILES.filter(f => f.layer === l).length;
+    return n ? `<button type="button" data-layer="${l}" aria-pressed="${l === layer}">${esc(l)}<span>${n}</span></button>` : "";
+  }).join("");
+}
+function renderFiles() {
+  const list = FILES.filter(f => layer === "All" || f.layer === layer);
+  const groups = {};
+  list.forEach(f => { const d = f.path.includes("/") ? f.path.slice(0, f.path.lastIndexOf("/") + 1) : "(top)"; (groups[d] = groups[d] || []).push(f); });
+  $("#fileList").innerHTML = Object.entries(groups).map(([dir, fs]) => `<div class="folder"><h3>${esc(dir)}</h3>${fs.map(f => `
+    <button type="button" class="frow" aria-expanded="false" data-path="${esc(f.path)}"><span class="path">${esc(f.path.slice(f.path.lastIndexOf("/") + 1))}</span><span class="about">${esc(f.about || "")}</span><span class="size">${kb(f.bytes)}</span></button>
+    <div class="fdetail" hidden>
+      <dl>
+        ${f.provides ? `<dt>Provides</dt><dd><code>${esc(f.provides)}</code></dd>` : ""}
+        ${f.requires ? `<dt>Needs</dt><dd>${esc(f.requires)}</dd>` : ""}
+        ${(f.usedBy || []).length ? `<dt>Used by</dt><dd class="used">${f.usedBy.map(u => `<span>${esc(u)}</span>`).join("")}</dd>` : ""}
+      </dl>
+      ${f.notes ? `<pre class="notes">${esc(f.notes)}</pre>` : ""}
+      <button type="button" class="showcode">Show code</button>
+      <pre class="code" hidden></pre>
+    </div>`).join("")}</div>`).join("");
+}
+$("#layerFilters").addEventListener("click", e => { const b = e.target.closest("[data-layer]"); if (!b) return; layer = b.dataset.layer; renderFilters(); renderFiles(); });
+$("#fileList").addEventListener("click", async e => {
+  const row = e.target.closest(".frow");
+  if (row) { const d = row.nextElementSibling, open = row.getAttribute("aria-expanded") === "true"; row.setAttribute("aria-expanded", String(!open)); d.hidden = open; return; }
+  const btn = e.target.closest(".showcode"); if (!btn) return;
+  const pre = btn.nextElementSibling, path = btn.closest(".fdetail").previousElementSibling.dataset.path;
+  if (!pre.hidden) { pre.hidden = true; btn.textContent = "Show code"; return; }
+  pre.hidden = false; btn.textContent = "Hide code"; pre.textContent = "Loading...";
+  try { const r = await fetch(path); if (!r.ok) throw new Error(r.status); pre.textContent = await r.text(); }
+  catch (err) { pre.textContent = "This file can't be shown here. It is still saved with the library's published files."; }
+});
+renderFilters(); renderFiles();
+})();
+</script>

@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Biscuit's Magic Words</title>
+<!-- A Toybox game. This page holds only its config; everything else lives in
+     the Toybox library files under lib/ (copied from the Biscuit's Toybox artifact). -->
+<link rel="stylesheet" href="lib/theme.css">
+<script src="lib/engine.js"></script>
+<script src="lib/assets/characters.js"></script>
+<script src="lib/assets/pictures.js"></script>
+<script src="lib/assets/sounds.js"></script>
+<script src="lib/packs/fb-initial.js"></script>
+<script src="lib/packs/kid-jokes.js"></script>
+<script src="lib/mechanics/listen-tap.js"></script>
+<script src="lib/mechanics/say-it.js"></script>
+<script src="lib/shell.js"></script>
+<script>
+Toybox.launch({
+  id: 'magic-words',
+  title: "Biscuit's Magic Words",
+  child: 'friend',
+  host: 'biscuit',
+  welcome: 'Hi friend! Biscuit the wizard pup needs help with his magic words. Tap Biscuit to say hi.',
+  mechanics: ['listen-tap', 'say-it'],
+  packs: ['fb-initial'],
+  jokes: 'kid-jokes',
+  goal: 10,
+  toybox: '1.0.0',
+  legacy: { total: 'bmw-total', enabled: 'bmw-pairs' }
+});
+</script>
+
+</body></html>

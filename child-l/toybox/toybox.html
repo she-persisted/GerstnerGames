@@ -1,0 +1,219 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Biscuit's Toybox</title>
+<link rel="stylesheet" href="lib/theme.css">
+<style>
+/* Layout: one scrolling reference sheet on the Toybox sky. One section per
+   library layer; items sit on the same ink-outlined cards the games use, so
+   this page is also a visual check of the theme. */
+.cat{position:relative;z-index:1;max-width:1020px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:grid;gap:44px}
+.cat-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:end}
+.cat-head .tb-host{--tb-host-size:84px}
+.cat-head .tb-title{text-align:left}
+.cat-ver{display:inline-block;margin-left:12px;padding:3px 12px;border-radius:999px;background:var(--tb-sun);color:var(--tb-ink);font-family:var(--tb-font-code);font-size:15px;font-weight:600;vertical-align:middle;text-shadow:none}
+.cat-lede{margin:8px 0 0;max-width:60ch;font-size:19px}
+.cat-nav{display:flex;flex-wrap:wrap;gap:8px}
+.cat-nav a{color:var(--tb-moon);text-decoration:none;border:2px solid var(--tb-mist);border-radius:999px;padding:6px 14px;font-family:var(--tb-font-display);font-weight:800;font-size:16px}
+.cat-nav a:hover{background:color-mix(in srgb,var(--tb-moon) 10%,transparent)}
+.cat-sec{display:grid;gap:14px;scroll-margin-top:16px;min-width:0}
+.cat-sec h2{margin:0;font-family:var(--tb-font-display);font-weight:800;font-size:clamp(26px,3.4vw,32px);color:var(--tb-sun)}
+.cat-sec > p{margin:0;max-width:65ch;color:var(--tb-mist);font-size:17px}
+.panel{min-width:0;background:var(--tb-card);color:var(--tb-ink);border:4px solid var(--tb-ink);border-radius:20px;box-shadow:0 6px 0 var(--tb-ink);padding:18px 20px}
+.panel h3{margin:0;font-family:var(--tb-font-display);font-weight:800;font-size:22px;line-height:1.15}
+.panel p{margin:6px 0 0;max-width:65ch}
+.meta{font-size:15px;color:color-mix(in srgb,var(--tb-ink) 62%,var(--tb-card))}
+code{font-family:var(--tb-font-code);font-size:.85em;padding:1px 6px;border-radius:6px;background:color-mix(in srgb,var(--tb-ink) 9%,var(--tb-card));overflow-wrap:anywhere}
+
+.layers{display:grid;gap:8px}
+.layer{display:grid;grid-template-columns:48px minmax(0,1fr);gap:16px;align-items:center;padding:12px 18px;box-shadow:0 4px 0 var(--tb-ink);border-width:3px}
+.layer-n{font-family:var(--tb-font-display);font-weight:800;font-size:30px;text-align:center;color:var(--tb-candy-deep);font-variant-numeric:tabular-nums}
+.layer h3{font-size:20px}
+.layer p{margin-top:2px;font-size:16px}
+.layer-top{background:var(--tb-sun)}
+
+.char{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center}
+.char .tb-host{--tb-host-size:104px;cursor:pointer}
+.lines{margin-top:12px}
+.lines summary{cursor:pointer;font-weight:700}
+.lines dl{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:6px 14px;margin:10px 0 0;font-size:15px}
+.lines dt{font-family:var(--tb-font-code);font-size:13px;padding-top:2px;color:var(--tb-candy-deep)}
+.lines dd{margin:0}
+
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px}
+.pic-tile{--tb-pic-size:56px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px 10px;background:var(--tb-card);color:var(--tb-ink);border:3px solid var(--tb-ink);border-radius:16px;box-shadow:0 4px 0 var(--tb-ink);transition:transform .08s,box-shadow .08s}
+.pic-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--tb-ink)}
+.pic-tile .tb-word{font-size:22px}
+.fallback{display:flex;align-items:center;gap:14px;--tb-pic-size:44px}
+
+.sounds{display:flex;flex-wrap:wrap;gap:12px}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.mech-top{display:flex;align-items:center;gap:14px}
+.mech .tb-mode-ico{width:60px;height:60px;font-size:32px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;border:2px solid var(--tb-ink)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;border-radius:999px;border:2px solid var(--tb-ink);font-weight:700;font-size:16px;--tb-pic-size:22px}
+.cue-list{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px;font-size:16px}
+.cue-list strong{font-family:var(--tb-font-display);color:var(--tb-candy-deep);margin-right:6px}
+.jokes{margin:12px 0 0;padding-left:22px;display:grid;gap:6px;font-size:16px}
+.jokes span{color:var(--tb-candy-deep);font-weight:700}
+
+.game{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+.game a.tb-pill{text-decoration:none}
+
+@media (max-width:560px){
+  .cat-head{grid-template-columns:1fr;justify-items:start}
+  .char{grid-template-columns:1fr;justify-items:start}
+  .lines dl{grid-template-columns:1fr}
+}
+</style>
+
+<div class="tb-sky" id="sky" aria-hidden="true"></div>
+<main class="cat" id="cat"></main>
+
+<script src="lib/engine.js"></script>
+<script src="lib/assets/characters.js"></script>
+<script src="lib/assets/pictures.js"></script>
+<script src="lib/assets/sounds.js"></script>
+<script src="lib/packs/fb-initial.js"></script>
+<script src="lib/packs/kid-jokes.js"></script>
+<script src="lib/mechanics/listen-tap.js"></script>
+<script src="lib/mechanics/say-it.js"></script>
+<script src="lib/shell.js"></script>
+<script>
+(function (T) {
+  'use strict';
+  const U = T.util;
+
+  /* Games built on the Toybox. Add a row here whenever a new game is published. */
+  const GAMES = [
+    {
+      title: "Biscuit's Magic Words",
+      url: 'https://claude.ai/artifact/G7s82Cdobz9eV6ir5oSNc1',
+      host: 'biscuit', mechanics: ['listen-tap', 'say-it'], packs: ['fb-initial', 'kid-jokes']
+    }
+  ];
+
+  const LAYERS = [
+    { n: 6, name: 'Games', files: 'one page per game', job: 'A short config: which character hosts, which game types, which word packs.', top: true },
+    { n: 5, name: 'Shell', files: 'shell.js', job: 'Builds a whole game from that config: home screen, menu, candy jar, grown-up corner, joke party.' },
+    { n: 4, name: 'Word packs', files: 'packs/*.js', job: 'Words and jokes as plain data. New homework becomes a new pack.' },
+    { n: 3, name: 'Game types', files: 'mechanics/*.js', job: 'How a round plays. Works with any pack of the type it accepts.' },
+    { n: 2, name: 'Engine', files: 'engine.js', job: 'Shared services: voice, sound player, effects, saving, tricky-word tracking, jar, party.' },
+    { n: 1, name: 'Assets', files: 'assets/*.js', job: 'Characters, pictures and sound recipes. Data plus tiny drawing functions.' },
+    { n: 0, name: 'Theme', files: 'theme.css', job: 'Colors, fonts, and the look of every card and button.' }
+  ];
+
+  /* stars */
+  let stars = '';
+  for (let i = 0; i < 40; i++) {
+    const s = (Math.random() * 2 + 1.5).toFixed(1);
+    stars += '<span class="tb-star" style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 90).toFixed(1) +
+      '%;width:' + s + 'px;height:' + s + 'px;animation-delay:-' + (Math.random() * 3.4).toFixed(2) + 's"></span>';
+  }
+  document.getElementById('sky').innerHTML = stars;
+
+  const host = T.host('biscuit');
+  const sec = (id, title, intro, body) =>
+    '<section class="cat-sec" id="' + id + '"><h2>' + title + '</h2>' + (intro ? '<p>' + intro + '</p>' : '') + body + '</section>';
+
+  const head =
+    '<header class="cat-head">' +
+      '<button type="button" class="tb-host" data-hear-char="biscuit" aria-label="Hear Biscuit">' + host.html() + '</button>' +
+      '<div><h1 class="tb-title">Biscuit\u2019s Toybox<span class="cat-ver">v' + U.esc(T.version) + '</span></h1>' +
+      '<p class="cat-lede">The shared characters, pictures, sounds, game types and words that every game for Child L is built from. Tap a character, picture or sound to hear it.</p></div>' +
+    '</header>' +
+    '<nav class="cat-nav" aria-label="Sections">' +
+      [['layers', 'How it fits together'], ['characters', 'Characters'], ['pictures', 'Pictures'], ['sounds', 'Sounds'],
+       ['types', 'Game types'], ['packs', 'Word packs'], ['games', 'Games']]
+        .map(p => '<a href="#' + p[0] + '">' + p[1] + '</a>').join('') +
+    '</nav>';
+
+  const layers = sec('layers', 'How it fits together',
+    'Seven layers, top to bottom. Each layer only uses the layers below it, so a new word pack never touches a game type, and a new game type never touches a character.',
+    '<div class="layers">' + LAYERS.map(l =>
+      '<div class="panel layer' + (l.top ? ' layer-top' : '') + '"><span class="layer-n">' + l.n + '</span>' +
+      '<div><h3>' + l.name + ' <code>' + U.esc(l.files) + '</code></h3><p>' + l.job + '</p></div></div>').join('') + '</div>');
+
+  const characters = sec('characters', 'Characters',
+    'The same faces, voices and catchphrases in every game, so Child L gets to know them.',
+    T.characters.all().map(c => {
+      const kinds = Object.keys(c.lines || {});
+      const n = kinds.reduce((sum, k) => sum + c.lines[k].length, 0);
+      return '<div class="panel char">' +
+        '<button type="button" class="tb-host" data-hear-char="' + U.esc(c.id) + '" aria-label="Hear ' + U.esc(c.name) + '">' + c.render() + '</button>' +
+        '<div><h3>' + U.esc(c.name) + ' <code>' + U.esc(c.id) + '</code></h3>' +
+        '<p class="meta">' + U.esc(c.role) + '</p>' +
+        '<p>' + U.esc(c.look) + '</p><p>' + U.esc(c.personality) + '</p>' +
+        '<p class="meta">Voice: pitch ' + c.voice.pitch + ', speed ' + c.voice.rate + '</p>' +
+        '<details class="lines"><summary>Everything ' + U.esc(c.name) + ' says (' + n + ' lines)</summary><dl>' +
+          kinds.map(k => '<dt>' + U.esc(k) + '</dt><dd>' + c.lines[k].map(s => U.esc(s)).join('<br>') + '</dd>').join('') +
+        '</dl></details></div></div>';
+    }).join(''));
+
+  const pics = T.pictures.all();
+  const pictures = sec('pictures', 'Pictures',
+    pics.length + ' pictures. Each word always gets the same picture, in every game. Tap one to hear the word.',
+    '<div class="pics">' + pics.map(p =>
+      '<button type="button" class="pic-tile" data-hear-word="' + U.esc(p.id) + '"' + (p.note ? ' title="' + U.esc(p.note) + '"' : '') + '>' +
+      T.art.picture(p.id) + '<span class="tb-word">' + U.esc(p.id) + '</span></button>').join('') + '</div>' +
+    '<div class="fallback">' + T.art.picture('zebra') + '<p style="margin:0;color:var(--tb-mist)">A word with no picture yet shows its first letter, so a new word never breaks a game.</p></div>');
+
+  const sounds = sec('sounds', 'Sounds',
+    'Made from musical notes in code, no audio files. The same sound always means the same thing.',
+    '<div class="sounds">' + T.sounds.all().map(s =>
+      '<button type="button" class="tb-pill tb-small" data-sound="' + U.esc(s.id) + '" title="' + U.esc(s.id) + '">' + U.esc(s.label) + '</button>').join('') + '</div>');
+
+  const types = sec('types', 'Game types',
+    'How a round plays. Any game type works with any word pack of the kind it accepts.',
+    '<div class="two">' + T.mechanics.all().map(m =>
+      '<div class="panel mech"><div class="mech-top"><span class="tb-mode-ico tb-accent-' + U.esc(m.accent || 'sun') + '" aria-hidden="true">' + m.icon + '</span>' +
+      '<div><h3>' + U.esc(m.title) + '</h3><p class="meta" style="margin:2px 0 0"><code>' + U.esc(m.id) + '</code></p></div></div>' +
+      '<p>' + U.esc(U.fill(m.blurb, { host: 'Biscuit' })) + '</p>' +
+      '<p class="meta">' + U.esc(U.fill(m.grownUpNote, { host: 'Biscuit', child: 'friend' })) + '</p>' +
+      '<div class="tags"><span class="tag">Uses ' + U.esc(m.accepts.join(', ')) + ' packs</span>' +
+      '<span class="tag">' + (m.needsGrownUp ? 'Needs a grown-up' : 'Plays alone') + '</span></div></div>').join('') + '</div>');
+
+  const packs = sec('packs', 'Word packs',
+    'Plain lists of words and jokes. When new homework comes home, it becomes a new pack.',
+    '<div class="two">' + T.packs.all().map(p => {
+      let body = '';
+      if (p.type === 'minimal-pairs') {
+        body = '<div class="chips">' + p.items.map(it =>
+          '<span class="chip">' + T.art.picture(it[0]) + T.art.picture(it[1]) + U.esc(it.join(' / ')) + '</span>').join('') + '</div>' +
+          (p.sounds ? '<ul class="cue-list">' + p.sounds.map(s => '<li><strong>' + U.esc(s.label) + '</strong>' + U.esc(s.cue) + '</li>').join('') + '</ul>' : '');
+      } else if (p.type === 'jokes') {
+        body = '<ol class="jokes">' + p.items.map(j => '<li>' + U.esc(j.q) + ' <span>' + U.esc(j.a) + '</span></li>').join('') + '</ol>';
+      }
+      return '<div class="panel"><h3>' + U.esc(p.title) + '</h3>' +
+        '<p class="meta"><code>' + U.esc(p.id) + '</code> ' + U.esc(p.type) + (p.source ? ', from ' + U.esc(p.source) : '') + ', ' + p.items.length + ' items</p>' +
+        body + '</div>';
+    }).join('') + '</div>');
+
+  const games = sec('games', 'Games built with the Toybox', '',
+    GAMES.map(g =>
+      '<div class="panel game"><div><h3>' + U.esc(g.title) + '</h3>' +
+      '<p class="meta">Host: ' + U.esc(g.host) + '. Game types: ' + U.esc(g.mechanics.join(', ')) + '. Packs: ' + U.esc(g.packs.join(', ')) + '.</p></div>' +
+      '<a class="tb-pill tb-small" href="' + U.esc(g.url) + '" target="_blank" rel="noopener">Open game</a></div>').join(''));
+
+  const cat = document.getElementById('cat');
+  cat.innerHTML = head + layers + characters + pictures + sounds + types + packs + games;
+
+  cat.addEventListener('click', e => {
+    const w = e.target.closest('[data-hear-word]');
+    if (w) { T.voice.say([{ t: w.getAttribute('data-hear-word'), rate: 0.75 }]); return; }
+    const c = e.target.closest('[data-hear-char]');
+    if (c) {
+      const h = T.host(c.getAttribute('data-hear-char'));
+      U.restart(c, 'tb-wiggle'); T.sfx.play('giggle');
+      h.say(h.line('hello', { child: 'friend' }));
+      return;
+    }
+    const s = e.target.closest('[data-sound]');
+    if (s) T.sfx.play(s.getAttribute('data-sound'));
+  });
+})(window.Toybox);
+</script>
+
+</body></html>

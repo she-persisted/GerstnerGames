@@ -1,0 +1,30 @@
+/**
+ * @file kit/puzzle-ui.css
+ * @about Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback.
+ * @requires kit/base.css
+ */
+.kind{margin:0;align-self:flex-start;padding:.2em .75em;border-radius:999px;background:var(--nebula-hi);font:700 .8rem/1.4 var(--font-display);letter-spacing:.08em;text-transform:uppercase;color:var(--c-robot,#9fd2ff)}
+.q.eq{font:700 clamp(1.8rem,1.4rem + 1.6vw,2.6rem)/1.2 var(--font-type);letter-spacing:.04em}
+.slot-blank{display:inline-block;min-width:4.5ch;padding:0 .35em;margin:0 .15em;border-bottom:3px solid var(--ember-gold);color:var(--ember-gold);text-align:center;font-family:var(--font-type);line-height:1.2}
+.slot-blank.filled{color:var(--good);border-color:var(--good)}
+.helpers{display:flex;gap:8px;flex-wrap:wrap}
+.help{font:600 .95rem var(--font-body);padding:.35em .9em .35em .4em;border-radius:999px;border:1.5px solid var(--who);background:transparent;color:var(--starlight);cursor:pointer;display:inline-flex;align-items:center;gap:.4em}
+.help svg{width:26px;height:26px;flex:none}
+.help:hover{background:var(--nebula-hi)}
+.help:disabled{opacity:.4;cursor:default;background:transparent}
+.help.nudge{animation:nudge .9s ease-in-out 4}
+@keyframes nudge{0%,100%{transform:scale(1);box-shadow:none}50%{transform:scale(1.08);box-shadow:0 0 0 4px color-mix(in srgb,var(--who) 35%,transparent)}}
+.clues{display:flex;flex-direction:column;gap:8px}
+.clue{margin:0;padding:.65em .9em;border-radius:12px;background:var(--nebula-hi);font-size:1.05rem;border-left:4px solid var(--who)}
+.clue b{color:var(--who);font-weight:600}
+.blanks{margin:0;font:700 1.6rem/1.2 var(--font-type);letter-spacing:.32em;color:var(--ember-gold);white-space:pre-wrap;word-break:break-word}
+.feedback{margin:0;min-height:1.6em;font-size:1.1rem;font-weight:600}
+.feedback.good{color:var(--good)}.feedback.oops{color:var(--oops)}
+.feedback b{font-family:var(--font-type);letter-spacing:.06em}
+.tiles{display:flex;gap:8px;flex-wrap:wrap}
+.tile{min-width:2.6rem;height:2.9rem;padding-inline:.35em;box-sizing:border-box;display:grid;place-items:center;border-radius:10px;font:700 1.6rem/1 var(--font-type);text-transform:uppercase}
+.tile.ice{background:linear-gradient(180deg,var(--ice,#eaf8ff),var(--ice-edge,#9bc9ec));color:var(--peng,#203457);box-shadow:inset 0 2px 0 var(--snow,#fbf7f2)}
+.tile.num{background:var(--nebula-hi);color:var(--starlight);border:1.5px solid var(--c-rock,#b9d98a);font-variant-numeric:tabular-nums}
+.tile.ask{border:1.5px dashed var(--ember-gold);color:var(--ember-gold);background:transparent}
+.tile.word{font:600 1.15rem/1 var(--font-body);text-transform:none;padding-inline:.8em;background:var(--nebula-hi);border:1.5px solid var(--c-robot,#9fd2ff)}
+@media (prefers-reduced-motion:reduce){ .help.nudge{animation:none !important} }

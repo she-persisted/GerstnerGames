@@ -1,0 +1,7 @@
+<!-- @file assets/worlds/nimbus.svg
+     @about Planet Nimbus scenery: puffy pink clouds on both sides of a 400 by 260 scene. Shows when the scene's data-world is "nimbus".
+     @requires assets/worlds/worlds.css -->
+<g class="deco deco-nimbus">
+  <g class="puffcloud"><circle cx="40" cy="214" r="12"/><circle cx="56" cy="207" r="15"/><circle cx="73" cy="215" r="11"/></g>
+  <g class="puffcloud"><circle cx="335" cy="212" r="11"/><circle cx="352" cy="205" r="14"/><circle cx="369" cy="213" r="12"/></g>
+</g>

@@ -1,0 +1,51 @@
+<!-- @file assets/characters/robot-side.svg
+     @about The tall robot hero, side view, standing at (0, 0) and about 200 units tall. Contains every face (worried, brave, happy, surprised, thinking); characters.css picks which one shows from the robot's class and data-face. Place inside <g class="robot" id="robot">.
+     @requires assets/characters/characters.css, assets/fx/defs.svg -->
+<path d="M-23 -108 C-38 -96 -41 -82 -36 -66" class="arm"/>
+<path d="M23 -108 C38 -96 41 -82 36 -66" class="arm"/>
+<circle cx="-36" cy="-64" r="5.5" class="cu"/><circle cx="36" cy="-64" r="5.5" class="cu"/>
+<rect x="-17" y="-62" width="7" height="58" rx="3.5" class="m-shade"/>
+<rect x="10" y="-62" width="7" height="58" rx="3.5" class="m-shade"/>
+<circle cx="-13.5" cy="-32" r="5" class="cu"/><circle cx="13.5" cy="-32" r="5" class="cu"/>
+<rect x="-27" y="-7" width="20" height="7" rx="3.5" class="m"/>
+<rect x="7" y="-7" width="20" height="7" rx="3.5" class="m"/>
+<rect x="-25" y="-122" width="50" height="64" rx="12" class="m"/>
+<rect x="-25" y="-122" width="50" height="64" rx="12" class="m-edge"/>
+<path d="M-15 -72 H15 M-15 -66 H6" class="panel"/>
+<circle cx="0" cy="-95" r="12.5" class="cu"/>
+<circle cx="0" cy="-95" r="9.5" class="glass"/>
+<g class="chest-flame" transform="translate(0,-87.5)"><g class="ember"><g class="flicker"><use href="#flamePath" class="f-outer" transform="scale(.36)"/><use href="#flamePath" class="f-mid" transform="scale(.22)"/></g></g></g>
+<path d="M-5.5 -100.5 A7 7 0 0 1 1 -102.5" class="glint"/>
+<rect x="-4" y="-140" width="8" height="19" class="m-shade"/>
+<path d="M-4 -134 H4 M-4 -128 H4" class="panel"/>
+<circle cx="-23" cy="-157" r="4" class="cu"/><circle cx="23" cy="-157" r="4" class="cu"/>
+<rect x="-23" y="-176" width="46" height="38" rx="14" class="m"/>
+<rect x="-23" y="-176" width="46" height="38" rx="14" class="m-edge"/>
+<path d="M0 -176 V-195" class="antenna"/>
+<circle cx="0" cy="-198.5" r="4.5" class="bulb"/>
+<rect x="-18" y="-171" width="36" height="28" rx="10" class="face"/>
+<g class="eyes-normal"><g class="eyes">
+  <circle cx="-8" cy="-158" r="6.6" class="eye"/><circle cx="8" cy="-158" r="6.6" class="eye"/>
+  <circle cx="-7" cy="-159.4" r="3.3" class="pupil"/><circle cx="9" cy="-159.4" r="3.3" class="pupil"/>
+  <circle cx="-5.8" cy="-160.8" r="1.1" class="spark"/><circle cx="10.2" cy="-160.8" r="1.1" class="spark"/>
+</g></g>
+<g class="eyes-happy"><path d="M-13.5 -156 Q-8 -164 -2.5 -156 M2.5 -156 Q8 -164 13.5 -156" class="happy-eye"/></g>
+<g class="eyes-wide">
+  <circle cx="-8.5" cy="-158" r="8" class="eye"/><circle cx="8.5" cy="-158" r="8" class="eye"/>
+  <circle cx="-8.5" cy="-158" r="2.6" class="pupil"/><circle cx="8.5" cy="-158" r="2.6" class="pupil"/>
+  <circle cx="-7.4" cy="-159.4" r="1" class="spark"/><circle cx="9.6" cy="-159.4" r="1" class="spark"/>
+</g>
+<g class="eyes-think">
+  <circle cx="-8" cy="-158" r="6.6" class="eye"/><circle cx="8" cy="-158" r="6.6" class="eye"/>
+  <circle cx="-5.6" cy="-161" r="3.1" class="pupil"/><circle cx="10.4" cy="-161" r="3.1" class="pupil"/>
+</g>
+<path d="M-14 -165.5 L-4.5 -168.5 M14 -165.5 L4.5 -168.5" class="brow brow-worried"/>
+<path d="M-14 -168.5 L-4.5 -166.5 M14 -168.5 L4.5 -166.5" class="brow brow-brave"/>
+<path d="M-14 -169 Q-9 -173.5 -4 -170 M4 -170 Q9 -173.5 14 -169" class="brow brow-up"/>
+<path d="M-14 -167.5 L-4 -167.5 M4 -170.5 Q9 -174 14 -169.5" class="brow brow-think"/>
+<path d="M-6 -147 q1.5 -1.8 3 0 t3 0 t3 0 t3 0" class="mouth mouth-wobble"/>
+<path d="M-6 -148 Q0 -143 6 -148" class="mouth mouth-smile"/>
+<path d="M-7 -151 H7 Q6.4 -144 0 -144 Q-6.4 -144 -7 -151 Z" class="mouth mouth-grin"/>
+<circle cx="0" cy="-147.5" r="3" class="mouth mouth-o"/>
+<path d="M-4.5 -146.5 L5 -148.5" class="mouth mouth-hmm"/>
+<g class="cheeks"><circle cx="-14" cy="-150" r="2.6"/><circle cx="14" cy="-150" r="2.6"/></g>

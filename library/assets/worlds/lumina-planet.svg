@@ -1,0 +1,41 @@
+<!-- @file assets/worlds/lumina-planet.svg
+     @about Lumina seen from the side as a small round planet that turns under the robot. Five places sit around it: launch pad (0 degrees), Comet Crater (72), Old Observatory (144), Glowworm Grove (216), Sleepy Village (288). Rotate #spin to walk between them. Windows and glowworms light up when the world is "luminaLit".
+     @requires assets/worlds/gradients.svg, assets/worlds/worlds.css -->
+<g id="spin" class="spin">
+  <circle cx="200" cy="430" r="215" fill="url(#gPlanet)"/>
+  <circle cx="200" cy="430" r="215" class="rim"/>
+  <g transform="rotate(36 200 430)"><ellipse cx="200" cy="217" rx="9" ry="2.5" class="pit"/><circle cx="214" cy="213" r="3" class="pebble"/></g>
+  <g transform="rotate(108 200 430)"><circle cx="190" cy="213" r="3.5" class="pebble"/><circle cx="198" cy="214" r="2.2" class="pebble"/></g>
+  <g transform="rotate(180 200 430)"><ellipse cx="205" cy="217" rx="11" ry="3" class="pit"/></g>
+  <g transform="rotate(252 200 430)"><circle cx="196" cy="213" r="3" class="pebble"/></g>
+  <g transform="rotate(324 200 430)"><ellipse cx="200" cy="217" rx="8" ry="2.2" class="pit"/><circle cx="187" cy="213.5" r="2.4" class="pebble"/></g>
+  <g class="site" data-place="pad">
+    <rect x="226" y="213" width="52" height="5" rx="2" class="padbase"/>
+    <path d="M282 214 V108 M288 214 V108 M282 214 L288 196 L282 178 L288 160 L282 142 L288 124 L282 108 M282 128 H268" class="gantry"/>
+    <g transform="translate(252,213)"><g id="padRocket"></g></g>
+  </g>
+  <g class="site" data-place="crater" transform="rotate(72 200 430)">
+    <ellipse cx="252" cy="216" rx="30" ry="7" class="pit"/>
+    <path d="M222 215 Q237 207 252 208 Q267 207 282 215" class="crater-rim"/>
+    <circle cx="252" cy="211" r="5.5" class="comet-rock"/>
+  </g>
+  <g class="site" data-place="observatory" transform="rotate(144 200 430)">
+    <rect x="232" y="186" width="44" height="30" class="wall"/>
+    <path d="M232 187 A22 22 0 0 1 276 187 Z" class="dome"/>
+    <path d="M254 166 V187" class="slit"/>
+    <g transform="translate(258,174) rotate(-40)"><rect x="0" y="-3" width="22" height="6" rx="2" class="scope"/></g>
+    <rect x="249" y="202" width="10" height="14" rx="2" class="door"/>
+  </g>
+  <g class="site" data-place="grove" transform="rotate(216 200 430)">
+    <rect x="234" y="190" width="5" height="26" class="trunk"/><circle cx="236.5" cy="182" r="14" class="leaf"/>
+    <rect x="257" y="182" width="6" height="34" class="trunk"/><circle cx="260" cy="170" r="18" class="leaf"/>
+    <rect x="281" y="194" width="4" height="22" class="trunk"/><circle cx="283" cy="188" r="11" class="leaf"/>
+    <g class="worms"><circle cx="230" cy="178" r="1.6"/><circle cx="242" cy="186" r="1.4"/><circle cx="252" cy="165" r="1.7"/><circle cx="266" cy="172" r="1.5"/><circle cx="262" cy="160" r="1.3"/><circle cx="280" cy="184" r="1.4"/><circle cx="287" cy="190" r="1.2"/></g>
+  </g>
+  <g class="site" data-place="village" transform="rotate(288 200 430)">
+    <rect x="226" y="198" width="20" height="18" class="wall"/><path d="M223 199 L236 187 L249 199Z" class="roof"/><rect x="233" y="204" width="6" height="6" rx="1" class="win"/>
+    <rect x="252" y="194" width="24" height="22" class="wall"/><path d="M249 195 L264 181 L279 195Z" class="roof"/><rect x="257" y="201" width="6" height="6" rx="1" class="win"/><rect x="266" y="201" width="6" height="6" rx="1" class="win"/>
+    <rect x="282" y="200" width="16" height="16" class="wall"/><path d="M279 201 L290 191 L301 201Z" class="roof"/><rect x="287" y="205" width="6" height="6" rx="1" class="win"/>
+    <text x="270" y="176" class="zzz">z</text><text x="278" y="168" class="zzz small">z</text>
+  </g>
+</g>

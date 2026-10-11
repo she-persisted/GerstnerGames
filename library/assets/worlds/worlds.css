@@ -1,0 +1,69 @@
+/**
+ * @file assets/worlds/worlds.css
+ * @about Colors and scenery rules for every side-view world (Lumina dark and lit, Nimbus, Glacia, Meridian, Corona): sky, ground, planet in the sky, which scenery shows, buildings, ice, stones, the tower windows, and the Everlight flame.
+ * @requires kit/base.css
+ *
+ * Set data-world on the .scene element to switch worlds. Add .flying to drop the ground away during flights.
+ */
+:root{
+  --ground-a:#565878; --ground-b:#272640; --sky-top:#1a1a36; --orb-a:#6d6a80; --orb-b:#34324a;
+  --wall:#3b3a52; --roof:#2b2a40; --win:#1d1c2c; --leaf:#4a4a66; --trunk:#34304a; --worm:#5a5880; --dome:#6b6f92;
+  --ice:#eaf8ff; --ice-edge:#9bc9ec; --cloud:#fff0fa; --tower:#5a1f2e; --tw-off:#2c0f18;
+}
+.orb{position:absolute;top:7%;right:27%;width:clamp(46px,13%,104px);aspect-ratio:1;max-width:100%;border-radius:50%;background:radial-gradient(circle at 34% 30%,var(--orb-a),var(--orb-b) 72%);box-shadow:0 0 38px -8px var(--orb-a);transition:opacity .6s}
+.scene[data-world="nimbus"] .orb::after{content:"";position:absolute;inset:38% -28%;border-radius:50%;border:3px solid var(--orb-a);opacity:.7;transform:rotate(-14deg)}
+.scene[data-world="meridian"] .orb{background:radial-gradient(circle at 30% 42%,#6cc46f 0 15%,transparent 16%),radial-gradient(circle at 66% 64%,#6cc46f 0 13%,transparent 14%),radial-gradient(circle at 58% 24%,#f4fbff 0 7%,transparent 8%),radial-gradient(circle at 34% 30%,var(--orb-a),var(--orb-b) 72%)}
+.world{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+
+/* World palettes */
+.scene[data-world="lumina"]{--ground-a:#565878;--ground-b:#272640;--sky-top:#1a1a36}
+.scene[data-world="luminaLit"]{--ground-a:#8fd26a;--ground-b:#3d8a52;--sky-top:#2b3f7a;--orb-a:#fff2b0;--orb-b:#ffb24d;--wall:#f1d9b5;--roof:#c9573f;--win:#ffcb5e;--leaf:#5cc46e;--trunk:#7a4f33;--worm:#ffe58a;--dome:#e7d6b0}
+.scene[data-world="nimbus"]{--ground-a:#f6b6de;--ground-b:#a866c0;--sky-top:#3a1f5e;--orb-a:#ffd3f0;--orb-b:#b45fa8}
+.scene[data-world="glacia"]{--ground-a:#e2f5ff;--ground-b:#7cb4df;--sky-top:#16305e;--orb-a:#d6f0ff;--orb-b:#5c8fc4}
+.scene[data-world="meridian"]{--ground-a:#d9a46b;--ground-b:#8a5636;--sky-top:#2d1f45;--orb-a:#8fd8ff;--orb-b:#2a5fb8}
+.scene[data-world="corona"]{--ground-a:#ffbf5a;--ground-b:#c2512a;--sky-top:#4a1d3a;--orb-a:#ffe08a;--orb-b:#e0603a}
+
+/* Ground */
+.stop-a{stop-color:var(--ground-a);transition:stop-color 1s}
+.stop-b{stop-color:var(--ground-b);transition:stop-color 1s}
+.rim{fill:none;stroke:var(--starlight);stroke-opacity:.14;stroke-width:2}
+.ground{transition:transform 1.1s cubic-bezier(.5,0,.3,1),opacity 1s}
+.flying .ground{transform:translateY(130px);opacity:0}
+.plain,.lumina-planet{transition:opacity .8s}
+.scene[data-world^="lumina"] .plain{opacity:0;visibility:hidden}
+.scene:not([data-world^="lumina"]) .lumina-planet{opacity:0;visibility:hidden}
+.spin{transform-origin:200px 430px;transition:transform 1.5s cubic-bezier(.45,0,.25,1)}
+.deco{opacity:0;transition:opacity .9s}
+.scene[data-world="nimbus"] .deco-nimbus,.scene[data-world="glacia"] .deco-glacia,.scene[data-world="meridian"] .deco-meridian,.scene[data-world="corona"] .deco-corona{opacity:1}
+
+/* Buildings and nature */
+.wall{fill:var(--wall);transition:fill 1.2s}.roof{fill:var(--roof);transition:fill 1.2s}.win{fill:var(--win);transition:fill 1.2s}
+.leaf{fill:var(--leaf);transition:fill 1.2s}.trunk{fill:var(--trunk);transition:fill 1.2s}.dome{fill:var(--dome);transition:fill 1.2s}
+.worms circle{fill:var(--worm);transition:fill 1.2s}
+.scene[data-world="luminaLit"] .worms circle{filter:drop-shadow(0 0 2px var(--ember-gold))}
+.pit{fill:var(--ground-b);opacity:.6}.pebble{fill:var(--stone-sh,#6d6259)}
+.padbase{fill:var(--metal-shade,#7684b4)}
+.gantry{stroke:var(--metal-shade,#7684b4);stroke-width:2.4;fill:none;stroke-linecap:round}
+.crater-rim{fill:none;stroke:var(--dust);stroke-opacity:.35;stroke-width:3}
+.comet-rock{fill:var(--c-peng,#8fe6ff);filter:drop-shadow(0 0 4px var(--c-peng,#8fe6ff))}
+.slit{stroke:var(--void);stroke-width:3}.door{fill:var(--roof)}
+.scope{fill:var(--scope,#b9a27a)}.tripod{stroke:var(--stone-sh,#6d6259);stroke-width:1.8;fill:none;stroke-linecap:round}
+.zzz{font:700 11px var(--font-display);fill:var(--dust)}.zzz.small{font-size:8px}
+.scene[data-world="luminaLit"] .zzz{display:none}
+.puffcloud{fill:var(--cloud);opacity:.95}
+.ice{fill:var(--ice);stroke:var(--ice-edge);stroke-width:1.2;stroke-linejoin:round}
+.stone2{fill:var(--stone,#8f8378)}.carve{stroke:var(--stone-sh,#6d6259);stroke-width:2;stroke-linecap:round;fill:none}
+.tower{fill:var(--tower)}.tower-top{fill:var(--stone-sh,#6d6259)}
+.tower-win{fill:var(--tw-off);transition:fill .8s}
+.scene[data-floors="1"] .tw1,.scene[data-floors="2"] :is(.tw1,.tw2),.scene[data-floors="3"] :is(.tw1,.tw2,.tw3){fill:var(--ember-gold)}
+
+/* The Everlight at the top of the tower */
+.bigflame{opacity:0;transform:translate(355px,95px);transition:transform 1.8s cubic-bezier(.5,0,.3,1),opacity .8s}
+.bigflame .flicker{filter:drop-shadow(0 0 8px var(--ember))}
+.scene[data-world="corona"] .bigflame{opacity:1}
+.scene[data-world="corona"] .bigflame.taken{transform:translate(200px,133px) scale(.3)}
+.scene .bigflame.gone{opacity:0}
+
+@media (prefers-reduced-motion:reduce){
+  .bigflame,.ground,.spin{transition:none !important}
+}

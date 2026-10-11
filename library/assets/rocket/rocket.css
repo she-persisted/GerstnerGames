@@ -1,0 +1,33 @@
+/**
+ * @file assets/rocket/rocket.css
+ * @about Rocket motion and display: liftoff rise, hover bob, launch rumble, engine flame stretch, plus the rocket previews in the side panel (build progress, part slots, finished ship).
+ * @requires kit/base.css
+ */
+.fly-rocket{opacity:0;transition:opacity .5s}
+.scene.ship .fly-rocket{opacity:1}
+.lift{transition:transform 1.2s cubic-bezier(.5,0,.3,1)}
+.flying .lift{transform:translateY(-34px)}
+.flying .bob-ship{animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.rumble{animation:rumble .08s linear infinite}
+@keyframes rumble{0%{transform:translate(0,0)}25%{transform:translate(-1px,.6px)}50%{transform:translate(1px,-.6px)}75%{transform:translate(-.6px,-.6px)}100%{transform:translate(.6px,.6px)}}
+.rflame{transform-box:fill-box;transform-origin:50% 0;transition:transform .6s}
+.flying .fly-rocket .rflame{transform:scale(1.25,1.8)}
+.scene.ship #padRocket{opacity:0}
+#padRocket{transition:opacity .4s}
+
+.roam-ship{display:flex;justify-content:center}
+.roam-ship svg{width:120px;height:228px;overflow:visible}
+.partslots{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.partslots li{aspect-ratio:1;border-radius:14px;border:2px dashed var(--nebula-hi);display:grid;place-items:center;max-width:100%}
+.partslots li.got{border:2px solid var(--good);background:var(--nebula-hi)}
+.partslots svg{width:62%;height:62%;overflow:visible}
+.target-ship svg{width:46px;height:88px;overflow:visible}
+.shipshow{display:flex;justify-content:center}
+.shipshow svg{width:110px;height:210px;overflow:visible}
+
+@media (max-width:860px){ .roam-ship svg{width:84px;height:160px} }
+@media (prefers-reduced-motion:reduce){
+  .flying .bob-ship,.rumble{animation:none !important}
+  .lift{transition:none !important}
+}

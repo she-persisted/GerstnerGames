@@ -1,0 +1,17 @@
+/**
+ * @file kit/jukebox.css
+ * @about Styles for the jukebox song list and the "New song!" title.
+ * @requires kit/base.css
+ */
+.jukebox{display:flex;flex-direction:column;gap:8px}
+.jlist{display:flex;flex-direction:column;gap:6px}
+.track-row{display:flex;align-items:center;gap:12px;padding:.5em .7em;border-radius:12px;background:var(--nebula-hi)}
+.track-row.locked{background:transparent;border:1.5px dashed var(--nebula-hi);color:var(--dust)}
+.track-row .tt{flex:1;min-width:0;font-weight:600;line-height:1.3}
+.track-row .tw{display:block;font-size:.8rem;font-weight:400;color:var(--dust)}
+.playbtn{flex:none;width:2.3rem;height:2.3rem;border-radius:50%;border:0;background:var(--ember);color:var(--on-ember);display:grid;place-items:center;cursor:pointer}
+.playbtn svg{width:14px;height:14px}
+.playbtn.on{background:var(--good)}
+.note-ic{width:1.1rem;height:1.1rem;flex:none;fill:var(--dust)}
+.songtitle{margin:0;display:flex;align-items:center;gap:.4em;font:800 clamp(1.6rem,1.3rem + 1.4vw,2.2rem)/1.1 var(--font-display);color:var(--ember-gold)}
+.songtitle svg{width:1em;height:1em;fill:currentColor}

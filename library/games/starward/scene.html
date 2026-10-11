@@ -1,0 +1,77 @@
+<!-- @file games/starward/scene.html
+     @about Starward's page layout: the top bar (courage, friends, music and sound), the scene window (side-view worlds, characters, rocket, walkable map, falling words), and the side panel. Lines like @include pull in art files when the game is built.
+     @requires assets/fx/defs.svg, assets/worlds/*.svg, assets/characters/*.svg -->
+<div class="app">
+  <header class="hud">
+    <h1 class="logo"><svg viewBox="-12 -12 24 24" aria-hidden="true"><use href="#spark4" class="star" transform="scale(2.2)"/></svg>Starward</h1>
+    <div class="courage" role="meter" aria-label="Courage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="8" id="courage">
+      <span class="lbl">Courage</span>
+      <span class="bar"><span class="fill" id="courageFill"></span></span>
+      <span class="pct" id="couragePct">8%</span>
+    </div>
+    <ul class="crew" aria-label="Friends">
+      <li class="lbl" aria-hidden="true">Friends</li>
+      <li class="slot" data-slot="dog" style="--who:var(--c-dog)">?</li>
+      <li class="slot" data-slot="peng" style="--who:var(--c-peng)">?</li>
+      <li class="slot" data-slot="rock" style="--who:var(--c-rock)">?</li>
+    </ul>
+    <div class="toggles">
+      <button class="btn ghost small" id="musicBtn" type="button" aria-pressed="true">Music on</button>
+      <button class="btn ghost small" id="soundBtn" type="button" aria-pressed="true">Sound on</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="scene attract" id="scene" data-world="lumina" data-floors="0" role="img" aria-label="A tall robot stands on the dark world of Lumina.">
+      <canvas id="stars" aria-hidden="true"></canvas>
+      <div class="orb" aria-hidden="true"></div>
+      <svg class="world" viewBox="0 0 400 260" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <defs>
+          <!-- @include assets/worlds/gradients.svg -->
+          <!-- @include assets/fx/defs.svg -->
+        </defs>
+        <g class="ground">
+          <g class="plain">
+            <!-- @include assets/worlds/plain-ground.svg -->
+            <!-- @include assets/worlds/nimbus.svg -->
+            <!-- @include assets/worlds/glacia.svg -->
+            <!-- @include assets/worlds/meridian.svg -->
+            <!-- @include assets/worlds/corona.svg -->
+          </g>
+          <g class="lumina-planet">
+            <!-- @include assets/worlds/lumina-planet.svg -->
+          </g>
+        </g>
+
+        <g class="cast">
+          <g transform="translate(134,222)"><g class="char" data-who="rock"><g class="hop"><g class="bob">
+            <!-- @include assets/characters/kepler.svg -->
+          </g></g></g></g>
+          <g transform="translate(200,222)"><g class="char in" data-who="robot"><g class="hop"><g class="bob"><g class="robot tremble" id="robot">
+            <!-- @include assets/characters/robot-side.svg -->
+          </g></g></g></g></g>
+          <g transform="translate(258,222) scale(1.15)"><g class="char" data-who="dog"><g class="hop"><g class="bob" id="dogArt"></g></g></g></g>
+          <g transform="translate(306,222) scale(1.1)"><g class="char" data-who="peng"><g class="hop"><g class="bob">
+            <!-- @include assets/characters/penguin.svg -->
+          </g></g></g></g>
+        </g>
+
+        <g class="fly-rocket" transform="translate(200,212) scale(1.3)">
+          <g class="lift"><g class="bob-ship"><g id="flyRocket"></g></g></g>
+        </g>
+
+        <g id="bigFlame" class="bigflame">
+          <g class="flicker"><use href="#flamePath" class="f-outer"/><use href="#flamePath" class="f-mid" transform="scale(.62)"/><use href="#flamePath" class="f-core" transform="scale(.3)"/></g>
+        </g>
+      </svg>
+      <canvas id="mapCanvas" class="mapcv" aria-hidden="true"></canvas>
+      <div class="arena" id="arena" aria-hidden="true"></div>
+      <div class="countdown" id="countdown" aria-live="assertive"></div>
+      <div class="board scene-board" id="boardScene" data-scoreboard></div>
+      <p class="place" id="place">Lumina</p>
+      <p class="toast" id="toast" role="status"></p>
+    </section>
+
+    <section class="console" id="panel" aria-live="polite"></section>
+  </main>
+</div>

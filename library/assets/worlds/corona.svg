@@ -1,0 +1,10 @@
+<!-- @file assets/worlds/corona.svg
+     @about The Corona Nebula scenery: a tall three-floor tower whose windows light up as data-floors goes from 1 to 3, in a 400 by 260 scene. Shows when the scene's data-world is "corona".
+     @requires assets/worlds/worlds.css -->
+<g class="deco deco-corona">
+  <path d="M341 228 L346 102 L364 102 L369 228Z" class="tower"/>
+  <rect x="342" y="96" width="26" height="7" rx="2" class="tower-top"/>
+  <rect x="351" y="130" width="8" height="13" rx="4" class="tower-win tw3"/>
+  <rect x="351" y="168" width="8" height="13" rx="4" class="tower-win tw2"/>
+  <rect x="351" y="204" width="8" height="13" rx="4" class="tower-win tw1"/>
+</g>

@@ -1,0 +1,26 @@
+/**
+ * @file kit/scoreboard.css
+ * @about Arcade look for the high score board, the name entry box, and the end-of-game score card.
+ * @requires kit/base.css
+ */
+.board{font-family:var(--font-arcade);background:color-mix(in srgb,var(--void) 84%,transparent);border:2px solid var(--ember-gold);border-radius:14px;padding:16px 18px;box-shadow:0 0 30px -10px var(--ember);color:var(--starlight);box-sizing:border-box}
+.board h3{margin:0 0 14px;font:400 .95rem/1.4 var(--font-arcade);color:var(--ember-gold);text-align:center;letter-spacing:.08em}
+.board ol{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.board li{display:grid;grid-template-columns:2.8em minmax(0,1fr) auto;gap:10px;font-size:.7rem;line-height:1.6;align-items:baseline}
+.board .rk{color:var(--dust)}
+.board .nm{text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .sc{font-variant-numeric:tabular-nums;color:var(--ember-gold);text-align:right}
+.board li.first .nm{color:var(--ember-gold)}
+.board li.me,.board li.me .sc,.board li.me .nm{color:var(--good)}
+.board li.me{animation:blinkrow 1s steps(2) 6}
+@keyframes blinkrow{50%{opacity:.35}}
+.board li.empty{opacity:.4}
+.board .note{margin:14px 0 0;font:500 .82rem/1.4 var(--font-body);color:var(--dust);text-align:center}
+.arcade-field{font:400 1rem/1.4 var(--font-arcade);text-transform:uppercase;letter-spacing:.06em}
+.scorecard{display:grid;gap:6px;background:var(--void);border:1.5px solid var(--nebula-hi);border-radius:14px;padding:12px 14px}
+.sc-row{margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sc-row span:last-child{font:400 .85rem var(--font-arcade);color:var(--ember-gold);font-variant-numeric:tabular-nums}
+.sc-total{border-top:1px dashed var(--nebula-hi);padding-top:8px;font-weight:600}
+.sc-total span:last-child{font-size:1.15rem}
+.rankmsg{margin:0;font:400 1rem/1.4 var(--font-arcade);color:var(--good);min-height:1.4em}
+@media (prefers-reduced-motion:reduce){ .board li.me{animation:none !important} }

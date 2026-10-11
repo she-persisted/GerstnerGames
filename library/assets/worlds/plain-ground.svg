@@ -1,0 +1,5 @@
+<!-- @file assets/worlds/plain-ground.svg
+     @about A wide curved hill for side-view planets, drawn in a 400 by 260 scene. Colored by the current world.
+     @requires assets/worlds/gradients.svg, assets/worlds/worlds.css -->
+<ellipse cx="200" cy="425" rx="560" ry="210" fill="url(#gGround)"/>
+<ellipse cx="200" cy="425" rx="560" ry="210" class="rim"/>

@@ -1,0 +1,138 @@
+/**
+ * @file site/page.js
+ * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.
+ * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js
+ */
+const { $, esc } = Kit.util;
+const CAT = JSON.parse($("#catalog").textContent);
+const FILES = CAT.files, GAMES = CAT.games;
+const R = Kit.art.rocket, ICON = Kit.art.icons;
+const kb = n => (n < 1024 ? `${n} B` : `${(n / 1024).toFixed(n < 10240 ? 1 : 0)} KB`);
+const base = p => p.split("/").pop().replace(/\.[a-z]+$/, "");
+const ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.3 5.3a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 1 1-1.4-1.4l4.3-4.3H4a1 1 0 1 1 0-2h13.6l-4.3-4.3a1 1 0 0 1 0-1.4z"/></svg>`;
+
+/* Header numbers */
+$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · 4 characters`;
+
+/* Games and versions */
+$("#gameList").innerHTML = GAMES.map(g => {
+  const rel = [...(g.releases || [])].reverse();
+  return `<article class="game">
+    <h3>${esc(g.title.replace(/ v\d+$/, ""))}</h3>
+    <span class="src">${g.legacy ? "One legacy file" : `${g.fileCount} source files`} in <code>${esc(g.source)}</code></span>
+    <p>${esc(g.about)}</p>
+    <ol class="versions">${rel.map((r, i) => {
+      const sameAsNewer = i > 0 && r.url && rel.slice(0, i).some(x => x.url === r.url);
+      const link = !r.url ? "" : sameAsNewer ? `<span class="same">page history</span>` : `<a href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>`;
+      return `<li><span class="v">v${r.version}</span><span class="d">${esc(r.date)}</span><span class="n">${esc(r.notes)}</span>${link}</li>`;
+    }).join("")}</ol>
+  </article>`;
+}).join("");
+
+/* Flow map, built from the catalog so it always matches the files */
+(function flowMap() {
+  const names = (layer, re) => [...new Set(FILES.filter(f => f.layer === layer && re.test(f.path) && !f.path.includes("/legacy/")).map(f => base(f.path)))];
+  const count = layer => FILES.filter(f => f.layer === layer).length;
+  const chip = list => `<div class="names">${list.map(n => `<span>${esc(n)}</span>`).join("")}</div>`;
+  const sw = GAMES.find(g => g.id === "starward") || GAMES[0];
+  const latest = GAMES.map(g => { const r = [...(g.releases || [])].sort((a, b) => b.version - a.version)[0]; return r && r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(g.title.replace(/ v\d+$/, ""))} v${r.version}</a>` : ""; }).join("");
+  $("#flowmap").innerHTML = `
+    <div class="stack">
+      <div class="node"><h3>Content <span>${count("Content")} files</span></h3><p>Questions tagged easy to hard, question generators, word lists</p>${chip(names("Content", /\.js$/))}</div>
+      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(names("Assets", /\.(js|svg)$/).filter(n => !/^(theme|lumina|nimbus|glacia|meridian|corona|reborn|gradients|defs|plain-ground)$/.test(n)).concat(["7 songs"]))}</div>
+      <div class="node"><h3>Kit <span>${count("Kit")} files</span></h3><p>Engines any game can use</p>${chip(names("Kit", /\.js$/))}</div>
+    </div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node game-node"><h3>${esc(sw.title.replace(/ v\d+$/, ""))}'s own parts</h3><p>Story, settings, screens, and layout. Only this game uses them.</p>${chip(FILES.filter(f => f.path.startsWith(sw.source + "/") && !f.path.includes("/legacy/") && !f.path.endsWith(".json")).map(f => base(f.path)))}</div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node"><h3>Build</h3><p>Joins every piece into one page and checks that nothing loads out of order.</p>${chip(["build.py"])}</div>
+    <div class="arrow">${ARROW}</div>
+    <div class="node out"><h3>Published pages</h3><p>Each version is its own page.</p>${latest}</div>`;
+})();
+
+/* Characters */
+$("#galleryPuppy").innerHTML = Kit.art.puppy();
+const robot = $("#galleryRobot");
+function setCourage(v) {
+  robot.style.setProperty("--warm", (v / 100).toFixed(2));
+  robot.style.setProperty("--fear", (1 - v / 100).toFixed(2));
+  robot.classList.toggle("brave", v >= 55);
+  $("#courageVal").textContent = v + "%";
+}
+$("#courage").addEventListener("input", e => setCourage(+e.target.value));
+setCourage(30);
+document.querySelectorAll(".faces button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".faces button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  if (b.dataset.face) robot.dataset.face = b.dataset.face; else delete robot.dataset.face;
+}));
+$("#litBox").addEventListener("change", e => robot.classList.toggle("lit", e.target.checked));
+
+/* Rocket builder */
+const rocketCfg = { nose: "star", fins: "swept", boost: "two", engine: "gold", paint: "purple" };
+const rocketField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${rocketCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
+$("#rocketControls").innerHTML = R.PART_ORDER.map(k => rocketField(k, R.PARTS[k].name, [["", "Not found yet"], ...R.PARTS[k].options])).join("")
+  + rocketField("paint", "Paint", R.PAINT_ORDER.map(p => [p, R.PAINTS[p].label]));
+function drawRocket() { $("#rocketArt").innerHTML = R.svg(rocketCfg, { flame: true, face: true, ghost: true }); }
+$("#rocketControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; rocketCfg[s.dataset.k] = s.value || undefined; drawRocket(); });
+drawRocket();
+
+/* Songs */
+const player = Kit.music.create(Kit.songs);
+player.setEnabled(false);
+let playing = null;
+const songFile = id => FILES.find(f => f.path === `assets/music/${id}.js`) || {};
+function renderSongs() {
+  $("#songList").innerHTML = Object.keys(Kit.songs).map(id => {
+    const s = Kit.songs[id], on = playing === id, about = (songFile(id).about || "").replace(/^"[^"]*":\s*/, "").replace(/ Song format is described in kit\/music\.js\.$/, "");
+    return `<div class="song"><button type="button" class="play" data-song="${id}" aria-pressed="${on}" aria-label="${on ? "Stop" : "Play"} ${esc(s.title)}">${on ? ICON.stop : ICON.play}</button>
+      <div><b>${esc(s.title)}</b><p>${esc(about)}</p><p><code>assets/music/${id}.js</code></p></div></div>`;
+  }).join("");
+}
+$("#songList").addEventListener("click", e => {
+  const b = e.target.closest("[data-song]"); if (!b) return;
+  const id = b.dataset.song;
+  if (playing === id) { player.setEnabled(false); playing = null; }
+  else { Kit.audio.ctx(); player.set(id); player.setEnabled(true); player.unlock(); playing = id; }
+  renderSongs();
+  const again = $(`[data-song="${id}"]`); if (again) again.focus();
+});
+renderSongs();
+
+/* File browser */
+const LAYERS = ["All", "Kit", "Assets", "Content", "Games", "Build", "Library page", "Docs"];
+let layer = "All";
+function renderFilters() {
+  $("#layerFilters").innerHTML = LAYERS.map(l => {
+    const n = l === "All" ? FILES.length : FILES.filter(f => f.layer === l).length;
+    return n ? `<button type="button" data-layer="${l}" aria-pressed="${l === layer}">${esc(l)}<span>${n}</span></button>` : "";
+  }).join("");
+}
+function renderFiles() {
+  const list = FILES.filter(f => layer === "All" || f.layer === layer);
+  const groups = {};
+  list.forEach(f => { const d = f.path.includes("/") ? f.path.slice(0, f.path.lastIndexOf("/") + 1) : "(top)"; (groups[d] = groups[d] || []).push(f); });
+  $("#fileList").innerHTML = Object.entries(groups).map(([dir, fs]) => `<div class="folder"><h3>${esc(dir)}</h3>${fs.map(f => `
+    <button type="button" class="frow" aria-expanded="false" data-path="${esc(f.path)}"><span class="path">${esc(f.path.slice(f.path.lastIndexOf("/") + 1))}</span><span class="about">${esc(f.about || "")}</span><span class="size">${kb(f.bytes)}</span></button>
+    <div class="fdetail" hidden>
+      <dl>
+        ${f.provides ? `<dt>Provides</dt><dd><code>${esc(f.provides)}</code></dd>` : ""}
+        ${f.requires ? `<dt>Needs</dt><dd>${esc(f.requires)}</dd>` : ""}
+        ${(f.usedBy || []).length ? `<dt>Used by</dt><dd class="used">${f.usedBy.map(u => `<span>${esc(u)}</span>`).join("")}</dd>` : ""}
+      </dl>
+      ${f.notes ? `<pre class="notes">${esc(f.notes)}</pre>` : ""}
+      <button type="button" class="showcode">Show code</button>
+      <pre class="code" hidden></pre>
+    </div>`).join("")}</div>`).join("");
+}
+$("#layerFilters").addEventListener("click", e => { const b = e.target.closest("[data-layer]"); if (!b) return; layer = b.dataset.layer; renderFilters(); renderFiles(); });
+$("#fileList").addEventListener("click", async e => {
+  const row = e.target.closest(".frow");
+  if (row) { const d = row.nextElementSibling, open = row.getAttribute("aria-expanded") === "true"; row.setAttribute("aria-expanded", String(!open)); d.hidden = open; return; }
+  const btn = e.target.closest(".showcode"); if (!btn) return;
+  const pre = btn.nextElementSibling, path = btn.closest(".fdetail").previousElementSibling.dataset.path;
+  if (!pre.hidden) { pre.hidden = true; btn.textContent = "Show code"; return; }
+  pre.hidden = false; btn.textContent = "Hide code"; pre.textContent = "Loading...";
+  try { const r = await fetch(path); if (!r.ok) throw new Error(r.status); pre.textContent = await r.text(); }
+  catch (err) { pre.textContent = "This file can't be shown here. It is still saved with the library's published files."; }
+});
+renderFilters(); renderFiles();

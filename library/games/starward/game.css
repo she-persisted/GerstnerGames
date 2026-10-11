@@ -1,0 +1,23 @@
+/**
+ * @file games/starward/game.css
+ * @about Starward-only layout: switching between the side view and the walkable map, the high score board over the scene on the title screen, hiding the cast during flights, and the level badges on the ending.
+ * @requires kit/base.css
+ */
+.mapcv{display:none !important;cursor:pointer;touch-action:none}
+.scene.mapmode .mapcv{display:block !important}
+.scene.mapmode #stars,.scene.mapmode .world,.scene.mapmode .orb{display:none}
+.cast{transition:opacity .6s,transform 1.1s cubic-bezier(.5,0,.3,1)}
+.scene.ship .cast,.scene.attract .cast{opacity:0}
+.scene.attract .orb{opacity:0}
+.scene-board{position:absolute;left:50%;top:50%;transform:translate(-50%,-56%);width:min(440px,calc(100% - 32px));max-height:calc(100% - 32px);overflow:auto;display:none;z-index:2}
+.scene.attract .scene-board{display:block}
+.panel-board{display:none}
+.levels{display:flex;flex-wrap:wrap;gap:8px}
+.lvl{padding:.3em .8em;border-radius:999px;background:var(--nebula-hi);font-size:.9rem;color:var(--dust)}
+.lvl b{color:var(--starlight);font-weight:600}
+@media (max-width:860px){
+  .scene.attract .scene-board{display:none}
+  .scene.attract .cast{opacity:1}
+  .panel-board{display:block}
+}
+@media (prefers-reduced-motion:reduce){ .cast{transition:none !important} }

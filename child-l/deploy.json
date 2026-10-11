@@ -1,0 +1,17 @@
+{
+  "about": "Where each page in child-l/toybox/ is deployed on claude.ai. This repo is the source; the artifacts are copies Child L plays. Each artifact gets the page as its index.html and every file under toybox/lib/ at lib/<same path>. See child-l/README.md, 'Deploy'.",
+  "artifacts": [
+    {
+      "name": "Biscuit's Toybox",
+      "url": "https://claude.ai/artifact/H2XE3HncmDzqdj11winw4k",
+      "page": "toybox/toybox.html",
+      "lib": "toybox/lib/"
+    },
+    {
+      "name": "Biscuit's Magic Words",
+      "url": "https://claude.ai/artifact/G7s82Cdobz9eV6ir5oSNc1",
+      "page": "toybox/magic-words.html",
+      "lib": "toybox/lib/"
+    }
+  ]
+}

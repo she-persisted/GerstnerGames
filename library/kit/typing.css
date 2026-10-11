@@ -1,0 +1,65 @@
+/**
+ * @file kit/typing.css
+ * @about Styles for typing challenges: falling word chips, the countdown, the big word display, the accuracy goal bar, the caught-star row, and the dirt clumps for digging.
+ * @requires kit/base.css
+ */
+:root{ --dirt:#8a6a4a; --dirt-dark:#4e3a2a; --dirt-text:#fbeedd; }
+
+/* Falling words */
+.arena{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+.fw{position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:.45em;padding:.38em .8em;border-radius:999px;background:color-mix(in srgb,var(--nebula) 88%,transparent);border:2px solid var(--nebula-hi);font:700 clamp(1.1rem,.95rem + .8vw,1.65rem)/1 var(--font-type);color:var(--starlight);white-space:pre;will-change:transform;box-shadow:0 0 18px -6px var(--c-robot,#9fd2ff)}
+.fw.target{border-color:var(--ember-gold);box-shadow:0 0 24px -4px var(--ember)}
+.fw .ok{color:var(--good)}.fw .cur{box-shadow:inset 0 -3px 0 var(--ember-gold)}
+.fw-star{width:.8em;height:.8em;flex:none;background:var(--ember-gold);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
+.fw.caught{transition:transform .5s ease-in,opacity .5s;opacity:0}
+.fw.lost{transition:opacity .6s,filter .6s;opacity:0;filter:grayscale(1)}
+.fw.shake{animation:fwshake .25s}
+@keyframes fwshake{0%,100%{margin-left:0}30%{margin-left:-5px}60%{margin-left:5px}}
+
+/* Countdown */
+.countdown{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:3}
+.countdown span{font:800 clamp(4rem,10vw,7.5rem)/1 var(--font-display);color:var(--ember-gold);text-shadow:0 0 30px color-mix(in srgb,var(--ember) 70%,transparent);animation:countpop .75s ease-out both}
+.countdown .go{font-size:clamp(2.6rem,7vw,5rem)}
+@keyframes countpop{0%{transform:scale(1.8);opacity:0}30%{opacity:1}100%{transform:scale(1);opacity:.95}}
+
+/* Typing display */
+.bigword{margin:0;font:700 clamp(2.2rem,1.6rem + 2.6vw,3.4rem)/1.25 var(--font-type);letter-spacing:.05em;min-height:1.3em;white-space:pre-wrap;word-break:break-word}
+.bigword .todo{color:var(--dust);opacity:.6}.bigword .ok{color:var(--good)}.bigword .cur{color:var(--starlight);box-shadow:inset 0 -4px 0 var(--ember-gold)}
+.bigword .wait{display:inline-flex;gap:6px}
+.bigword .wait i{width:.5em;height:.5em;border-radius:50%;background:var(--dust);animation:dot 1s infinite}
+.bigword .wait i:nth-child(2){animation-delay:.15s}.bigword .wait i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,100%{opacity:.2}50%{opacity:1}}
+.target{margin:0;font:700 clamp(1.8rem,1.4rem + 2vw,2.8rem)/1.35 var(--font-type);letter-spacing:.04em;white-space:pre-wrap;word-break:break-word}
+.target .todo{color:var(--dust);opacity:.55}.target .ok{color:var(--good)}.target .cur{color:var(--starlight);box-shadow:inset 0 -4px 0 var(--ember-gold)}
+
+/* Accuracy goal */
+.goal{padding-top:22px}
+.goal-bar{position:relative;height:16px;border-radius:999px;background:var(--void);border:1px solid var(--nebula-hi)}
+.goal-fill{position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:999px;background:var(--good);transition:width .25s,background .25s}
+.goal-fill.low{background:var(--warn)}
+.goal-mark{position:absolute;top:-6px;bottom:-6px;left:85%;width:3px;border-radius:2px;background:var(--starlight)}
+.goal-flag{position:absolute;left:85%;top:-24px;transform:translateX(-50%);font:700 .8rem/1 var(--font-display);color:var(--starlight);white-space:nowrap}
+.bigpct{margin:0;font:400 clamp(1.8rem,1.4rem + 1.8vw,2.6rem)/1 var(--font-arcade);color:var(--good)}
+.bigpct.low{color:var(--warn)}
+.starrow{display:flex;gap:6px;flex-wrap:wrap}
+.st{width:20px;height:20px;background:var(--nebula-hi);clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
+.st.caught{background:var(--ember-gold)}
+.st.lost{background:var(--dust);opacity:.35}
+.meter{margin:0;display:flex;gap:18px;flex-wrap:wrap;color:var(--dust);font-variant-numeric:tabular-nums}
+.meter b{color:var(--starlight);font-weight:600}
+
+/* Digging */
+.digrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.shovel{width:46px;height:46px;flex:none}
+.clods{display:flex;gap:12px;flex-wrap:wrap}
+.clod{padding:.7em 1.1em;border-radius:46% 54% 40% 60%/60% 45% 55% 40%;background:radial-gradient(circle at 35% 30%,var(--dirt),var(--dirt-dark));font:700 clamp(1.5rem,1.2rem + 1.2vw,2rem)/1.1 var(--font-type);color:var(--dirt-text);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);transition:transform .2s}
+.clod .todo{opacity:.7}.clod .ok{color:var(--good)}.clod .cur{box-shadow:inset 0 -3px 0 var(--ember-gold)}
+.clod.cur{outline:3px solid var(--ember-gold);outline-offset:3px}
+.clod.gone{animation:crumble .45s forwards}
+.clod.shake{animation:fwshake .25s}
+@keyframes crumble{to{transform:scale(.2) rotate(20deg);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .fw.shake,.countdown span,.clod.gone,.clod.shake,.bigword .wait i{animation:none !important}
+  .fw.caught,.fw.lost{transition:none !important}
+}

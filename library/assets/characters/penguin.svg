@@ -1,0 +1,17 @@
+<!-- @file assets/characters/penguin.svg
+     @about Rigel the penguin in a bubble helmet and a pink scarf. Stands at (0, 0), about 48 units tall.
+     @requires assets/characters/characters.css -->
+<ellipse cx="-6" cy="-1.6" rx="5" ry="2.3" class="beak"/>
+<ellipse cx="6" cy="-1.6" rx="5" ry="2.3" class="beak"/>
+<ellipse cx="-12" cy="-16" rx="3.6" ry="9" transform="rotate(20 -12 -16)" class="peng-dark"/>
+<ellipse cx="12" cy="-16" rx="3.6" ry="9" transform="rotate(-20 12 -16)" class="peng-dark"/>
+<ellipse cx="0" cy="-17" rx="12.5" ry="16" class="peng-dark"/>
+<ellipse cx="0" cy="-14" rx="8" ry="11.5" class="white"/>
+<circle cx="0" cy="-33" r="10" class="peng-dark"/>
+<ellipse cx="0" cy="-31.5" rx="7" ry="5.8" class="white"/>
+<circle cx="-3.2" cy="-33" r="1.7" class="nose"/><circle cx="3.2" cy="-33" r="1.7" class="nose"/>
+<path d="M-2.6 -30.2 L2.6 -30.2 L0 -26.6Z" class="beak"/>
+<path d="M-9.5 -24.5 Q0 -20.5 9.5 -24.5 L9.5 -21 Q0 -17 -9.5 -21Z" class="scarf"/>
+<path d="M5 -21.5 L9 -13 L5.5 -12.5 L3 -20Z" class="scarf"/>
+<circle cx="0" cy="-33" r="15" class="bubble"/>
+<path d="M-9.5 -41 A11.5 11.5 0 0 1 -2 -45.5" class="glint"/>

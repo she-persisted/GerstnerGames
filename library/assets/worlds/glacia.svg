@@ -1,0 +1,7 @@
+<!-- @file assets/worlds/glacia.svg
+     @about Planet Glacia scenery: clusters of ice spikes on both sides of a 400 by 260 scene. Shows when the scene's data-world is "glacia".
+     @requires assets/worlds/worlds.css -->
+<g class="deco deco-glacia">
+  <path d="M28 228 L37 192 L46 228Z M43 228 L54 176 L65 228Z M61 228 L67 202 L73 228Z" class="ice"/>
+  <path d="M332 228 L341 198 L350 228Z M345 228 L357 180 L369 228Z" class="ice"/>
+</g>

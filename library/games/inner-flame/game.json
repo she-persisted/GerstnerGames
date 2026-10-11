@@ -1,0 +1,10 @@
+{
+  "id": "inner-flame",
+  "title": "The Inner Flame",
+  "version": 1,
+  "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
+  "legacy": "games/inner-flame/legacy/v1.html",
+  "releases": [
+    { "version": 1, "date": "2026-10-10", "url": "https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6", "notes": "Original game, designed by Child I by voice." }
+  ]
+}

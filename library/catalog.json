@@ -1,0 +1,963 @@
+{
+ "files": [
+  {
+   "path": "README.md",
+   "layer": "Docs",
+   "bytes": 4647,
+   "usedBy": [],
+   "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/characters.css",
+   "layer": "Assets",
+   "bytes": 6252,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Colors, faces, and animations for every character: the robot (worried, brave, happy, surprised, thinking faces; chest spark that grows with courage), Sunny, Rigel, Professor Kepler, flames, and the hop, walk, tremble, blink, and wag motions.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/kepler.svg",
+   "layer": "Assets",
+   "bytes": 1231,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Professor Kepler, the mossy rock with tiny round glasses. Sits at (0, 0), about 52 units tall.",
+   "provides": "",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/penguin.svg",
+   "layer": "Assets",
+   "bytes": 1142,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Rigel the penguin in a bubble helmet and a pink scarf. Stands at (0, 0), about 48 units tall.",
+   "provides": "",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/portraits.js",
+   "layer": "Assets",
+   "bytes": 2478,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Small round head portraits of the robot, Sunny, Rigel, and Professor Kepler, used in the friends bar and on helper buttons.",
+   "provides": "Kit.art.portraits { robot, dog, peng, rock } (SVG markup strings, viewBox -16 -16 32 32)",
+   "requires": "assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/puppy.js",
+   "layer": "Assets",
+   "bytes": 3711,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Sunny, the fluffy magic puppy (black, white, and tan curls, floppy ears, star collar, sparkles, wagging tail). Built in code so the curls stay even. Sits at (0, 0), about 66 units tall.",
+   "provides": "Kit.art.puppy() -> SVG markup string",
+   "requires": "assets/characters/characters.css, assets/fx/defs.svg",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/robot-side.svg",
+   "layer": "Assets",
+   "bytes": 3836,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "The tall robot hero, side view, standing at (0, 0) and about 200 units tall. Contains every face (worried, brave, happy, surprised, thinking); characters.css picks which one shows from the robot's class and data-face. Place inside <g class=\"robot\" id=\"robot\">.",
+   "provides": "",
+   "requires": "assets/characters/characters.css, assets/fx/defs.svg",
+   "notes": ""
+  },
+  {
+   "path": "assets/characters/robot-topdown.js",
+   "layer": "Assets",
+   "bytes": 2619,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The robot drawn small on a canvas for walkable maps: legs swing and arms pump while walking, eyes look the way he's heading, and his chest glows brighter with courage.",
+   "provides": "Kit.art.drawRobotTop(ctx, x, y, t, motion, { tokens, glow })",
+   "requires": "kit/canvas.js",
+   "notes": "motion = { moving, phase, fx, fy } from kit/topdown-map.js; glow = 0 to 1 chest brightness.\ntokens needs: metal, metalShade, copper, glass, snow, void, cRobot"
+  },
+  {
+   "path": "assets/fx/defs.svg",
+   "layer": "Assets",
+   "bytes": 437,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Shared shapes referenced with <use>: the flame (flamePath, base at 0,0, 40 units tall) and the four-point twinkle star (spark4). Place inside an inline SVG's <defs>.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/icons/icons.js",
+   "layer": "Assets",
+   "bytes": 2175,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Simple filled icons used on buttons so the game needs fewer words: back, go, retry, rocket, check, eye, music note, play, stop, and a shovel.",
+   "provides": "Kit.art.icons { back, go, retry, rocket, check, eye, note, play, stop, shovel } (SVG markup strings)",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/map/lumina-map.js",
+   "layer": "Assets",
+   "bytes": 7966,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Art for the top-down map of Lumina: dusty ground with craters, rocks, and glowing mushrooms, dotted paths, Comet Crater, the Old Observatory, Glowworm Grove, the Sleepy Village, the launch pad, gold star beacons with progress dots, and the glowing launch ring.",
+   "provides": "Kit.art.luminaMap { makeDecor, drawGround, drawPaths, drawCrater, drawObservatory, drawGrove, drawVillage, drawPad, drawBeacon, drawPadRing }",
+   "requires": "kit/canvas.js",
+   "notes": "Every draw function takes the canvas context first and a tokens object T (colors read from CSS) last.\nT needs: void, gold, good, cPeng, stoneSh, metalShade, wall, roof, win, leaf, trunk, dome, scope"
+  },
+  {
+   "path": "assets/music/corona.js",
+   "layer": "Assets",
+   "bytes": 763,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Corona Blaze\": a fast, driving adventure tune for the fiery nebula and the tower climb. 128 bpm, A minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.corona",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/glacia.js",
+   "layer": "Assets",
+   "bytes": 713,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Glacia Twinkle\": a high, icy, plucked tune for the frozen planet. 92 bpm, E major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.glacia",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/lumina.js",
+   "layer": "Assets",
+   "bytes": 690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Lumina in the Dark\": a slow, soft music-box tune for the sleeping home world. 74 bpm, A minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.lumina",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/meridian.js",
+   "layer": "Assets",
+   "bytes": 708,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Meridian Stargazer\": a thoughtful, wandering tune for the stony planet of the old stargazer. 88 bpm, G minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.meridian",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/nimbus.js",
+   "layer": "Assets",
+   "bytes": 690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Nimbus Bounce\": a bouncy square-wave tune for the cotton-candy cloud planet. 120 bpm, D major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.nimbus",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/reborn.js",
+   "layer": "Assets",
+   "bytes": 680,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Lumina Reborn\": the happy ending tune when the Everlight comes home. 108 bpm, C major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.reborn",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/theme.js",
+   "layer": "Assets",
+   "bytes": 675,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "\"Starward Theme\": the cheerful main tune for the title screen and flights. 104 bpm, C major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.theme",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/rocket/rocket.css",
+   "layer": "Assets",
+   "bytes": 1853,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Rocket motion and display: liftoff rise, hover bob, launch rumble, engine flame stretch, plus the rocket previews in the side panel (build progress, part slots, finished ship).",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/rocket/rocket.js",
+   "layer": "Assets",
+   "bytes": 6690,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "The buildable rocket. Data for every part choice and paint color, plus a drawing function that renders any combination (missing parts can show as dashed outlines, and one part can be highlighted).",
+   "provides": "Kit.art.rocket { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, ENGINE_COLORS, svg(config, options), box(innerSvg, cls), partIcons }",
+   "requires": "assets/fx/defs.svg (unless options.plainFlame)",
+   "notes": "config  = { nose, fins, boost, engine, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: show engine flames, face: robot peeking out, plainFlame: no <use> refs (for images) }\nDrawing space: viewBox -38 -112 76 144, base of the rocket at y = 0."
+  },
+  {
+   "path": "assets/worlds/corona.svg",
+   "layer": "Assets",
+   "bytes": 672,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The Corona Nebula scenery: a tall three-floor tower whose windows light up as data-floors goes from 1 to 3, in a 400 by 260 scene. Shows when the scene's data-world is \"corona\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/glacia.svg",
+   "layer": "Assets",
+   "bytes": 439,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Glacia scenery: clusters of ice spikes on both sides of a 400 by 260 scene. Shows when the scene's data-world is \"glacia\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/gradients.svg",
+   "layer": "Assets",
+   "bytes": 549,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Ground gradients for side-view worlds. Their colors come from --ground-a and --ground-b, so each world recolors them in worlds.css. Place inside an inline SVG's <defs>.",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/lumina-planet.svg",
+   "layer": "Assets",
+   "bytes": 3693,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Lumina seen from the side as a small round planet that turns under the robot. Five places sit around it: launch pad (0 degrees), Comet Crater (72), Old Observatory (144), Glowworm Grove (216), Sleepy Village (288). Rotate #spin to walk between them. Windows and glowworms light up when the world is \"luminaLit\".",
+   "provides": "",
+   "requires": "assets/worlds/gradients.svg, assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/meridian.svg",
+   "layer": "Assets",
+   "bytes": 904,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Meridian scenery: carved standing stones and an old brass telescope on a tripod, in a 400 by 260 scene. Shows when the scene's data-world is \"meridian\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css, assets/characters/characters.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/nimbus.svg",
+   "layer": "Assets",
+   "bytes": 508,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Planet Nimbus scenery: puffy pink clouds on both sides of a 400 by 260 scene. Shows when the scene's data-world is \"nimbus\".",
+   "provides": "",
+   "requires": "assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/plain-ground.svg",
+   "layer": "Assets",
+   "bytes": 355,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A wide curved hill for side-view planets, drawn in a 400 by 260 scene. Colored by the current world.",
+   "provides": "",
+   "requires": "assets/worlds/gradients.svg, assets/worlds/worlds.css",
+   "notes": ""
+  },
+  {
+   "path": "assets/worlds/worlds.css",
+   "layer": "Assets",
+   "bytes": 5279,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Colors and scenery rules for every side-view world (Lumina dark and lit, Nimbus, Glacia, Meridian, Corona): sky, ground, planet in the sky, which scenery shows, buildings, ice, stones, the tower windows, and the Everlight flame.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": "Set data-world on the .scene element to switch worlds. Add .flying to drop the ground away during flights."
+  },
+  {
+   "path": "build/build.py",
+   "layer": "Build",
+   "bytes": 8462,
+   "usedBy": [],
+   "about": "Assembles a game (or the library page) from its separate files into one self-contained web page, checks that every file's",
+   "provides": "",
+   "requires": "are loaded first, and writes catalog.json, the list of every file and what it does.",
+   "notes": "Usage, from the library folder:\n  python3 build/build.py games/starward/game.json   build one game into dist/\n  python3 build/build.py site/site.json            build the library page (index.html)\n  python3 build/build.py --catalog                 rewrite catalog.json from the file headers\n  python3 build/build.py --all                     catalog, every buildable game, then the library page\n\nA game.json lists: title, output, fonts, styles (CSS in order), body (HTML with <!-- @include path --> lines),\nscripts (shared Kit modules, assets, and content, in load order), and parts (the game's own files, which share one scope)."
+  },
+  {
+   "path": "build/playtest.py",
+   "layer": "Build",
+   "bytes": 17377,
+   "usedBy": [],
+   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward start to finish (map, puzzles, digging, flights, the brave words, the ending and high score). Must pass before every commit that changes library/.",
+   "provides": "",
+   "requires": "build/build.py",
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+  },
+  {
+   "path": "content/questions/blanks.js",
+   "layer": "Content",
+   "bytes": 6531,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "46 fill-in-the-blank sentences about space, robots, and science for ages 8 to 10, each tagged easy (1), medium (2), or hard (3). ___ marks the blank.",
+   "provides": "Kit.questions.banks.blanks",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/earth.js",
+   "layer": "Content",
+   "bytes": 3808,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "21 Earth and geography questions (continents, oceans, mountains, deserts, famous places), each tagged easy (1), medium (2), or hard (3).",
+   "provides": "Kit.questions.banks.earth",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/math.js",
+   "layer": "Content",
+   "bytes": 8599,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Math question generators that make new problems every time: space word problems, missing numbers, place value, rounding, and number patterns. Each takes a level from 1 to 5. Level 1 is early second grade, 3 is third grade, 5 is fourth grade.",
+   "provides": "Kit.questions.gens { word, missing, place, round, pattern }",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": "Number ranges by level:\n  add       1: 1-10        2: 10-60      3: 100-450     4: 150-900     5: 1,000-5,000\n  subtract  1: within 20   2: within 100 3: within 1,000 (bigger gaps at 4) 5: within 10,000\n  multiply  1: x2, x5, x10 2: up to 5x5  3: up to 9x9   4: 1 digit x 2 digits   5: 2 digits x 2 digits\n  divide    matches multiply (always comes out even)"
+  },
+  {
+   "path": "content/questions/odd-one-out.js",
+   "layer": "Content",
+   "bytes": 2119,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Generator for \"which one does not belong?\" puzzles: three things from one group and one sneaky outsider. Level 1 mixes very different groups (tools and planets); level 3 is trickier (the Moon among planets).",
+   "provides": "Kit.questions.gens.odd",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/planet-order.js",
+   "layer": "Content",
+   "bytes": 1392,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Generator for planet-order questions. Level 1 asks about Earth's neighbors, level 2 about any planet, level 3 asks \"which planet is fifth from the Sun?\"",
+   "provides": "Kit.questions.gens.order, Kit.questions.PLANETS",
+   "requires": "kit/util.js, kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/riddles.js",
+   "layer": "Content",
+   "bytes": 6176,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "36 STEM-leaning riddles for ages 8 to 10, each tagged easy (1), medium (2), or hard (3). The clue is what a helper friend says when asked.",
+   "provides": "Kit.questions.banks.riddles",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/scramble.js",
+   "layer": "Content",
+   "bytes": 3070,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "48 science and space words to unscramble, from 4 to 7 letters. Longer words are harder, so games choose the length from the player's level.",
+   "provides": "Kit.questions.banks.scramble (each item has len)",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/questions/space.js",
+   "layer": "Content",
+   "bytes": 3739,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "17 space riddles (planets, stars, comets, rovers), each tagged easy (1), medium (2), or hard (3). Each has two clues: one for a sniff hint and one for a ponder hint.",
+   "provides": "Kit.questions.banks.space",
+   "requires": "kit/questions.js",
+   "notes": ""
+  },
+  {
+   "path": "content/words/typing-words.js",
+   "layer": "Content",
+   "bytes": 1651,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Word lists for typing practice, sorted by length: short words, five-letter words, longer words, short phrases, cozy \"home\" words, and digging words.",
+   "provides": "Kit.words { short, five, long, phrases, home, dig }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "games/inner-flame/game.json",
+   "layer": "Games",
+   "bytes": 632,
+   "usedBy": [
+    "The Inner Flame"
+   ],
+   "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/inner-flame/legacy/v1.html",
+   "layer": "Games",
+   "bytes": 79242,
+   "usedBy": [
+    "The Inner Flame"
+   ],
+   "about": "Original single-file source, kept unchanged so this version can always be rebuilt or edited.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/boot.js",
+   "layer": "Games",
+   "bytes": 1958,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starts Starward: connects each story step type to its screen, resumes saved games, turns on Enter-to-continue, and keeps the game going through live page updates.",
+   "provides": "",
+   "requires": "kit/flow.js, games/starward/story.js, games/starward/screens.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/game.css",
+   "layer": "Games",
+   "bytes": 1280,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward-only layout: switching between the side view and the walkable map, the high score board over the scene on the title screen, hiding the cast during flights, and the level badges on the ending.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/game.json",
+   "layer": "Games",
+   "bytes": 3151,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/legacy/v3.html",
+   "layer": "Games",
+   "bytes": 174676,
+   "usedBy": [],
+   "about": "Original single-file source, kept unchanged so this version can always be rebuilt or edited.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/lumina.js",
+   "layer": "Games",
+   "bytes": 7942,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging), choosing each rocket part's style, and building and painting the ship at the launch pad.",
+   "provides": "",
+   "requires": "kit/topdown-map.js, kit/typing-challenges.js, assets/map/lumina-map.js, assets/characters/robot-topdown.js, games/starward/scene.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/scene.html",
+   "layer": "Games",
+   "bytes": 4189,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's page layout: the top bar (courage, friends, music and sound), the scene window (side-view worlds, characters, rocket, walkable map, falling words), and the side panel. Lines like @include pull in art files when the game is built.",
+   "provides": "",
+   "requires": "assets/fx/defs.svg, assets/worlds/*.svg, assets/characters/*.svg",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/scene.js",
+   "layer": "Games",
+   "bytes": 6868,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.",
+   "provides": "",
+   "requires": "kit/starfield.js, kit/music.js, kit/audio.js, assets/characters/puppy.js, assets/characters/portraits.js, assets/rocket/rocket.js, games/starward/state.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/screens.js",
+   "layer": "Games",
+   "bytes": 11914,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here.",
+   "provides": "",
+   "requires": "kit/puzzle-ui.js, kit/flight.js, kit/typing-challenges.js, kit/jukebox.js, kit/scoreboard.js, games/starward/lumina.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/state.js",
+   "layer": "Games",
+   "bytes": 7744,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's settings and save data: storage keys, places on Lumina, worlds and their songs, the cast, flight tuning, the adaptive skill levels, the puzzle plan for each playthrough, and the question chooser that matches the player's level.",
+   "provides": "",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js, kit/adaptive.js, assets/rocket/rocket.js, assets/icons/icons.js, content/words/typing-words.js",
+   "notes": ""
+  },
+  {
+   "path": "games/starward/story.js",
+   "layer": "Games",
+   "bytes": 5528,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Starward's story, in order: every line, every world change, every friend, puzzle, flight, and song. To change the story, edit this list. Step types: world, say, appear, join, explore, build, puzzle, song, fly, flame, end.",
+   "provides": "",
+   "requires": "games/starward/state.js",
+   "notes": "say:    { who: narrator | robot | dog | peng | rock | flame, x: text or (names) => text, face?: happy | surprised | think }\npuzzle: { set: nimbus | glacia | meridian | corona, n: 0 to 2 }   question kinds come from makePlan() in state.js\nfly:    { to: place name, leg: f1 to f5 (see LEGS in state.js) } or { vow: true } for the brave words"
+  },
+  {
+   "path": "kit/adaptive.js",
+   "layer": "Kit",
+   "bytes": 2495,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Adaptive difficulty. Tracks how the player is doing in each skill and moves that skill's level up or down. Levels are remembered on that computer for that game.",
+   "provides": "Kit.adaptive.create({ key, skills, onChange }) -> { level(skill), record(skill, outcome), adjust(skill, delta), snapshot() }",
+   "requires": "kit/util.js",
+   "notes": "skills: { name: { min, max, start } }, for example { math: { min: 1, max: 5, start: 3 } }\nrecord(skill, outcome) rules:\n  \"clean\"    solved on the first try with no hints. Two in a row: level up.\n  \"ok\"       solved after one miss or with a hint. Level stays the same.\n  \"struggle\" solved after two or more misses. Two in a row: level down.\n  \"gaveup\"   needed \"Show me\". Level down right away.\nadjust(skill, +1 or -1) changes a level directly (typing rounds use this).\nonChange(skill, newLevel, delta) runs whenever a level actually changes."
+  },
+  {
+   "path": "kit/audio.js",
+   "layer": "Kit",
+   "bytes": 4285,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Sound effects made in code (no audio files): beeps, chimes, whooshes, a woof. Also unlocks sound on the first click or key press, which browsers require.",
+   "provides": "Kit.audio { ctx, noiseBuffer, tone, noise, sfx, enabled, setEnabled, onFirstGesture }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/base.css",
+   "layer": "Kit",
+   "bytes": 8228,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Core look shared by every game: color and font tokens, the one-screen layout (top bar, scene, side panel), buttons, text boxes, choice tiles, title text, and toasts. Single dark space theme by design.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/canvas.js",
+   "layer": "Kit",
+   "bytes": 1584,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Tiny canvas drawing shortcuts used by map art and top-down characters: circles, ovals, rounded boxes, glows, stars, and fog holes.",
+   "provides": "Kit.draw { circle, ellipse, rr, glow, star4, hole }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/flight.js",
+   "layer": "Kit",
+   "bytes": 7732,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The speed-typing round: words fall like shooting stars and must be typed before they reach the bottom. Missed words are not retyped. Also the 3, 2, 1, Liftoff countdown and the accuracy goal bar.",
+   "provides": "Kit.flight { run(options) -> stop, countdown(options) -> Promise<boolean>, goalBar(pct, id, goal), starRow(n, results) }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js",
+   "notes": "run options:\n  arena      element the words fall through (position: absolute; inset: 0)\n  panel      element for the typing display\n  head       HTML shown at the top of the panel\n  words      list of words or short phrases, in order\n  timing     { base, per, slow }: seconds to fall = (base + per * letters) * slow\n  maxFalling how many words can be on screen at once (default 2)\n  alive()    returns false once the player has left this screen\n  onCatch()  called when a word is finished (for effects)\n  onEnd(result) result = { hits, misses, caught, n, typeMs, typeChars, acc, res }"
+  },
+  {
+   "path": "kit/flow.js",
+   "layer": "Kit",
+   "bytes": 1682,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Runs a game's story as a list of steps (say a line, show a puzzle, fly, and so on). Each step type has a handler. Also holds the cleanup for whatever screen is showing, so leaving a screen always stops its timers and key listeners.",
+   "provides": "Kit.flow.create({ steps, handlers, beforeStep }) -> { go, next, step, token, alive, bump, setCleanup, cleanupNow, replay }",
+   "requires": "nothing",
+   "notes": "A handler returns true when its step is instant (change world, add a friend); the flow then moves straight to the next step.\ntoken() and alive(t) let slow actions (countdowns, walks) check they still belong to the current screen.\nreplay(upto, { type: fn }) re-applies instant steps when resuming a saved game."
+  },
+  {
+   "path": "kit/jukebox.css",
+   "layer": "Kit",
+   "bytes": 1109,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for the jukebox song list and the \"New song!\" title.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/jukebox.js",
+   "layer": "Kit",
+   "bytes": 2252,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A list of collected songs with play and stop buttons. Songs not found yet show as locked.",
+   "provides": "Kit.jukebox.render(el, { order, songs, owned, where, music, icons, onTurnOn, fallback })",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js",
+   "notes": "order     song ids in display order\nsongs     Kit.songs (each has a title)\nowned()   ids the player has collected; the first id in order is always owned\nwhere(id) where the song is found, shown under its title\nmusic     the player made by Kit.music.create\nicons     { note, play, stop } HTML\nonTurnOn  called if pressing play had to switch music back on\nfallback  song id to return to when a playing song is stopped (default: the first in order)"
+  },
+  {
+   "path": "kit/music.js",
+   "layer": "Kit",
+   "bytes": 4293,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Plays looping background songs that are written as data and synthesized in code (no audio files, nothing copyrighted).",
+   "provides": "Kit.music.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }",
+   "requires": "kit/audio.js",
+   "notes": "Song format (see assets/music/*.js):\n  title     name shown in jukeboxes\n  bpm       tempo; each step is an eighth note\n  root      MIDI note number of the key (60 = middle C)\n  lead      32 steps: semitones above root, or null for a rest\n  chords    4 chords (one per 8 steps), each a list of semitone offsets\n  bass      8 steps: 1 = chord root, 2 = root an octave up, 0 = rest\n  kick, hat 8 steps of 1 or 0 (optional drums)\n  optional: wave, oct, pluck, leadVol, leadLen, pad, padWave, bassWave, bassVol, bassLen, hatVol"
+  },
+  {
+   "path": "kit/puzzle-ui.css",
+   "layer": "Kit",
+   "bytes": 2851,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/puzzle-ui.js",
+   "layer": "Kit",
+   "bytes": 7981,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Shows one question with an answer box, helper buttons, and feedback. Works with every question kind in kit/questions.js (riddles, fill in the blank, scrambles, number patterns, odd one out, math).",
+   "provides": "Kit.puzzleUI { render(panel, question, options), blankHTML }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js",
+   "notes": "options:\n  head        HTML above the question (place name, progress dots)\n  leave       function for a \"walk away\" back button (optional)\n  helpers     [{ key, type: \"scan\" | \"clue\" | \"peek\" | \"clue2\", label, iconHtml, color, who, onUse }] in display order\n              scan = show how many letters; clue = show question.clue; peek = reveal a letter; clue2 = show question.clue2\n  icons       { check, eye, back } HTML\n  nextHtml    HTML for the Next button shown after a correct answer\n  showAfter   wrong answers before \"Show me\" appears (default 3)\n  onHint(type), onWrong(tries), onWin({ shown, tries, hints, spell }), onDone()"
+  },
+  {
+   "path": "kit/questions.js",
+   "layer": "Kit",
+   "bytes": 4321,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "The question system: banks of written questions, generators that make new ones on the fly, a picker that matches the player's level and avoids repeats across games, and the answer checker.",
+   "provides": "Kit.questions { addBank, banks, gens, KIND, createPicker, judge, scrambled }",
+   "requires": "kit/util.js",
+   "notes": "Question shape: { id, kind, q, a: [accepted answers; the first is the one shown], clue, clue2?, d (difficulty 1 easy, 2 medium, 3 hard), seq?, tiles?, eq?, len? }\nBanks live in content/questions/*.js and register with addBank(name, kind, idPrefix, rows), rows = [id, d, question, answers, clue, clue2?].\nGenerators live in content/questions/*.js too: Kit.questions.gens.name = level => question."
+  },
+  {
+   "path": "kit/scoreboard.css",
+   "layer": "Kit",
+   "bytes": 2019,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Arcade look for the high score board, the name entry box, and the end-of-game score card.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/scoreboard.js",
+   "layer": "Kit",
+   "bytes": 3713,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Arcade-style high score board. Uses the page's shared database when it's available and falls back to scores saved on this computer. Draws into every element marked data-scoreboard.",
+   "provides": "Kit.scoreboard.create({ storeKey, collection, size }) -> { init(), render(), save(entry) -> rank, all() }",
+   "requires": "kit/util.js",
+   "notes": "The published page must declare capabilities: { db: {} } for the shared board.\nEntry shape: { name, score, at (ISO date), ...any extra fields }"
+  },
+  {
+   "path": "kit/starfield.js",
+   "layer": "Kit",
+   "bytes": 2271,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A twinkling starfield on a canvas that can streak into warp speed during flights.",
+   "provides": "Kit.starfield.create(canvas, { color, count }) -> { boost(), warp(on), pause(on) }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "kit/topdown-map.js",
+   "layer": "Kit",
+   "bytes": 9196,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "A walkable top-down map on a canvas. The player moves with arrow keys, WASD, or by clicking; walking into a place triggers it. Includes fog with light holes, particle bursts, speech bubbles, and an arrow-key hint until the player first moves.",
+   "provides": "Kit.topdownMap.create(options) -> map { start(pos), stop(), on, busy, pos, say(text, ms), burst(x, y, color, n), stepOutOf(site) }",
+   "requires": "kit/ui.js, kit/canvas.js",
+   "notes": "options:\n  canvas, width, height       map size in map units (the canvas scales to fit)\n  speed, enterRadius          walking speed (units per second) and how close counts as \"arrived\"\n  bounds                      { minX, maxX, minY, maxY } where the player can walk\n  sites                       [{ id, x, y }] places that trigger onArrive\n  drawWorld(c, t)             draw ground and places (map units)\n  drawPlayer(c, x, y, t, m)   draw the player; m = { moving, phase, fx, fy }\n  drawAbove(c, t)             draw things that sit above the fog (beacons)\n  fog                         { rgb: \"r,g,b\", alpha(), holes(pos) -> [{ x, y, r, a }] } (optional)\n  onArrive(site), onMove(), showHint() -> boolean\n  colors                      { light, dark } for bubbles and the arrow-key hint\n  font                        font family for speech bubbles"
+  },
+  {
+   "path": "kit/typing-challenges.js",
+   "layer": "Kit",
+   "bytes": 3959,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Two untimed typing challenges. dig: type the words written on clumps of dirt to dig something up. line: type one sentence exactly (like a brave promise).",
+   "provides": "Kit.typing { dig(panel, options) -> stop, line(panel, options) -> stop }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js",
+   "notes": "dig options:  { head, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }\nline options: { text, onDone(stats, doneEl) }    doneEl is an empty .actions element for the Next button\nstats = { hits, misses, ms, chars }"
+  },
+  {
+   "path": "kit/typing.css",
+   "layer": "Kit",
+   "bytes": 4942,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Styles for typing challenges: falling word chips, the countdown, the big word display, the accuracy goal bar, the caught-star row, and the dirt clumps for digging.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/ui.js",
+   "layer": "Kit",
+   "bytes": 2710,
+   "usedBy": [
+    "Starward"
+   ],
+   "about": "Shared screen helpers: the main Next button, progress dots, toasts, focus, Enter-to-continue, and reading theme colors for canvas drawing.",
+   "provides": "Kit.ui { reduced, focusSoon, bindPrimary, nextBtn, pips, toaster, enterAdvances, tokens, blurActive }",
+   "requires": "kit/util.js",
+   "notes": ""
+  },
+  {
+   "path": "kit/util.js",
+   "layer": "Kit",
+   "bytes": 2648,
+   "usedBy": [
+    "Starward",
+    "Child I's Game Library"
+   ],
+   "about": "Small helpers every game uses: finding elements, random picks, answer matching, and safe browser storage.",
+   "provides": "Kit.util { $, wait, shuffle, sample, pick, rint, clamp, esc, norm, squash, lev, cleanName, store }",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "site/page.css",
+   "layer": "Library page",
+   "bytes": 10906,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Look of the Game Library page: light and dark themes, game cards with version lists, the flow map, night-sky character tiles, the song list, and the file browser.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "site/page.html",
+   "layer": "Library page",
+   "bytes": 5211,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.",
+   "provides": "",
+   "requires": "site/page.css, catalog.json",
+   "notes": ""
+  },
+  {
+   "path": "site/page.js",
+   "layer": "Library page",
+   "bytes": 9613,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.",
+   "provides": "",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js",
+   "notes": ""
+  },
+  {
+   "path": "site/site.json",
+   "layer": "Library page",
+   "bytes": 1006,
+   "usedBy": [
+    "Child I's Game Library"
+   ],
+   "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, music, and engines as the games so they can be previewed live.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  }
+ ],
+ "games": [
+  {
+   "id": "inner-flame",
+   "title": "The Inner Flame",
+   "version": 1,
+   "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
+   "legacy": "games/inner-flame/legacy/v1.html",
+   "releases": [
+    {
+     "version": 1,
+     "date": "2026-10-10",
+     "url": "https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6",
+     "notes": "Original game, designed by Child I by voice."
+    }
+   ],
+   "source": "games/inner-flame",
+   "fileCount": 0
+  },
+  {
+   "id": "starward",
+   "title": "Starward v4",
+   "version": 4,
+   "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
+   "output": "dist/starward-v4.html",
+   "body": "games/starward/scene.html",
+   "releases": [
+    {
+     "version": 2,
+     "date": "2026-10-10",
+     "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg",
+     "notes": "First Starward: new names and story, rocket parts on Lumina, falling-word flights, fill-in-the-blank puzzles, songs, high scores. Kept in that page's version history (version 1 of the page)."
+    },
+    {
+     "version": 3,
+     "date": "2026-10-11",
+     "url": "https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg",
+     "notes": "Walkable Lumina map, three challenges per rocket part, fresh questions every game, fewer instructions. Current version of that page. Single-file source: games/starward/legacy/v3.html"
+    },
+    {
+     "version": 4,
+     "date": "2026-10-11",
+     "url": "https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV",
+     "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level."
+    }
+   ],
+   "source": "games/starward",
+   "fileCount": 53
+  }
+ ]
+}

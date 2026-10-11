@@ -1,0 +1,95 @@
+<!-- @file site/page.html
+     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.
+     @requires site/page.css, catalog.json -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <!-- @include assets/fx/defs.svg -->
+</defs></svg>
+<div class="wrap">
+  <header class="masthead">
+    <p class="kicker">Child I Fun</p>
+    <h1>Game Library</h1>
+    <p class="lede">Every game Child I and Mom design is built from the pieces on this page. Each piece is its own readable file, so any game can be changed later and any character, song, or engine can go into the next game.</p>
+    <p class="stats" id="stats"></p>
+  </header>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#games">Games</a><a href="#fit">How it fits</a><a href="#cast">Characters</a><a href="#songs">Music</a><a href="#files">Files</a><a href="#later">Changing a game</a>
+  </nav>
+
+  <section id="games" aria-labelledby="h-games">
+    <h2 id="h-games">Games</h2>
+    <div class="games" id="gameList"></div>
+  </section>
+
+  <section id="fit" aria-labelledby="h-fit">
+    <h2 id="h-fit">How it fits together</h2>
+    <p class="sub">Shared pieces on the left. Each game adds its own story and screens, the build joins everything into one page, and every version is published as its own page.</p>
+    <div class="flowmap" id="flowmap"></div>
+  </section>
+
+  <section id="cast" aria-labelledby="h-cast">
+    <h2 id="h-cast">Characters</h2>
+    <div class="cast-grid">
+      <figure class="tile stagebox robot-tile">
+        <svg class="art" viewBox="-70 -212 140 222" aria-label="The robot hero">
+          <g class="robot tremble" id="galleryRobot"><!-- @include assets/characters/robot-side.svg --></g>
+        </svg>
+        <figcaption>
+          <p class="name">The Keeper <code>assets/characters/robot-side.svg</code></p>
+          <label class="ctl" for="courage">Courage <span id="courageVal">30%</span></label>
+          <input type="range" id="courage" min="0" max="100" value="30">
+          <div class="faces" role="group" aria-label="Face">
+            <button type="button" data-face="" aria-pressed="true">Calm</button>
+            <button type="button" data-face="happy" aria-pressed="false">Happy</button>
+            <button type="button" data-face="surprised" aria-pressed="false">Surprised</button>
+            <button type="button" data-face="think" aria-pressed="false">Thinking</button>
+          </div>
+          <label class="check"><input type="checkbox" id="litBox"> Everlight in his chest</label>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-36 -74 72 80" aria-label="Sunny the puppy"><g id="galleryPuppy"></g></svg>
+        <figcaption><p class="name">Sunny <code>assets/characters/puppy.js</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-24 -54 48 58" aria-label="Rigel the penguin"><!-- @include assets/characters/penguin.svg --></svg>
+        <figcaption><p class="name">Rigel <code>assets/characters/penguin.svg</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" viewBox="-34 -56 68 62" aria-label="Professor Kepler"><!-- @include assets/characters/kepler.svg --></svg>
+        <figcaption><p class="name">Professor Kepler <code>assets/characters/kepler.svg</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox rocket-tile">
+        <svg class="art" id="rocketArt" viewBox="-38 -112 76 144" aria-label="The rocket"></svg>
+        <figcaption>
+          <p class="name">Rocket <code>assets/rocket/rocket.js</code></p>
+          <div class="selects" id="rocketControls"></div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="songs" aria-labelledby="h-songs">
+    <h2 id="h-songs">Music</h2>
+    <p class="sub">Every song is written as notes in a small file and played by <code>kit/music.js</code>. No recordings, nothing copyrighted.</p>
+    <div class="songs" id="songList"></div>
+  </section>
+
+  <section id="files" aria-labelledby="h-files">
+    <h2 id="h-files">Files</h2>
+    <div class="filters" id="layerFilters" role="group" aria-label="Show files from"></div>
+    <div class="filelist" id="fileList"></div>
+  </section>
+
+  <section id="later" aria-labelledby="h-later">
+    <h2 id="h-later">Changing a game later</h2>
+    <ol class="steps">
+      <li><b>Ask in the project.</b> In a new chat in the Child I Fun project, say which game to change and how.</li>
+      <li><b>Claude restores the library.</b> Every file on this page is read back in one step.</li>
+      <li><b>Only the right files change.</b> Claude edits the pieces involved, rebuilds the game, and play-tests it.</li>
+      <li><b>A new version gets its own page.</b> Earlier versions keep working exactly as they were.</li>
+      <li><b>This library is updated.</b> It always holds the newest source and a link to every version.</li>
+    </ol>
+  </section>
+</div>
+<script type="application/json" id="catalog"><!-- @include catalog.json --></script>

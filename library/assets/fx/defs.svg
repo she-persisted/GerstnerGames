@@ -1,0 +1,5 @@
+<!-- @file assets/fx/defs.svg
+     @about Shared shapes referenced with <use>: the flame (flamePath, base at 0,0, 40 units tall) and the four-point twinkle star (spark4). Place inside an inline SVG's <defs>.
+     @requires nothing -->
+<path id="flamePath" d="M0 0 C-11 0 -15 -10 -10 -19 C-6 -26 -1 -29 0 -40 C5 -31 15 -24 13 -12 C12 -4 7 0 0 0 Z"/>
+<path id="spark4" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z"/>
