@@ -10,7 +10,7 @@
 (function (global) {
   'use strict';
   const T = global.Toybox = global.Toybox || {};
-  T.version = '1.0.0';
+  T.version = '1.1.0';
 
   /* ---------- registries: each layer adds its definitions here ---------- */
   function registry(kind) {

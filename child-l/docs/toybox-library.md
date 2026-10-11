@@ -1,6 +1,6 @@
 # Toybox: the game library for Child L
 
-Version 1.0.0. Built October 11, 2026.
+Version 1.1.0. Built October 11, 2026; Biscuit redrawn as a golden retriever in 1.1.0.
 
 Toybox is the shared set of characters, pictures, sounds, game types and word packs that every game for Child L is built from. The point is familiarity: the same host, the same pictures for the same words, the same sounds for the same meanings, in every game.
 
@@ -60,10 +60,10 @@ Line kinds used today: `hello`, `intro:<game type id>`, `whichOne`, `find`, `pra
 `ctx`: `root`, `host`, `nextItem() -> {words, sounds, pack}`, `reward(el, then)`, `progress.log(gameTypeId, word, ok)`, `isActive()`.
 
 **Game config** (passed to `Toybox.launch`)
-`{ id, title, child, host, welcome, mechanics: [...], packs: [...], jokes, goal (max 12), toybox: '1.0.0', legacy? }`
+`{ id, title, child, host, welcome, mechanics: [...], packs: [...], jokes, goal (max 12), toybox: '1.1.0', legacy? }`
 
-## Current inventory (v1.0.0)
-- Characters: Biscuit the wizard pup (host).
+## Current inventory (v1.1.0)
+- Characters: Biscuit the wizard pup (host), a golden retriever drawn in SVG with idle ear sway and blinking.
 - Pictures: 20 (the F/B homework words).
 - Sounds: 5.
 - Game types: Listen Game (`listen-tap`, plays alone), Magic Word Game (`say-it`, grown-up judges what they heard).

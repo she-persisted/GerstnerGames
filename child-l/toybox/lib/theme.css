@@ -71,6 +71,11 @@ html.tb-locked body{overflow:hidden}
 .tb-host{position:relative;display:inline-block;font-size:var(--tb-host-size,96px);line-height:1;padding:.5em .08em 0;background:none;border:0;color:inherit}
 .tb-host-inner{position:relative;display:block;animation:tb-float 3.2s ease-in-out infinite}
 .tb-host-face{display:block;font-family:var(--tb-font-emoji)}
+svg.tb-host-face{width:1em;height:1em;overflow:visible}
+.tb-host-ear{--ear:1;transform-box:fill-box;transform-origin:60% 6%;animation:tb-ear-sway 3.2s ease-in-out infinite}
+.tb-host-ear-r{--ear:-1;transform-origin:40% 6%}
+.tb-host-eyes{transform-box:fill-box;transform-origin:50% 50%;animation:tb-blink 5s ease-in-out infinite}
+.tb-host.tb-wiggle .tb-host-ear{animation:tb-ear-flop .6s ease-in-out}
 .tb-host-accessory{position:absolute;width:var(--acc-w,.8em);height:auto;left:var(--acc-left,.1em);top:var(--acc-top,-.5em);transform:rotate(var(--acc-rot,0deg));transform-origin:50% 85%}
 .tb-host.tb-wiggle .tb-host-inner{animation:tb-wiggle .6s ease-in-out}
 .tb-host-big{--tb-host-size:clamp(78px,15vmin,132px);cursor:pointer}
@@ -171,6 +176,9 @@ button.tb-card:active{transform:translateY(6px);box-shadow:0 2px 0 var(--tb-ink)
 @keyframes tb-twinkle{0%,100%{opacity:.25}50%{opacity:.9}}
 @keyframes tb-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @keyframes tb-wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}
+@keyframes tb-ear-sway{0%,100%{transform:rotate(0)}50%{transform:rotate(calc(4deg * var(--ear)))}}
+@keyframes tb-ear-flop{0%,100%{transform:rotate(0)}30%{transform:rotate(calc(14deg * var(--ear)))}65%{transform:rotate(calc(-8deg * var(--ear)))}}
+@keyframes tb-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes tb-pop{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1)}}
 @keyframes tb-wobble{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px) rotate(-3deg)}40%{transform:translateX(10px) rotate(3deg)}60%{transform:translateX(-7px)}80%{transform:translateX(5px)}}
 @keyframes tb-bump{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
