@@ -38,7 +38,7 @@ Notes after the header explain options and formats. `build.py --catalog` reads t
 2. Code that more than one game could use goes in `kit/`; art and music in `assets/`; questions and words in `content/`. Code only one game needs goes in `games/<id>/`.
 3. Kit modules never reach into a game. Games pass in what a module needs (callbacks, colors, elements).
 4. A game's own parts share one scope and run in the order `game.json` lists them.
-5. Every published change to a game gets a new version number, a new output file name, and a new page. Earlier pages stay untouched. Add each release (version, date, link, notes) to `game.json`.
+5. Every published change to a game gets a new version number and a new output file name. Each game has one permanent home page (`home` in `game.json`) that always runs the newest version; the version it replaces is first saved as its own archive page, which then stays untouched. Add each release (version, date, link, notes) to `game.json`, and make its QR card with `build/qr.py`.
 6. After any change, run `python3 build/build.py --all` and `python3 build/playtest.py` (it must end with `PASS`), then commit and push.
 
 ## Where the source lives
@@ -47,7 +47,7 @@ The source is the `library/` folder of the GitHub repo `she-persisted/GerstnerGa
 
 ## Changing a game later (steps for Claude)
 
-Follow `project/claude/game-library.md` in the repo. In short: clone the repo, edit source here, build, run `build/playtest.py`, commit and push, then publish any new game version as a new page and redeploy this library page.
+Follow `project/claude/game-library.md` in the repo. In short: clone the repo, edit source here, build, run `build/playtest.py`, commit and push, then archive the current version, publish the new one to the game's home page, make its QR card, and redeploy this library page.
 
 ## Starting a new game
 

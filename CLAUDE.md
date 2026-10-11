@@ -19,8 +19,8 @@ Key rules:
 
 - This repo is the source. Pages on claude.ai are deployed copies; never edit them.
 - Edit source in `library/`, never a built page. Run `python3 build/build.py --all` from `library/` after every change.
-- Never overwrite a published game: bump `version` and `output` in `games/<id>/game.json` and publish a new page.
-- Every new version ships with two things, no exceptions: its high scores carried over from the previous version's page, and a QR card made with `build/qr.py` that passes its scan check, sent to Mom with the link. Steps are in `project/claude/game-library.md`, "Publish a new game version".
+- Each game has one permanent home page (`home` in `games/<id>/game.json`) that always runs the newest version, so its link, QR card and high scores carry across updates. For a new version: bump `version` and `output`, save the current version as its own archive page first, then update the home page. Never publish a new version as a separate page, and never update the home page without archiving first.
+- Every new version ships with a QR card made with `build/qr.py` that passes its scan check, sent to Mom with the link. Steps are in `project/claude/game-library.md`, "Publish a new game version".
 - Run `python3 library/build/playtest.py` until it ends with `PASS`, then commit and push to `main` without asking. Never force-push.
 - Notes about Child I himself (what he knows, play-test feedback, session notes) stay in the claude.ai project doc `claude/child-i-notes.md`, never in this repo.
 - Keep each file's `@file`, `@about`, `@provides`, and `@requires` header accurate.

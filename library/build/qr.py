@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 @file build/qr.py
-@about Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the release page. Checks that the finished card scans back to the right link.
+@about Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the game's permanent home page ("home" in game.json). Checks that the finished card scans back to the right link.
 @requires kit/base.css, assets/fx/defs.svg, assets/icons/icons.js (colors and icon shapes are copied from these)
 
 Usage, from the library folder:
@@ -208,9 +208,10 @@ def main():
     rel = max(spec["releases"], key=lambda r: r["version"])
     name = spec["title"].rsplit(" v", 1)[0]
     out = ROOT / "dist" / f"{spec['id']}-v{rel['version']}-qr.png"
-    card(name, rel["version"], rel["url"]).save(out, optimize=True)
-    print(f"Wrote {out.relative_to(ROOT).as_posix()} for {rel['url']}")
-    sys.exit(0 if scans_to(out, rel["url"]) else 1)
+    url = spec.get("home") or rel["url"]
+    card(name, rel["version"], url).save(out, optimize=True)
+    print(f"Wrote {out.relative_to(ROOT).as_posix()} for {url}")
+    sys.exit(0 if scans_to(out, url) else 1)
 
 
 if __name__ == "__main__":

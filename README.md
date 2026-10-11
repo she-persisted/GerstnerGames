@@ -24,7 +24,7 @@ Educational space games that Child I designs with his mom and Claude builds. Eve
 
 | Game | Version | Play on claude.ai | Source |
 |---|---|---|---|
-| Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v5.html` |
+| Starward | **Home page, always the newest version** (now v5, 2026-10-11) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v5.html` |
 | Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/dist/starward-v4.html` |
 | Starward | v3 (2026-10-11), walkable map | https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg | `library/games/starward/legacy/v3.html` |
 | The Inner Flame | v1 (2026-10-10) | https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6 | `library/games/inner-flame/legacy/v1.html` |
@@ -45,7 +45,8 @@ A clean checkout rebuilds byte-for-byte: `build.py --all` should leave `git stat
 
 ## Rules that carry over from the project
 
-- Never overwrite a published game. Each round of changes gets a new version number, a new `dist/` file, and a new page.
+- Each game has one permanent home page that always runs the newest version, so its link, QR card and high scores carry across updates. Each round of changes gets a new version number and a new `dist/` file; the version it replaces is saved as its own archive page first, so earlier versions stay playable.
+- Every new version ships with a scan-checked QR card made by `library/build/qr.py`.
 - Change source files, never a built page.
 - Original characters and music only. All music and sound effects are generated in code.
 - Read `project/claude/game-design-guide.md` before designing anything new.

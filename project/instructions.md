@@ -25,5 +25,6 @@ Code
 - Leave Child L's folder (child-l/) alone.
 
 Versions
-- Never overwrite a published game. Each version is a new, separate page, and earlier pages stay untouched. Publishing a new version doesn't need my OK, since it never changes what Child I already plays.
+- Each game has one permanent home page that always runs the newest version, so its link, QR card and high scores carry across updates. Before updating it, save the version it was running as its own archive page, so earlier versions stay playable and untouched. Publishing a new version doesn't need my OK, as long as the play-test passes and the old version is archived first.
+- Every new version comes with a QR card in the game's own colors and icons, checked to scan, sent to me with the link.
 - After publishing, confirm the page matches the built file in the repo. Record the link in game.json and in the game's doc in claude/, with what changed.

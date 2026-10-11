@@ -260,7 +260,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 
   <section id="fit" aria-labelledby="h-fit">
     <h2 id="h-fit">How it fits together</h2>
-    <p class="sub">Shared pieces on the left. Each game adds its own story and screens, the build joins everything into one page, and every version is published as its own page.</p>
+    <p class="sub">Shared pieces on the left. Each game adds its own story and screens, the build joins everything into one page, and each game's home page always runs the newest version.</p>
     <div class="flowmap" id="flowmap"></div>
   </section>
 
@@ -408,7 +408,8 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
       <li><b>Ask in the project.</b> In a new chat in the Child I Fun project, say which game to change and how.</li>
       <li><b>Claude restores the library.</b> Every file on this page is read back in one step.</li>
       <li><b>Only the right files change.</b> Claude edits the pieces involved, rebuilds the game, and play-tests it.</li>
-      <li><b>A new version gets its own page.</b> Earlier versions keep working exactly as they were.</li>
+      <li><b>The game's home page gets the new version.</b> The old version is saved as its own archive page first, so it keeps working exactly as it was, and the home page keeps its link, QR card and high scores.</li>
+      <li><b>A QR card ships with it.</b> In the game's own colors and icons, checked to scan before it's sent.</li>
       <li><b>This library is updated.</b> It always holds the newest source and a link to every version.</li>
     </ol>
   </section>
@@ -777,9 +778,9 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/qr.py",
    "layer": "Build",
-   "bytes": 9260,
+   "bytes": 9316,
    "usedBy": [],
-   "about": "Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the release page. Checks that the finished card scans back to the right link.",
+   "about": "Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the game's permanent home page (\"home\" in game.json). Checks that the finished card scans back to the right link.",
    "provides": "",
    "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js (colors and icon shapes are copied from these)",
    "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs: pip install \"qrcode[pil]\" opencv-python-headless\nExits 1 if the card does not scan back to the release link."
@@ -943,7 +944,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/starward/game.json",
    "layer": "Games",
-   "bytes": 3410,
+   "bytes": 3515,
    "usedBy": [
     "Starward"
    ],
@@ -1280,7 +1281,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 4651,
+   "bytes": 4889,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -1302,7 +1303,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/page.html",
    "layer": "Library page",
-   "bytes": 5214,
+   "bytes": 5453,
    "usedBy": [
     "Child I's Game Library"
    ],
@@ -1314,7 +1315,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/page.js",
    "layer": "Library page",
-   "bytes": 9613,
+   "bytes": 9680,
    "usedBy": [
     "Child I's Game Library"
    ],
@@ -1360,6 +1361,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "version": 5,
    "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
    "output": "dist/starward-v5.html",
+   "home": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw",
    "body": "games/starward/scene.html",
    "releases": [
     {
@@ -1384,7 +1386,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
      "version": 5,
      "date": "2026-10-11",
      "url": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw",
-     "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". New page, so its high score board starts empty."
+     "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". The first version on the permanent home page, whose high scores now carry across updates."
     }
    ],
    "source": "games/starward",
@@ -1917,7 +1919,7 @@ $("#gameList").innerHTML = GAMES.map(g => {
     <div class="arrow">${ARROW}</div>
     <div class="node"><h3>Build</h3><p>Joins every piece into one page and checks that nothing loads out of order.</p>${chip(["build.py"])}</div>
     <div class="arrow">${ARROW}</div>
-    <div class="node out"><h3>Published pages</h3><p>Each version is its own page.</p>${latest}</div>`;
+    <div class="node out"><h3>Published pages</h3><p>One home page per game always runs the newest version; older versions are kept as archive pages.</p>${latest}</div>`;
 })();
 
 /* Characters */

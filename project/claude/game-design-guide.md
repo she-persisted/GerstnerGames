@@ -21,7 +21,7 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - For learning content, quiz interactively and make it fun instead of lecturing. [asked]
 - Before building, read the full design list back and get a yes. [asked]
 - Changes arrive in batches. Restate each batch as a numbered list, test each item, and report back against the list. [observed]
-- Never overwrite a published game. Publish each round of changes as a separate new page and leave earlier versions untouched. This is the default for every change, not only when she says "new version." [asked] Starward v2 and v3 share one page, with v2 in its version history, because that happened before this rule.
+- Each game has one permanent home page that always runs the newest version, so the link, the QR card and the high scores carry across updates. Before an update, the version it was running is saved as its own archive page and left untouched, so every earlier version stays playable. This replaced the earlier "every version is a new page" rule on 2026-10-11, starting with Starward v5. [asked] Starward v2 to v4 each have their own older pages.
 - Keep every game's code, art, music, and other assets in the Game Library as separate, readable, reusable files, so any game can be changed later from a new chat. Build games from the library; never edit a built page directly. [asked]
 - Keep one doc per game in claude/ that lists every version's link and what changed in it. [built]
 - The private GitHub repo she-persisted/GerstnerGames is the source for code and game docs, and the only place they change. Pages on claude.ai are deployed copies. After every change, commit and push without asking. [asked]
@@ -61,8 +61,8 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 ## Scoring
 - An arcade-style high score board sits on the home screen: one list for everyone, no logins, and players type a name at the end. [asked]
 - The board ranks one combined score. [asked] Starward v4's formula: puzzle points by difficulty (100 easy, 140 medium, 180 hard; 25 if the answer was shown), plus 20 × words per minute, plus 5 × accuracy percent. [built]
-- The shared board only takes scores from people who can edit the page. With a public link, that means only Mom's account, so everyone else's scores save on their own computer. Each version's page has its own board. [limit]
-- High scores carry over to every new version: when a version ships, its page's board starts with all the scores from the previous version's page. Only shared-board scores can be carried; scores saved on one computer stay with that version's page. [asked]
+- The shared board only takes scores from people who can edit the page. With a public link, that means only Mom's account, so everyone else's scores save on their own computer. [limit]
+- High scores carry over to every new version, both the shared board and the scores saved on each computer, because new versions update the game's permanent home page instead of starting a new page. Archive pages of older versions start with an empty board. [asked]
 
 ## Sharing
 - Every new version ships with a QR card that opens it, styled with the game's own colors and icons (`library/build/qr.py`), checked to scan before it's sent to Mom. [asked]

@@ -47,7 +47,7 @@ $("#gameList").innerHTML = GAMES.map(g => {
     <div class="arrow">${ARROW}</div>
     <div class="node"><h3>Build</h3><p>Joins every piece into one page and checks that nothing loads out of order.</p>${chip(["build.py"])}</div>
     <div class="arrow">${ARROW}</div>
-    <div class="node out"><h3>Published pages</h3><p>Each version is its own page.</p>${latest}</div>`;
+    <div class="node out"><h3>Published pages</h3><p>One home page per game always runs the newest version; older versions are kept as archive pages.</p>${latest}</div>`;
 })();
 
 /* Characters */
