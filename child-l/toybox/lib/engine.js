@@ -10,7 +10,7 @@
 (function (global) {
   'use strict';
   const T = global.Toybox = global.Toybox || {};
-  T.version = '1.1.0';
+  T.version = '1.2.0';
 
   /* ---------- registries: each layer adds its definitions here ---------- */
   function registry(kind) {
@@ -99,7 +99,37 @@
     };
   };
 
-  /* ---------- voice: the browser's built-in text-to-speech ---------- */
+  /* ---------- voice: recorded clips first, the browser's text-to-speech otherwise ----------
+     A clip set (assets/voice-clips.js) maps spoken text to mp3 files made ahead of
+     time. say() plays clips when every part has one, so a sentence is never split
+     between two voices; anything without a clip uses text-to-speech. */
+  const clipSets = {};
+  let defaultClips = null;
+  let playing = null;
+  /* the lookup key for a part: words only, lowercase; slow parts get their own clip */
+  function clipKey(text, rate) {
+    const words = String(text).toLowerCase().replace(/['\u2018\u2019]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+    return (rate && rate < 0.85) ? words + ' |slow' : words;
+  }
+  function clipsFor(parts, s) {
+    const set = clipSets[s.clips] || defaultClips;
+    if (!set || !parts.length) return null;
+    const files = parts.map(p => set.clips[clipKey(p.t, p.rate)]);
+    return files.every(Boolean) ? files.map(f => set.base + f) : null;
+  }
+  function stopClip() { if (playing) { playing.pause(); playing = null; } }
+  function playClips(files, mine) {
+    let i = 0;
+    (function next() {
+      if (mine !== sayToken || i >= files.length) { playing = null; return; }
+      const a = playing = new Audio(files[i++]);
+      a.onended = () => setTimeout(next, 120);
+      a.onerror = next;
+      a.play().catch(next);
+    })();
+  }
+
   const synth = ('speechSynthesis' in global) ? global.speechSynthesis : null;
   let chosenVoice = null;
   let sayToken = 0;
@@ -118,13 +148,23 @@
 
   T.voice = {
     available: !!synth,
-    /* parts: 'text' or [{t:'text', rate, pitch}, ...]; style: {rate, pitch} defaults */
+    key: clipKey,
+    /* set: {id, base: 'lib/assets/voice/<id>/', clips: {key: 'file.mp3'}}. The first set added is the default. */
+    addClips(set) {
+      clipSets[set.id] = set;
+      if (!defaultClips) defaultClips = set;
+      T.voice.available = true;
+    },
+    /* parts: 'text' or [{t:'text', rate, pitch}, ...]; style: {rate, pitch, clips} defaults */
     say(parts, style) {
-      if (!synth) return;
       if (typeof parts === 'string') parts = [{ t: parts }];
       parts = (parts || []).filter(p => p && p.t);
       const s = style || {};
       const mine = ++sayToken;
+      stopClip();
+      const files = clipsFor(parts, s);
+      if (files) { if (synth) synth.cancel(); playClips(files, mine); return; }
+      if (!synth) return;
       synth.cancel();
       setTimeout(() => {   // Chrome can drop speech queued right after cancel()
         if (mine !== sayToken) return;
@@ -138,7 +178,7 @@
         });
       }, 70);
     },
-    hush() { sayToken++; if (synth) synth.cancel(); }
+    hush() { sayToken++; stopClip(); if (synth) synth.cancel(); }
   };
 
   /* ---------- host: a character wrapped with speaking + line picking ---------- */

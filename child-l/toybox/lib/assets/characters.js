@@ -4,7 +4,7 @@
    Keep looks, names and voices stable: familiarity is the point.
    A character definition:
      id, name, role, look, personality,
-     voice: {pitch, rate}            (browser voice settings)
+     voice: {pitch, rate, clips}     (text-to-speech settings; clips = clip set id in assets/voice-clips.js)
      render(): markup                (uses .tb-host-* classes from theme.css)
      lines: {kind: ['text with {vars}', ...]}
    Line kinds the game types and shell ask for:
@@ -72,7 +72,7 @@
     role: 'Wizard pup. Host of every game so far.',
     look: 'Golden retriever pup with big feathered floppy ears, a fluffy chest and a happy tongue, in a tilted pink wizard hat with three yellow stars and a star tag on a pink collar.',
     personality: 'Cheerful, silly, a little clumsy with magic. Loves jokes. Never scolds.',
-    voice: { pitch: 1.25, rate: 0.95 },
+    voice: { pitch: 1.25, rate: 0.95, clips: 'biscuit' },
     render() {
       return '<span class="tb-host-inner">' + retriever + wizardHat + '</span>';
     },

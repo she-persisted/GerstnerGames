@@ -21,7 +21,7 @@ All code for Child L's games lives here and is changed here. The claude.ai artif
 
 ## Play from a download
 
-Open `toybox/magic-words.html` in Chrome. No server is needed. Fonts load from Google Fonts, so it needs internet for the intended look; the game still works without it. Biscuit's voice is Chrome's built-in text-to-speech.
+Open `toybox/magic-words.html` in Chrome. No server is needed. Fonts load from Google Fonts, so it needs internet for the intended look; the game still works without it. Biscuit speaks with recorded clips (`toybox/lib/assets/voice/`); any line without a clip uses Chrome's built-in text-to-speech.
 
 A local copy keeps its own candy total and tricky-word list in that browser. It does not share them with the claude.ai page Child L normally plays.
 
@@ -46,6 +46,7 @@ Deploy after the push, so what Child L plays always matches a commit on GitHub. 
 For each artifact:
 1. `Artifact` read with its `url` (required before publishing to it), then `Artifact` list with scope `files` to see its published paths.
 2. `Artifact` publish with `url`, `file_path` = the repo page, and `files` mapping `lib/<path>` to `child-l/toybox/lib/<path>` for every library file. Map to `null` any published `lib/` path the repo no longer has.
+   The voice clips make this about 200 files. One publish takes at most 255 files, so when `lib/` grows past that, publish in batches to the same `url`; each later publish adds to the files already there.
 3. Read back `index.html` and every `lib/` path. Each sha256 must match the repo file (`sha256sum`). If any differ, find out why before telling Mom the change is live.
 
 The two pages in the repo include the document header claude.ai added when they were first published. The first deploy from the repo should confirm claude.ai serves them back unchanged. If it adds a second header, decide then whether to store pages without it, and update this section.

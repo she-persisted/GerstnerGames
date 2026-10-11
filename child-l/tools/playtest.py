@@ -15,7 +15,8 @@ Checks:
      no console errors or warnings, no missing files, and no sideways scroll.
      Google Fonts is blocked so the run doesn't depend on outside network.
   3. Every game page (one that shows game modes):
-     - Listen Game: one round, tapping until the right picture, earns a candy.
+     - Listen Game: one round, tapping until the right picture, earns a candy,
+       and Biscuit speaks with recorded voice clips.
      - Magic Word Game: tapping the other word causes the mix-up and shows the
        sound cue; then correct rounds fill the jar and open the joke party;
        "Tell me!" shows the punchline; Home empties the jar.
@@ -44,7 +45,7 @@ def fail(msg):
 def ascii_check():
     print("ASCII check")
     for p in sorted(TOYBOX.rglob("*")):
-        if p.is_file():
+        if p.is_file() and p.suffix != ".mp3":
             for n, line in enumerate(p.read_bytes().split(b"\n"), 1):
                 if re.search(rb"[^\x00-\x7f]", line):
                     fail(f"non-ASCII in {p.relative_to(TOYBOX)} line {n}")
@@ -53,7 +54,9 @@ def ascii_check():
 def serve():
     handler = lambda *a: http.server.SimpleHTTPRequestHandler(*a, directory=str(TOYBOX))
     http.server.SimpleHTTPRequestHandler.log_message = lambda *a: None
-    srv = socketserver.TCPServer(("127.0.0.1", 0), handler)
+    # threaded, with a deep queue: a page requests a dozen files at once
+    socketserver.ThreadingTCPServer.request_queue_size = 64
+    srv = socketserver.ThreadingTCPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv, f"http://127.0.0.1:{srv.server_address[1]}/"
 
@@ -105,6 +108,11 @@ def play_game(browser, base, name):
             pg.wait_for_timeout(150)
         pg.wait_for_function("() => document.querySelector('.tb-jar-text').textContent.startsWith('1 ')", timeout=5000)
         print(f"  Listen Game: right picture earned a candy ({pg.text_content('.tb-jar-text')})")
+        clips = pg.evaluate("performance.getEntriesByType('resource').filter(e => e.name.includes('/assets/voice/')).length")
+        if not clips:
+            fail(f"{tag}: Biscuit spoke without any recorded voice clip")
+        else:
+            print(f"  Voice: {clips} recorded clip(s) played")
     ctx.close()
 
     # Magic Word Game

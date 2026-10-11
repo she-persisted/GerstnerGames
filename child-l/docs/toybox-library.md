@@ -1,6 +1,6 @@
 # Toybox: the game library for Child L
 
-Version 1.1.0. Built October 11, 2026; Biscuit redrawn as a golden retriever in 1.1.0.
+Version 1.2.0. Built October 11, 2026; Biscuit redrawn as a golden retriever in 1.1.0; Biscuit speaks with recorded voice clips in 1.2.0.
 
 Toybox is the shared set of characters, pictures, sounds, game types and word packs that every game for Child L is built from. The point is familiarity: the same host, the same pictures for the same words, the same sounds for the same meanings, in every game.
 
@@ -25,7 +25,7 @@ Toybox is the shared set of characters, pictures, sounds, game types and word pa
 | 4 | Word packs | `lib/packs/*.js` | Words and jokes. Data only |
 | 3 | Game types | `lib/mechanics/*.js` | How a round plays. Never names specific words or characters |
 | 2 | Engine | `lib/engine.js` | Registries, voice, sound player, effects, storage, progress tally, candy jar, party, UI builders |
-| 1 | Assets | `lib/assets/characters.js`, `pictures.js`, `sounds.js` | Characters, pictures, sound recipes. Data plus tiny render functions |
+| 1 | Assets | `lib/assets/characters.js`, `pictures.js`, `sounds.js`, `voice-clips.js`, `voice/` | Characters, pictures, sound recipes, each character's recorded lines. Data plus tiny render functions |
 | 0 | Theme | `lib/theme.css` | Color and font tokens, every component style |
 
 **Load order on a page:** `theme.css`, `engine.js`, `assets/*`, `packs/*`, `mechanics/*`, `shell.js`, then the config script. The engine loads before the assets because it creates the registries the data registers into.
@@ -40,7 +40,8 @@ Toybox is the shared set of characters, pictures, sounds, game types and word pa
 ## Contracts
 
 **Character** (`assets/characters.js`)
-`{ id, name, role, look, personality, voice: {pitch, rate}, render(), lines: { kind: ['text with {vars}'] } }`
+`{ id, name, role, look, personality, voice: {pitch, rate, clips}, render(), lines: { kind: ['text with {vars}'] } }`
+`voice.clips` names the character's clip set in `assets/voice-clips.js`; `pitch` and `rate` only shape the browser voice used when a clip is missing.
 Line kinds used today: `hello`, `intro:<game type id>`, `whichOne`, `find`, `praise`, `oops`, `sayPrompt`, `abracadabra`, `mixup`, `close`, `tryAgain`, `newOne`, `jarFull`. Vars: `{word}`, `{Word}`, `{other}`, `{child}`.
 
 **Picture** (`assets/pictures.js`), keyed by the word
@@ -48,6 +49,9 @@ Line kinds used today: `hello`, `intro:<game type id>`, `whichOne`, `find`, `pra
 
 **Sound** (`assets/sounds.js`)
 `{ id, label, notes: [{ f, at, dur, wave, vol, to }] }`. Ids in use: `chime` (right), `boing` (mix-up), `plink` (candy lands), `fanfare` (jar full), `giggle`.
+
+**Voice clips** (`assets/voice-clips.js`, generated; mp3s in `assets/voice/<character>/`)
+`Toybox.voice.addClips({ id, voice, base, clips: { key: 'file.mp3' } })`, where key = `Toybox.voice.key(text, rate)`: the words of the text, lowercase, plus ` |slow` for a part spoken below rate 0.85 (a word said slowly for listening). `say()` plays clips when every part of the sentence has one, and otherwise uses the browser voice for the whole sentence, so one sentence never mixes two voices and a missing clip never breaks a game. Never edit by hand: run `child-l/tools/voice_clips.py` (see its header).
 
 **Pack: minimal pairs** (`packs/*.js`)
 `{ id, type: 'minimal-pairs', title, source, sounds: [{label, cue}, {label, cue}], items: [['fox','box'], ...] }`. `sounds[0]` describes the first word of each pair, `sounds[1]` the second.
@@ -60,10 +64,11 @@ Line kinds used today: `hello`, `intro:<game type id>`, `whichOne`, `find`, `pra
 `ctx`: `root`, `host`, `nextItem() -> {words, sounds, pack}`, `reward(el, then)`, `progress.log(gameTypeId, word, ok)`, `isActive()`.
 
 **Game config** (passed to `Toybox.launch`)
-`{ id, title, child, host, welcome, mechanics: [...], packs: [...], jokes, goal (max 12), toybox: '1.1.0', legacy? }`
+`{ id, title, child, host, welcome, mechanics: [...], packs: [...], jokes, goal (max 12), toybox: '1.2.0', legacy? }`
 
-## Current inventory (v1.1.0)
+## Current inventory (v1.2.0)
 - Characters: Biscuit the wizard pup (host), a golden retriever drawn in SVG with idle ear sway and blinking.
+- Voices: Biscuit speaks with 190 recorded clips in the Kokoro voice `af_aoede` (Mom's pick). Any new character uses Kokoro `am_puck` (also Mom's pick).
 - Pictures: 20 (the F/B homework words).
 - Sounds: 5.
 - Game types: Listen Game (`listen-tap`, plays alone), Magic Word Game (`say-it`, grown-up judges what they heard).
@@ -79,13 +84,14 @@ All paths below are under `child-l/toybox/`. Every procedure ends the same way: 
 2. Copy `lib/packs/fb-initial.js` to `lib/packs/<new-id>.js`, change the id, title, words, cues and source.
 3. Add any missing pictures to `lib/assets/pictures.js`.
 4. Add the new pack's `<script>` tag to `toybox.html` and to each game that uses it, and add the pack id to that game's `packs` config.
+4a. Make the voice clips for the new words: `python3 child-l/tools/voice_clips.py list`, then `make`. If it lists any clip as LISTEN, ask Mom to listen to it before deploying: these words are the speech practice.
 5. Bump the minor version in `lib/engine.js` and set `toybox:` in every game's config to match (a mismatch fails the play-test).
 6. Test, commit, push, deploy every artifact.
 7. Update the "Child L current focus" doc in the claude.ai project.
 
 **New game:** steps in `child-l/README.md` ("New game").
 
-**New game type or character:** add one file or entry that follows the contract above, add its `<script>` tag to `toybox.html` and to the games that use it, and give the host any new line kinds the game type asks for. Bump the minor version as above.
+**New game type or character:** add one file or entry that follows the contract above, add its `<script>` tag to `toybox.html` and to the games that use it, and give the host any new line kinds the game type asks for. A new character gets `voice.clips: '<its id>'` and the Kokoro voice `am_puck` unless Mom picks another (`VOICES` in `tools/voice_clips.py`). Any new or changed line: run `voice_clips.py list` and `make`. Bump the minor version as above.
 
 ## Versioning
 Semantic version in `lib/engine.js` (`T.version`), shown on the catalog page.
@@ -98,12 +104,12 @@ Each game records the version it was built against in `config.toybox`. The shell
 ## Engineering notes
 - **Keep library files plain ASCII.** Write emoji and curly quotes as `\u` escapes. A raw emoji in a script file showed up garbled in testing whenever the server didn't declare UTF-8. The play-test checks this.
 - **Test before every commit and deploy:** `python3 child-l/tools/playtest.py` loads every page at 1366px and 400px wide, fails on console errors, missing files or sideways scrolling, and plays each game: a Listen round, a Magic Word mix-up, and correct rounds until the jar fills and the joke party opens.
-- **Voice** is the browser's built-in text-to-speech. It works in Chrome on the Chromebook. It cannot reliably say single speech sounds like "fff" or "b".
+- **Voice** comes from recorded clips made with Kokoro (open, free, runs offline; `tools/voice_clips.py`). Mom chose Kokoro's voices after the browser voice and a clone of her own voice both sounded poor. Kokoro swallows the first sound of a word said on its own ("fox" comes out near "vox"), so the tool says each practice word inside a short sentence, cuts it out, and checks every clip with Whisper speech recognition. The browser's built-in text-to-speech is the fallback for any text without a clip. Neither voice can reliably say single speech sounds like "fff" or "b".
 - **Progress** (the tricky-words list in the grown-up corner) is saved per device, in the browser. Claude cannot see it yet.
 - **Saved candies:** stored per game, in the browser, keyed by the artifact's address. They survive deploys to the same artifact. Biscuit's Magic Words imported Child L's totals from its pre-Toybox version through `config.legacy`.
 
 ## Roadmap
-1. **Robot Talk game type** (blending sounds into words; also measures his reading baseline). Decision needed first: the built-in voice can't say single sounds cleanly. Options are recording Mom's voice for each sound, or using consonant-plus-vowel chunks ("buh", "aa").
+1. **Robot Talk game type** (blending sounds into words; also measures his reading baseline). Decision needed first: the built-in voice can't say single sounds cleanly. Options are recording Mom's voice for each sound, or using consonant-plus-vowel chunks ("buh", "aa"). Recording a sound as an mp3 in `assets/voice/` and listing it in the clip set works with today's engine.
 2. **New packs** as homework changes, one pack per sheet.
 3. **Shared progress:** store the tricky-word tally where Claude can read it, so the current-focus doc can update from real results.
 4. **Letter-sound game type** for phonics: hear a sound, tap the letter.
