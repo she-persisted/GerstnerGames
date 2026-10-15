@@ -47,6 +47,7 @@ For each artifact:
 1. `Artifact` read with its `url` (required before publishing to it), then `Artifact` list with scope `files` to see its published paths.
 2. `Artifact` publish with `url`, `file_path` = the repo page, and `files` mapping `lib/<path>` to `child-l/toybox/lib/<path>` for every library file. Map to `null` any published `lib/` path the repo no longer has.
    The voice clips make this about 200 files. One publish takes at most 255 files, so when `lib/` grows past that, publish in batches to the same `url`; each later publish adds to the files already there.
+   One artifact version holds at most 511 files in all. When the clips pass that, publish only the clips the page can say (`docs/toybox-library.md`, Engineering notes, "Artifact file cap").
 3. Read back `index.html` and every `lib/` path. Each sha256 must match the repo file (`sha256sum`). If any differ, find out why before telling Mom the change is live.
 
 The two pages in the repo include the document header claude.ai added when they were first published. The first deploy from the repo should confirm claude.ai serves them back unchanged. If it adds a second header, decide then whether to store pages without it, and update this section.

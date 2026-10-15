@@ -1,6 +1,6 @@
 # Toybox: the game library for Child L
 
-Version 1.2.0. Built October 11, 2026; Biscuit redrawn as a golden retriever in 1.1.0; Biscuit speaks with recorded voice clips in 1.2.0.
+Version 1.3.0. Built October 11, 2026; Biscuit redrawn as a golden retriever in 1.1.0; Biscuit speaks with recorded voice clips in 1.2.0; the Gliding homework sheet (R/W, L/W, L/Y packs and their pictures) added in 1.3.0.
 
 Toybox is the shared set of characters, pictures, sounds, game types and word packs that every game for Child L is built from. The point is familiarity: the same host, the same pictures for the same words, the same sounds for the same meanings, in every game.
 
@@ -66,14 +66,14 @@ Line kinds used today: `hello`, `intro:<game type id>`, `whichOne`, `find`, `pra
 **Game config** (passed to `Toybox.launch`)
 `{ id, title, child, host, welcome, mechanics: [...], packs: [...], jokes, goal (max 12), toybox: '1.2.0', legacy? }`
 
-## Current inventory (v1.2.0)
+## Current inventory (v1.3.0)
 - Characters: Biscuit the wizard pup (host), a golden retriever drawn in SVG with idle ear sway and blinking.
-- Voices: Biscuit speaks with 190 recorded clips in the Kokoro voice `af_aoede` (Mom's pick). Any new character uses Kokoro `am_puck` (also Mom's pick).
-- Pictures: 20 (the F/B homework words).
+- Voices: Biscuit speaks with 190 recorded clips (none yet for the Gliding words; see Roadmap 1) in the Kokoro voice `af_aoede` (Mom's pick). Any new character uses Kokoro `am_puck` (also Mom's pick).
+- Pictures: 76 (the F/B words and the 56 Gliding words). Five are drawn in SVG (rag, rake, whip, lap, less); the rest are emoji.
 - Sounds: 5.
 - Game types: Listen Game (`listen-tap`, plays alone), Magic Word Game (`say-it`, grown-up judges what they heard).
-- Packs: `fb-initial` (10 F/B pairs), `kid-jokes` (9 jokes).
-- Games: Biscuit's Magic Words.
+- Packs: `fb-initial` (10 F/B pairs); `r-w-initial`, `l-w-initial`, `l-y-initial` (10 pairs each, the Gliding sheet, October 15 2026); `kid-jokes` (9 jokes).
+- Games: Biscuit's Magic Words (still plays `fb-initial`; it moves to the Gliding packs once their clips exist).
 
 ## Procedures
 
@@ -81,7 +81,7 @@ All paths below are under `child-l/toybox/`. Every procedure ends the same way: 
 
 **New homework sheet**
 1. Mom sends a photo. Read the word pairs off it.
-2. Copy `lib/packs/fb-initial.js` to `lib/packs/<new-id>.js`, change the id, title, words, cues and source.
+2. Copy `lib/packs/fb-initial.js` to `lib/packs/<new-id>.js`, change the id, title, words, cues and source. A pack holds exactly two sounds, so a sheet with several sound contrasts becomes one pack per contrast (the Gliding sheet is three).
 3. Add any missing pictures to `lib/assets/pictures.js`.
 4. Add the new pack's `<script>` tag to `toybox.html` and to each game that uses it, and add the pack id to that game's `packs` config.
 4a. Make the voice clips for the new words: `python3 child-l/tools/voice_clips.py list`, then `make`. If it lists any clip as LISTEN, ask Mom to listen to it before deploying: these words are the speech practice.
@@ -105,12 +105,16 @@ Each game records the version it was built against in `config.toybox`. The shell
 - **Keep library files plain ASCII.** Write emoji and curly quotes as `\u` escapes. A raw emoji in a script file showed up garbled in testing whenever the server didn't declare UTF-8. The play-test checks this.
 - **Test before every commit and deploy:** `python3 child-l/tools/playtest.py` loads every page at 1366px and 400px wide, fails on console errors, missing files or sideways scrolling, and plays each game: a Listen round, a Magic Word mix-up, and correct rounds until the jar fills and the joke party opens.
 - **Voice** comes from recorded clips made with Kokoro (open, free, runs offline; `tools/voice_clips.py`). Mom chose Kokoro's voices after the browser voice and a clone of her own voice both sounded poor. Kokoro swallows the first sound of a word said on its own ("fox" comes out near "vox"), so the tool says each practice word inside a short sentence, cuts it out, and checks every clip with Whisper speech recognition. The browser's built-in text-to-speech is the fallback for any text without a clip. Neither voice can reliably say single speech sounds like "fff" or "b".
+- **Clips need huggingface.co.** `voice_clips.py make` downloads the Kokoro and Whisper models from Hugging Face. Claude's cloud workspace can't reach it (October 2026), so clips are made on a machine with normal internet. `list` and the play-test only need Playwright.
+- **Artifact file cap.** One artifact version holds at most 511 files, and one publish at most 255. All clips together (638 after the Gliding sheet) plus `lib/` are over the cap, so once a game's clips pass it, each artifact gets only the clips its page can say: its packs' words in every line, the word-free lines, the jokes, and the slow words. A missing clip only skips that sentence's audio (`onerror` moves on), but a deploy must never leave a sentence the page can say without its clip.
 - **Progress** (the tricky-words list in the grown-up corner) is saved per device, in the browser. Claude cannot see it yet.
 - **Saved candies:** stored per game, in the browser, keyed by the artifact's address. They survive deploys to the same artifact. Biscuit's Magic Words imported Child L's totals from its pre-Toybox version through `config.legacy`.
 
 ## Roadmap
-1. **Robot Talk game type** (blending sounds into words; also measures his reading baseline). Decision needed first: the built-in voice can't say single sounds cleanly. Options are recording Mom's voice for each sound, or using consonant-plus-vowel chunks ("buh", "aa"). Recording a sound as an mp3 in `assets/voice/` and listing it in the clip set works with today's engine.
-2. **New packs** as homework changes, one pack per sheet.
-3. **Shared progress:** store the tricky-word tally where Claude can read it, so the current-focus doc can update from real results.
-4. **Letter-sound game type** for phonics: hear a sound, tap the letter.
-5. **A sidekick character** (for example a robot for Robot Talk). Biscuit stays the host.
+1. **Move Magic Words to the Gliding packs** (current homework). Steps: run `voice_clips.py make` somewhere huggingface.co is reachable (448 new clips; listen to any LISTEN), switch the config in `magic-words.html` to `['r-w-initial', 'l-w-initial', 'l-y-initial']` (drop `legacy.enabled`, which belongs to the F/B pack, keep `legacy.total`), add per-page clip subsets to the deploy (see the file cap note above), play-test, deploy. A dry run with the Gliding packs passed every play-test check except the recorded-voice check.
+2. **Cut clips per word** (major version): today each word costs 8 clips (3 praise, 2 abracadabra, oops, mix-up, slow word) because the word is baked into whole sentences. Saying the word as its own part ("Ring!" + "You got it!") would make it about 2, so every homework sheet fits the file cap.
+3. **Robot Talk game type** (blending sounds into words; also measures his reading baseline). Decision needed first: the built-in voice can't say single sounds cleanly. Options are recording Mom's voice for each sound, or using consonant-plus-vowel chunks ("buh", "aa"). Recording a sound as an mp3 in `assets/voice/` and listing it in the clip set works with today's engine.
+4. **New packs** as homework changes, one pack per sound contrast.
+5. **Shared progress:** store the tricky-word tally where Claude can read it, so the current-focus doc can update from real results.
+6. **Letter-sound game type** for phonics: hear a sound, tap the letter.
+7. **A sidekick character** (for example a robot for Robot Talk). Biscuit stays the host.

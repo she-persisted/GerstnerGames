@@ -108,12 +108,18 @@ def to_mp3(audio, path):
 
 
 def words_of(text):
+    text = re.sub(r"\b1\b", " one ", text)  # the listener may write "one" as a digit
     return re.sub(r"[^a-z ]", " ", re.sub(r"['\u2019]", "", text.lower())).split()
 
 
 # Words that sound the same, so a listener writing them down can't tell them apart.
 HOMOPHONES = {"bin": {"been"}, "fin": {"finn"}, "fair": {"fare"}, "bear": {"bare"},
-              "bead": {"bede"}, "feed": {"fede"}}
+              "bead": {"bede"}, "feed": {"fede"},
+              # gliding sheet (October 2026)
+              "read": {"reed"}, "reel": {"real"}, "rail": {"rale"}, "one": {"won"},
+              "whale": {"wail"}, "week": {"weak"}, "weigh": {"way", "whey"}, "witch": {"which"},
+              "white": {"wight"}, "weather": {"whether"}, "leak": {"leek"}, "lay": {"lei"},
+              "lamb": {"lam"}, "yuck": {"yuk"}, "yay": {"yea"}, "use": {"ewes", "yews"}}
 # Sentences a slow word is said inside before it is cut out; the first one that checks out is used.
 CARRIERS = ["Okay, ready? {w}, okay.", "Ready? {w}. Good.", "Okay, ready? {w}.", "Now, {w}, okay."]
 # Short lines lose their first or last sound too ("Yes! Fox!" came out "Yes, fogs"),
@@ -122,12 +128,16 @@ SENTENCE_CARRIERS = ["Okay. {w} Okay.", "Ready? {w} Good."]
 SENTENCE_SPEEDS = [SPEED, 0.95]
 # Words Kokoro would misread, with the sounds to say instead (Kokoro's [word](/phonemes/) markup).
 # "fsh" (the fish-with-no-eyes joke) was spelled out as letters.
-PRONOUNCE = {"fsh": "[fsh](/fSH/)".replace("SH", chr(0x283))}
+# "read" and "use" have two sayings; the gliding sheet means "reed" (read a book) and the verb "use"
+# (rhymes with "lose"). Added October 2026, not yet heard: check them on the next make.
+PRONOUNCE = {"fsh": "[fsh](/fSH/)".replace("SH", chr(0x283)),
+             "read": "[read](/" + chr(0x279) + chr(0x2C8) + "id/)",
+             "use": "[use](/j" + chr(0x2C8) + "uz/)"}
 
 
 def say_as(text):
     for word, markup in PRONOUNCE.items():
-        text = re.sub(rf"\b{word}\b", markup, text)
+        text = re.sub(rf"\b{word}\b", markup, text, flags=re.IGNORECASE)
     return text
 
 

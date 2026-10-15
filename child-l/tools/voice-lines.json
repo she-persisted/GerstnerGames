@@ -96,9 +96,233 @@
    "slow": false,
    "text": "Abracadabra! Funny!"
   },
+  "abracadabra lake": {
+   "slow": false,
+   "text": "Abracadabra! Lake!"
+  },
+  "abracadabra lamb": {
+   "slow": false,
+   "text": "Abracadabra! Lamb!"
+  },
+  "abracadabra lap": {
+   "slow": false,
+   "text": "Abracadabra! Lap!"
+  },
+  "abracadabra lawn": {
+   "slow": false,
+   "text": "Abracadabra! Lawn!"
+  },
+  "abracadabra lay": {
+   "slow": false,
+   "text": "Abracadabra! Lay!"
+  },
+  "abracadabra leak": {
+   "slow": false,
+   "text": "Abracadabra! Leak!"
+  },
+  "abracadabra leap": {
+   "slow": false,
+   "text": "Abracadabra! Leap!"
+  },
+  "abracadabra leather": {
+   "slow": false,
+   "text": "Abracadabra! Leather!"
+  },
+  "abracadabra less": {
+   "slow": false,
+   "text": "Abracadabra! Less!"
+  },
+  "abracadabra light": {
+   "slow": false,
+   "text": "Abracadabra! Light!"
+  },
+  "abracadabra link": {
+   "slow": false,
+   "text": "Abracadabra! Link!"
+  },
+  "abracadabra lip": {
+   "slow": false,
+   "text": "Abracadabra! Lip!"
+  },
+  "abracadabra lizard": {
+   "slow": false,
+   "text": "Abracadabra! Lizard!"
+  },
+  "abracadabra lock": {
+   "slow": false,
+   "text": "Abracadabra! Lock!"
+  },
+  "abracadabra lose": {
+   "slow": false,
+   "text": "Abracadabra! Lose!"
+  },
+  "abracadabra lot": {
+   "slow": false,
+   "text": "Abracadabra! Lot!"
+  },
+  "abracadabra luck": {
+   "slow": false,
+   "text": "Abracadabra! Luck!"
+  },
+  "abracadabra lung": {
+   "slow": false,
+   "text": "Abracadabra! Lung!"
+  },
+  "abracadabra one": {
+   "slow": false,
+   "text": "Abracadabra! One!"
+  },
   "abracadabra phone": {
    "slow": false,
    "text": "Abracadabra! Phone!"
+  },
+  "abracadabra rag": {
+   "slow": false,
+   "text": "Abracadabra! Rag!"
+  },
+  "abracadabra rail": {
+   "slow": false,
+   "text": "Abracadabra! Rail!"
+  },
+  "abracadabra rake": {
+   "slow": false,
+   "text": "Abracadabra! Rake!"
+  },
+  "abracadabra read": {
+   "slow": false,
+   "text": "Abracadabra! Read!"
+  },
+  "abracadabra reel": {
+   "slow": false,
+   "text": "Abracadabra! Reel!"
+  },
+  "abracadabra rich": {
+   "slow": false,
+   "text": "Abracadabra! Rich!"
+  },
+  "abracadabra ring": {
+   "slow": false,
+   "text": "Abracadabra! Ring!"
+  },
+  "abracadabra ripe": {
+   "slow": false,
+   "text": "Abracadabra! Ripe!"
+  },
+  "abracadabra rock": {
+   "slow": false,
+   "text": "Abracadabra! Rock!"
+  },
+  "abracadabra run": {
+   "slow": false,
+   "text": "Abracadabra! Run!"
+  },
+  "abracadabra use": {
+   "slow": false,
+   "text": "Abracadabra! Use!"
+  },
+  "abracadabra wag": {
+   "slow": false,
+   "text": "Abracadabra! Wag!"
+  },
+  "abracadabra wake": {
+   "slow": false,
+   "text": "Abracadabra! Wake!"
+  },
+  "abracadabra walk": {
+   "slow": false,
+   "text": "Abracadabra! Walk!"
+  },
+  "abracadabra weather": {
+   "slow": false,
+   "text": "Abracadabra! Weather!"
+  },
+  "abracadabra weed": {
+   "slow": false,
+   "text": "Abracadabra! Weed!"
+  },
+  "abracadabra week": {
+   "slow": false,
+   "text": "Abracadabra! Week!"
+  },
+  "abracadabra weep": {
+   "slow": false,
+   "text": "Abracadabra! Weep!"
+  },
+  "abracadabra weigh": {
+   "slow": false,
+   "text": "Abracadabra! Weigh!"
+  },
+  "abracadabra whale": {
+   "slow": false,
+   "text": "Abracadabra! Whale!"
+  },
+  "abracadabra wheel": {
+   "slow": false,
+   "text": "Abracadabra! Wheel!"
+  },
+  "abracadabra whip": {
+   "slow": false,
+   "text": "Abracadabra! Whip!"
+  },
+  "abracadabra white": {
+   "slow": false,
+   "text": "Abracadabra! White!"
+  },
+  "abracadabra wing": {
+   "slow": false,
+   "text": "Abracadabra! Wing!"
+  },
+  "abracadabra wink": {
+   "slow": false,
+   "text": "Abracadabra! Wink!"
+  },
+  "abracadabra wipe": {
+   "slow": false,
+   "text": "Abracadabra! Wipe!"
+  },
+  "abracadabra witch": {
+   "slow": false,
+   "text": "Abracadabra! Witch!"
+  },
+  "abracadabra wizard": {
+   "slow": false,
+   "text": "Abracadabra! Wizard!"
+  },
+  "abracadabra yacht": {
+   "slow": false,
+   "text": "Abracadabra! Yacht!"
+  },
+  "abracadabra yam": {
+   "slow": false,
+   "text": "Abracadabra! Yam!"
+  },
+  "abracadabra yap": {
+   "slow": false,
+   "text": "Abracadabra! Yap!"
+  },
+  "abracadabra yawn": {
+   "slow": false,
+   "text": "Abracadabra! Yawn!"
+  },
+  "abracadabra yay": {
+   "slow": false,
+   "text": "Abracadabra! Yay!"
+  },
+  "abracadabra yes": {
+   "slow": false,
+   "text": "Abracadabra! Yes!"
+  },
+  "abracadabra yip": {
+   "slow": false,
+   "text": "Abracadabra! Yip!"
+  },
+  "abracadabra young": {
+   "slow": false,
+   "text": "Abracadabra! Young!"
+  },
+  "abracadabra yuck": {
+   "slow": false,
+   "text": "Abracadabra! Yuck!"
   },
   "ball you got it": {
    "slow": false,
@@ -280,13 +504,165 @@
    "slow": false,
    "text": "Knock knock! Who\u2019s there? Boo. Boo who?"
   },
+  "lake you got it": {
+   "slow": false,
+   "text": "Lake! You got it!"
+  },
+  "lake |slow": {
+   "slow": true,
+   "text": "lake"
+  },
+  "lamb you got it": {
+   "slow": false,
+   "text": "Lamb! You got it!"
+  },
+  "lamb |slow": {
+   "slow": true,
+   "text": "lamb"
+  },
+  "lap you got it": {
+   "slow": false,
+   "text": "Lap! You got it!"
+  },
+  "lap |slow": {
+   "slow": true,
+   "text": "lap"
+  },
+  "lawn you got it": {
+   "slow": false,
+   "text": "Lawn! You got it!"
+  },
+  "lawn |slow": {
+   "slow": true,
+   "text": "lawn"
+  },
+  "lay you got it": {
+   "slow": false,
+   "text": "Lay! You got it!"
+  },
+  "lay |slow": {
+   "slow": true,
+   "text": "lay"
+  },
+  "leak you got it": {
+   "slow": false,
+   "text": "Leak! You got it!"
+  },
+  "leak |slow": {
+   "slow": true,
+   "text": "leak"
+  },
+  "leap you got it": {
+   "slow": false,
+   "text": "Leap! You got it!"
+  },
+  "leap |slow": {
+   "slow": true,
+   "text": "leap"
+  },
+  "leather you got it": {
+   "slow": false,
+   "text": "Leather! You got it!"
+  },
+  "leather |slow": {
+   "slow": true,
+   "text": "leather"
+  },
+  "less you got it": {
+   "slow": false,
+   "text": "Less! You got it!"
+  },
+  "less |slow": {
+   "slow": true,
+   "text": "less"
+  },
+  "light you got it": {
+   "slow": false,
+   "text": "Light! You got it!"
+  },
+  "light |slow": {
+   "slow": true,
+   "text": "light"
+  },
+  "link you got it": {
+   "slow": false,
+   "text": "Link! You got it!"
+  },
+  "link |slow": {
+   "slow": true,
+   "text": "link"
+  },
+  "lip you got it": {
+   "slow": false,
+   "text": "Lip! You got it!"
+  },
+  "lip |slow": {
+   "slow": true,
+   "text": "lip"
+  },
   "listen game ill say a word you tap the picture": {
    "slow": false,
    "text": "Listen game! I'll say a word. You tap the picture."
   },
+  "lizard you got it": {
+   "slow": false,
+   "text": "Lizard! You got it!"
+  },
+  "lizard |slow": {
+   "slow": true,
+   "text": "lizard"
+  },
+  "lock you got it": {
+   "slow": false,
+   "text": "Lock! You got it!"
+  },
+  "lock |slow": {
+   "slow": true,
+   "text": "lock"
+  },
+  "lose you got it": {
+   "slow": false,
+   "text": "Lose! You got it!"
+  },
+  "lose |slow": {
+   "slow": true,
+   "text": "lose"
+  },
+  "lot you got it": {
+   "slow": false,
+   "text": "Lot! You got it!"
+  },
+  "lot |slow": {
+   "slow": true,
+   "text": "lot"
+  },
+  "luck you got it": {
+   "slow": false,
+   "text": "Luck! You got it!"
+  },
+  "luck |slow": {
+   "slow": true,
+   "text": "luck"
+  },
+  "lung you got it": {
+   "slow": false,
+   "text": "Lung! You got it!"
+  },
+  "lung |slow": {
+   "slow": true,
+   "text": "lung"
+  },
   "magic word game you say the word and a grown up listens": {
    "slow": false,
    "text": "Magic word game! You say the word, and a grown-up listens."
+  },
+  "one you got it": {
+   "slow": false,
+   "text": "One! You got it!"
+  },
+  "one |slow": {
+   "slow": true,
+   "text": "one"
   },
   "oops that one says ball listen again": {
    "slow": false,
@@ -364,9 +740,233 @@
    "slow": false,
    "text": "Oops, that one says funny! Listen again."
   },
+  "oops that one says lake listen again": {
+   "slow": false,
+   "text": "Oops, that one says lake! Listen again."
+  },
+  "oops that one says lamb listen again": {
+   "slow": false,
+   "text": "Oops, that one says lamb! Listen again."
+  },
+  "oops that one says lap listen again": {
+   "slow": false,
+   "text": "Oops, that one says lap! Listen again."
+  },
+  "oops that one says lawn listen again": {
+   "slow": false,
+   "text": "Oops, that one says lawn! Listen again."
+  },
+  "oops that one says lay listen again": {
+   "slow": false,
+   "text": "Oops, that one says lay! Listen again."
+  },
+  "oops that one says leak listen again": {
+   "slow": false,
+   "text": "Oops, that one says leak! Listen again."
+  },
+  "oops that one says leap listen again": {
+   "slow": false,
+   "text": "Oops, that one says leap! Listen again."
+  },
+  "oops that one says leather listen again": {
+   "slow": false,
+   "text": "Oops, that one says leather! Listen again."
+  },
+  "oops that one says less listen again": {
+   "slow": false,
+   "text": "Oops, that one says less! Listen again."
+  },
+  "oops that one says light listen again": {
+   "slow": false,
+   "text": "Oops, that one says light! Listen again."
+  },
+  "oops that one says link listen again": {
+   "slow": false,
+   "text": "Oops, that one says link! Listen again."
+  },
+  "oops that one says lip listen again": {
+   "slow": false,
+   "text": "Oops, that one says lip! Listen again."
+  },
+  "oops that one says lizard listen again": {
+   "slow": false,
+   "text": "Oops, that one says lizard! Listen again."
+  },
+  "oops that one says lock listen again": {
+   "slow": false,
+   "text": "Oops, that one says lock! Listen again."
+  },
+  "oops that one says lose listen again": {
+   "slow": false,
+   "text": "Oops, that one says lose! Listen again."
+  },
+  "oops that one says lot listen again": {
+   "slow": false,
+   "text": "Oops, that one says lot! Listen again."
+  },
+  "oops that one says luck listen again": {
+   "slow": false,
+   "text": "Oops, that one says luck! Listen again."
+  },
+  "oops that one says lung listen again": {
+   "slow": false,
+   "text": "Oops, that one says lung! Listen again."
+  },
+  "oops that one says one listen again": {
+   "slow": false,
+   "text": "Oops, that one says one! Listen again."
+  },
   "oops that one says phone listen again": {
    "slow": false,
    "text": "Oops, that one says phone! Listen again."
+  },
+  "oops that one says rag listen again": {
+   "slow": false,
+   "text": "Oops, that one says rag! Listen again."
+  },
+  "oops that one says rail listen again": {
+   "slow": false,
+   "text": "Oops, that one says rail! Listen again."
+  },
+  "oops that one says rake listen again": {
+   "slow": false,
+   "text": "Oops, that one says rake! Listen again."
+  },
+  "oops that one says read listen again": {
+   "slow": false,
+   "text": "Oops, that one says read! Listen again."
+  },
+  "oops that one says reel listen again": {
+   "slow": false,
+   "text": "Oops, that one says reel! Listen again."
+  },
+  "oops that one says rich listen again": {
+   "slow": false,
+   "text": "Oops, that one says rich! Listen again."
+  },
+  "oops that one says ring listen again": {
+   "slow": false,
+   "text": "Oops, that one says ring! Listen again."
+  },
+  "oops that one says ripe listen again": {
+   "slow": false,
+   "text": "Oops, that one says ripe! Listen again."
+  },
+  "oops that one says rock listen again": {
+   "slow": false,
+   "text": "Oops, that one says rock! Listen again."
+  },
+  "oops that one says run listen again": {
+   "slow": false,
+   "text": "Oops, that one says run! Listen again."
+  },
+  "oops that one says use listen again": {
+   "slow": false,
+   "text": "Oops, that one says use! Listen again."
+  },
+  "oops that one says wag listen again": {
+   "slow": false,
+   "text": "Oops, that one says wag! Listen again."
+  },
+  "oops that one says wake listen again": {
+   "slow": false,
+   "text": "Oops, that one says wake! Listen again."
+  },
+  "oops that one says walk listen again": {
+   "slow": false,
+   "text": "Oops, that one says walk! Listen again."
+  },
+  "oops that one says weather listen again": {
+   "slow": false,
+   "text": "Oops, that one says weather! Listen again."
+  },
+  "oops that one says weed listen again": {
+   "slow": false,
+   "text": "Oops, that one says weed! Listen again."
+  },
+  "oops that one says week listen again": {
+   "slow": false,
+   "text": "Oops, that one says week! Listen again."
+  },
+  "oops that one says weep listen again": {
+   "slow": false,
+   "text": "Oops, that one says weep! Listen again."
+  },
+  "oops that one says weigh listen again": {
+   "slow": false,
+   "text": "Oops, that one says weigh! Listen again."
+  },
+  "oops that one says whale listen again": {
+   "slow": false,
+   "text": "Oops, that one says whale! Listen again."
+  },
+  "oops that one says wheel listen again": {
+   "slow": false,
+   "text": "Oops, that one says wheel! Listen again."
+  },
+  "oops that one says whip listen again": {
+   "slow": false,
+   "text": "Oops, that one says whip! Listen again."
+  },
+  "oops that one says white listen again": {
+   "slow": false,
+   "text": "Oops, that one says white! Listen again."
+  },
+  "oops that one says wing listen again": {
+   "slow": false,
+   "text": "Oops, that one says wing! Listen again."
+  },
+  "oops that one says wink listen again": {
+   "slow": false,
+   "text": "Oops, that one says wink! Listen again."
+  },
+  "oops that one says wipe listen again": {
+   "slow": false,
+   "text": "Oops, that one says wipe! Listen again."
+  },
+  "oops that one says witch listen again": {
+   "slow": false,
+   "text": "Oops, that one says witch! Listen again."
+  },
+  "oops that one says wizard listen again": {
+   "slow": false,
+   "text": "Oops, that one says wizard! Listen again."
+  },
+  "oops that one says yacht listen again": {
+   "slow": false,
+   "text": "Oops, that one says yacht! Listen again."
+  },
+  "oops that one says yam listen again": {
+   "slow": false,
+   "text": "Oops, that one says yam! Listen again."
+  },
+  "oops that one says yap listen again": {
+   "slow": false,
+   "text": "Oops, that one says yap! Listen again."
+  },
+  "oops that one says yawn listen again": {
+   "slow": false,
+   "text": "Oops, that one says yawn! Listen again."
+  },
+  "oops that one says yay listen again": {
+   "slow": false,
+   "text": "Oops, that one says yay! Listen again."
+  },
+  "oops that one says yes listen again": {
+   "slow": false,
+   "text": "Oops, that one says yes! Listen again."
+  },
+  "oops that one says yip listen again": {
+   "slow": false,
+   "text": "Oops, that one says yip! Listen again."
+  },
+  "oops that one says young listen again": {
+   "slow": false,
+   "text": "Oops, that one says young! Listen again."
+  },
+  "oops that one says yuck listen again": {
+   "slow": false,
+   "text": "Oops, that one says yuck! Listen again."
   },
   "phone you got it": {
    "slow": false,
@@ -452,9 +1052,313 @@
    "slow": false,
    "text": "Poof! Funny!"
   },
+  "poof lake": {
+   "slow": false,
+   "text": "Poof! Lake!"
+  },
+  "poof lamb": {
+   "slow": false,
+   "text": "Poof! Lamb!"
+  },
+  "poof lap": {
+   "slow": false,
+   "text": "Poof! Lap!"
+  },
+  "poof lawn": {
+   "slow": false,
+   "text": "Poof! Lawn!"
+  },
+  "poof lay": {
+   "slow": false,
+   "text": "Poof! Lay!"
+  },
+  "poof leak": {
+   "slow": false,
+   "text": "Poof! Leak!"
+  },
+  "poof leap": {
+   "slow": false,
+   "text": "Poof! Leap!"
+  },
+  "poof leather": {
+   "slow": false,
+   "text": "Poof! Leather!"
+  },
+  "poof less": {
+   "slow": false,
+   "text": "Poof! Less!"
+  },
+  "poof light": {
+   "slow": false,
+   "text": "Poof! Light!"
+  },
+  "poof link": {
+   "slow": false,
+   "text": "Poof! Link!"
+  },
+  "poof lip": {
+   "slow": false,
+   "text": "Poof! Lip!"
+  },
+  "poof lizard": {
+   "slow": false,
+   "text": "Poof! Lizard!"
+  },
+  "poof lock": {
+   "slow": false,
+   "text": "Poof! Lock!"
+  },
+  "poof lose": {
+   "slow": false,
+   "text": "Poof! Lose!"
+  },
+  "poof lot": {
+   "slow": false,
+   "text": "Poof! Lot!"
+  },
+  "poof luck": {
+   "slow": false,
+   "text": "Poof! Luck!"
+  },
+  "poof lung": {
+   "slow": false,
+   "text": "Poof! Lung!"
+  },
+  "poof one": {
+   "slow": false,
+   "text": "Poof! One!"
+  },
   "poof phone": {
    "slow": false,
    "text": "Poof! Phone!"
+  },
+  "poof rag": {
+   "slow": false,
+   "text": "Poof! Rag!"
+  },
+  "poof rail": {
+   "slow": false,
+   "text": "Poof! Rail!"
+  },
+  "poof rake": {
+   "slow": false,
+   "text": "Poof! Rake!"
+  },
+  "poof read": {
+   "slow": false,
+   "text": "Poof! Read!"
+  },
+  "poof reel": {
+   "slow": false,
+   "text": "Poof! Reel!"
+  },
+  "poof rich": {
+   "slow": false,
+   "text": "Poof! Rich!"
+  },
+  "poof ring": {
+   "slow": false,
+   "text": "Poof! Ring!"
+  },
+  "poof ripe": {
+   "slow": false,
+   "text": "Poof! Ripe!"
+  },
+  "poof rock": {
+   "slow": false,
+   "text": "Poof! Rock!"
+  },
+  "poof run": {
+   "slow": false,
+   "text": "Poof! Run!"
+  },
+  "poof use": {
+   "slow": false,
+   "text": "Poof! Use!"
+  },
+  "poof wag": {
+   "slow": false,
+   "text": "Poof! Wag!"
+  },
+  "poof wake": {
+   "slow": false,
+   "text": "Poof! Wake!"
+  },
+  "poof walk": {
+   "slow": false,
+   "text": "Poof! Walk!"
+  },
+  "poof weather": {
+   "slow": false,
+   "text": "Poof! Weather!"
+  },
+  "poof weed": {
+   "slow": false,
+   "text": "Poof! Weed!"
+  },
+  "poof week": {
+   "slow": false,
+   "text": "Poof! Week!"
+  },
+  "poof weep": {
+   "slow": false,
+   "text": "Poof! Weep!"
+  },
+  "poof weigh": {
+   "slow": false,
+   "text": "Poof! Weigh!"
+  },
+  "poof whale": {
+   "slow": false,
+   "text": "Poof! Whale!"
+  },
+  "poof wheel": {
+   "slow": false,
+   "text": "Poof! Wheel!"
+  },
+  "poof whip": {
+   "slow": false,
+   "text": "Poof! Whip!"
+  },
+  "poof white": {
+   "slow": false,
+   "text": "Poof! White!"
+  },
+  "poof wing": {
+   "slow": false,
+   "text": "Poof! Wing!"
+  },
+  "poof wink": {
+   "slow": false,
+   "text": "Poof! Wink!"
+  },
+  "poof wipe": {
+   "slow": false,
+   "text": "Poof! Wipe!"
+  },
+  "poof witch": {
+   "slow": false,
+   "text": "Poof! Witch!"
+  },
+  "poof wizard": {
+   "slow": false,
+   "text": "Poof! Wizard!"
+  },
+  "poof yacht": {
+   "slow": false,
+   "text": "Poof! Yacht!"
+  },
+  "poof yam": {
+   "slow": false,
+   "text": "Poof! Yam!"
+  },
+  "poof yap": {
+   "slow": false,
+   "text": "Poof! Yap!"
+  },
+  "poof yawn": {
+   "slow": false,
+   "text": "Poof! Yawn!"
+  },
+  "poof yay": {
+   "slow": false,
+   "text": "Poof! Yay!"
+  },
+  "poof yes": {
+   "slow": false,
+   "text": "Poof! Yes!"
+  },
+  "poof yip": {
+   "slow": false,
+   "text": "Poof! Yip!"
+  },
+  "poof young": {
+   "slow": false,
+   "text": "Poof! Young!"
+  },
+  "poof yuck": {
+   "slow": false,
+   "text": "Poof! Yuck!"
+  },
+  "rag you got it": {
+   "slow": false,
+   "text": "Rag! You got it!"
+  },
+  "rag |slow": {
+   "slow": true,
+   "text": "rag"
+  },
+  "rail you got it": {
+   "slow": false,
+   "text": "Rail! You got it!"
+  },
+  "rail |slow": {
+   "slow": true,
+   "text": "rail"
+  },
+  "rake you got it": {
+   "slow": false,
+   "text": "Rake! You got it!"
+  },
+  "rake |slow": {
+   "slow": true,
+   "text": "rake"
+  },
+  "read you got it": {
+   "slow": false,
+   "text": "Read! You got it!"
+  },
+  "read |slow": {
+   "slow": true,
+   "text": "read"
+  },
+  "reel you got it": {
+   "slow": false,
+   "text": "Reel! You got it!"
+  },
+  "reel |slow": {
+   "slow": true,
+   "text": "reel"
+  },
+  "rich you got it": {
+   "slow": false,
+   "text": "Rich! You got it!"
+  },
+  "rich |slow": {
+   "slow": true,
+   "text": "rich"
+  },
+  "ring you got it": {
+   "slow": false,
+   "text": "Ring! You got it!"
+  },
+  "ring |slow": {
+   "slow": true,
+   "text": "ring"
+  },
+  "ripe you got it": {
+   "slow": false,
+   "text": "Ripe! You got it!"
+  },
+  "ripe |slow": {
+   "slow": true,
+   "text": "ripe"
+  },
+  "rock you got it": {
+   "slow": false,
+   "text": "Rock! You got it!"
+  },
+  "rock |slow": {
+   "slow": true,
+   "text": "rock"
+  },
+  "run you got it": {
+   "slow": false,
+   "text": "Run! You got it!"
+  },
+  "run |slow": {
+   "slow": true,
+   "text": "run"
   },
   "say the magic word": {
    "slow": false,
@@ -476,6 +1380,86 @@
    "slow": false,
    "text": "Try again!"
   },
+  "use you got it": {
+   "slow": false,
+   "text": "Use! You got it!"
+  },
+  "use |slow": {
+   "slow": true,
+   "text": "use"
+  },
+  "wag you got it": {
+   "slow": false,
+   "text": "Wag! You got it!"
+  },
+  "wag |slow": {
+   "slow": true,
+   "text": "wag"
+  },
+  "wake you got it": {
+   "slow": false,
+   "text": "Wake! You got it!"
+  },
+  "wake |slow": {
+   "slow": true,
+   "text": "wake"
+  },
+  "walk you got it": {
+   "slow": false,
+   "text": "Walk! You got it!"
+  },
+  "walk |slow": {
+   "slow": true,
+   "text": "walk"
+  },
+  "weather you got it": {
+   "slow": false,
+   "text": "Weather! You got it!"
+  },
+  "weather |slow": {
+   "slow": true,
+   "text": "weather"
+  },
+  "weed you got it": {
+   "slow": false,
+   "text": "Weed! You got it!"
+  },
+  "weed |slow": {
+   "slow": true,
+   "text": "weed"
+  },
+  "week you got it": {
+   "slow": false,
+   "text": "Week! You got it!"
+  },
+  "week |slow": {
+   "slow": true,
+   "text": "week"
+  },
+  "weep you got it": {
+   "slow": false,
+   "text": "Weep! You got it!"
+  },
+  "weep |slow": {
+   "slow": true,
+   "text": "weep"
+  },
+  "weigh you got it": {
+   "slow": false,
+   "text": "Weigh! You got it!"
+  },
+  "weigh |slow": {
+   "slow": true,
+   "text": "weigh"
+  },
+  "whale you got it": {
+   "slow": false,
+   "text": "Whale! You got it!"
+  },
+  "whale |slow": {
+   "slow": true,
+   "text": "whale"
+  },
   "what do you call a bear with no teeth": {
    "slow": false,
    "text": "What do you call a bear with no teeth?"
@@ -496,9 +1480,33 @@
    "slow": false,
    "text": "What kind of key opens a banana?"
   },
+  "wheel you got it": {
+   "slow": false,
+   "text": "Wheel! You got it!"
+  },
+  "wheel |slow": {
+   "slow": true,
+   "text": "wheel"
+  },
   "which one did i say": {
    "slow": false,
    "text": "Which one did I say?"
+  },
+  "whip you got it": {
+   "slow": false,
+   "text": "Whip! You got it!"
+  },
+  "whip |slow": {
+   "slow": true,
+   "text": "whip"
+  },
+  "white you got it": {
+   "slow": false,
+   "text": "White! You got it!"
+  },
+  "white |slow": {
+   "slow": true,
+   "text": "white"
   },
   "whoops you said ball my magic got mixed up": {
    "slow": false,
@@ -576,9 +1584,233 @@
    "slow": false,
    "text": "Whoops! You said funny! My magic got mixed up!"
   },
+  "whoops you said lake my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lake! My magic got mixed up!"
+  },
+  "whoops you said lamb my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lamb! My magic got mixed up!"
+  },
+  "whoops you said lap my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lap! My magic got mixed up!"
+  },
+  "whoops you said lawn my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lawn! My magic got mixed up!"
+  },
+  "whoops you said lay my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lay! My magic got mixed up!"
+  },
+  "whoops you said leak my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said leak! My magic got mixed up!"
+  },
+  "whoops you said leap my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said leap! My magic got mixed up!"
+  },
+  "whoops you said leather my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said leather! My magic got mixed up!"
+  },
+  "whoops you said less my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said less! My magic got mixed up!"
+  },
+  "whoops you said light my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said light! My magic got mixed up!"
+  },
+  "whoops you said link my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said link! My magic got mixed up!"
+  },
+  "whoops you said lip my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lip! My magic got mixed up!"
+  },
+  "whoops you said lizard my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lizard! My magic got mixed up!"
+  },
+  "whoops you said lock my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lock! My magic got mixed up!"
+  },
+  "whoops you said lose my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lose! My magic got mixed up!"
+  },
+  "whoops you said lot my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lot! My magic got mixed up!"
+  },
+  "whoops you said luck my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said luck! My magic got mixed up!"
+  },
+  "whoops you said lung my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said lung! My magic got mixed up!"
+  },
+  "whoops you said one my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said one! My magic got mixed up!"
+  },
   "whoops you said phone my magic got mixed up": {
    "slow": false,
    "text": "Whoops! You said phone! My magic got mixed up!"
+  },
+  "whoops you said rag my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said rag! My magic got mixed up!"
+  },
+  "whoops you said rail my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said rail! My magic got mixed up!"
+  },
+  "whoops you said rake my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said rake! My magic got mixed up!"
+  },
+  "whoops you said read my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said read! My magic got mixed up!"
+  },
+  "whoops you said reel my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said reel! My magic got mixed up!"
+  },
+  "whoops you said rich my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said rich! My magic got mixed up!"
+  },
+  "whoops you said ring my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said ring! My magic got mixed up!"
+  },
+  "whoops you said ripe my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said ripe! My magic got mixed up!"
+  },
+  "whoops you said rock my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said rock! My magic got mixed up!"
+  },
+  "whoops you said run my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said run! My magic got mixed up!"
+  },
+  "whoops you said use my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said use! My magic got mixed up!"
+  },
+  "whoops you said wag my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wag! My magic got mixed up!"
+  },
+  "whoops you said wake my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wake! My magic got mixed up!"
+  },
+  "whoops you said walk my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said walk! My magic got mixed up!"
+  },
+  "whoops you said weather my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said weather! My magic got mixed up!"
+  },
+  "whoops you said weed my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said weed! My magic got mixed up!"
+  },
+  "whoops you said week my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said week! My magic got mixed up!"
+  },
+  "whoops you said weep my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said weep! My magic got mixed up!"
+  },
+  "whoops you said weigh my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said weigh! My magic got mixed up!"
+  },
+  "whoops you said whale my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said whale! My magic got mixed up!"
+  },
+  "whoops you said wheel my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wheel! My magic got mixed up!"
+  },
+  "whoops you said whip my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said whip! My magic got mixed up!"
+  },
+  "whoops you said white my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said white! My magic got mixed up!"
+  },
+  "whoops you said wing my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wing! My magic got mixed up!"
+  },
+  "whoops you said wink my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wink! My magic got mixed up!"
+  },
+  "whoops you said wipe my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wipe! My magic got mixed up!"
+  },
+  "whoops you said witch my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said witch! My magic got mixed up!"
+  },
+  "whoops you said wizard my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said wizard! My magic got mixed up!"
+  },
+  "whoops you said yacht my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yacht! My magic got mixed up!"
+  },
+  "whoops you said yam my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yam! My magic got mixed up!"
+  },
+  "whoops you said yap my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yap! My magic got mixed up!"
+  },
+  "whoops you said yawn my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yawn! My magic got mixed up!"
+  },
+  "whoops you said yay my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yay! My magic got mixed up!"
+  },
+  "whoops you said yes my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yes! My magic got mixed up!"
+  },
+  "whoops you said yip my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yip! My magic got mixed up!"
+  },
+  "whoops you said young my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said young! My magic got mixed up!"
+  },
+  "whoops you said yuck my magic got mixed up": {
+   "slow": false,
+   "text": "Whoops! You said yuck! My magic got mixed up!"
   },
   "why are fish so smart": {
    "slow": false,
@@ -591,6 +1823,46 @@
   "why do bees have sticky hair": {
    "slow": false,
    "text": "Why do bees have sticky hair?"
+  },
+  "wing you got it": {
+   "slow": false,
+   "text": "Wing! You got it!"
+  },
+  "wing |slow": {
+   "slow": true,
+   "text": "wing"
+  },
+  "wink you got it": {
+   "slow": false,
+   "text": "Wink! You got it!"
+  },
+  "wink |slow": {
+   "slow": true,
+   "text": "wink"
+  },
+  "wipe you got it": {
+   "slow": false,
+   "text": "Wipe! You got it!"
+  },
+  "wipe |slow": {
+   "slow": true,
+   "text": "wipe"
+  },
+  "witch you got it": {
+   "slow": false,
+   "text": "Witch! You got it!"
+  },
+  "witch |slow": {
+   "slow": true,
+   "text": "witch"
+  },
+  "wizard you got it": {
+   "slow": false,
+   "text": "Wizard! You got it!"
+  },
+  "wizard |slow": {
+   "slow": true,
+   "text": "wizard"
   },
   "woof woof ball": {
    "slow": false,
@@ -668,9 +1940,273 @@
    "slow": false,
    "text": "Woof woof! Funny!"
   },
+  "woof woof lake": {
+   "slow": false,
+   "text": "Woof woof! Lake!"
+  },
+  "woof woof lamb": {
+   "slow": false,
+   "text": "Woof woof! Lamb!"
+  },
+  "woof woof lap": {
+   "slow": false,
+   "text": "Woof woof! Lap!"
+  },
+  "woof woof lawn": {
+   "slow": false,
+   "text": "Woof woof! Lawn!"
+  },
+  "woof woof lay": {
+   "slow": false,
+   "text": "Woof woof! Lay!"
+  },
+  "woof woof leak": {
+   "slow": false,
+   "text": "Woof woof! Leak!"
+  },
+  "woof woof leap": {
+   "slow": false,
+   "text": "Woof woof! Leap!"
+  },
+  "woof woof leather": {
+   "slow": false,
+   "text": "Woof woof! Leather!"
+  },
+  "woof woof less": {
+   "slow": false,
+   "text": "Woof woof! Less!"
+  },
+  "woof woof light": {
+   "slow": false,
+   "text": "Woof woof! Light!"
+  },
+  "woof woof link": {
+   "slow": false,
+   "text": "Woof woof! Link!"
+  },
+  "woof woof lip": {
+   "slow": false,
+   "text": "Woof woof! Lip!"
+  },
+  "woof woof lizard": {
+   "slow": false,
+   "text": "Woof woof! Lizard!"
+  },
+  "woof woof lock": {
+   "slow": false,
+   "text": "Woof woof! Lock!"
+  },
+  "woof woof lose": {
+   "slow": false,
+   "text": "Woof woof! Lose!"
+  },
+  "woof woof lot": {
+   "slow": false,
+   "text": "Woof woof! Lot!"
+  },
+  "woof woof luck": {
+   "slow": false,
+   "text": "Woof woof! Luck!"
+  },
+  "woof woof lung": {
+   "slow": false,
+   "text": "Woof woof! Lung!"
+  },
+  "woof woof one": {
+   "slow": false,
+   "text": "Woof woof! One!"
+  },
   "woof woof phone": {
    "slow": false,
    "text": "Woof woof! Phone!"
+  },
+  "woof woof rag": {
+   "slow": false,
+   "text": "Woof woof! Rag!"
+  },
+  "woof woof rail": {
+   "slow": false,
+   "text": "Woof woof! Rail!"
+  },
+  "woof woof rake": {
+   "slow": false,
+   "text": "Woof woof! Rake!"
+  },
+  "woof woof read": {
+   "slow": false,
+   "text": "Woof woof! Read!"
+  },
+  "woof woof reel": {
+   "slow": false,
+   "text": "Woof woof! Reel!"
+  },
+  "woof woof rich": {
+   "slow": false,
+   "text": "Woof woof! Rich!"
+  },
+  "woof woof ring": {
+   "slow": false,
+   "text": "Woof woof! Ring!"
+  },
+  "woof woof ripe": {
+   "slow": false,
+   "text": "Woof woof! Ripe!"
+  },
+  "woof woof rock": {
+   "slow": false,
+   "text": "Woof woof! Rock!"
+  },
+  "woof woof run": {
+   "slow": false,
+   "text": "Woof woof! Run!"
+  },
+  "woof woof use": {
+   "slow": false,
+   "text": "Woof woof! Use!"
+  },
+  "woof woof wag": {
+   "slow": false,
+   "text": "Woof woof! Wag!"
+  },
+  "woof woof wake": {
+   "slow": false,
+   "text": "Woof woof! Wake!"
+  },
+  "woof woof walk": {
+   "slow": false,
+   "text": "Woof woof! Walk!"
+  },
+  "woof woof weather": {
+   "slow": false,
+   "text": "Woof woof! Weather!"
+  },
+  "woof woof weed": {
+   "slow": false,
+   "text": "Woof woof! Weed!"
+  },
+  "woof woof week": {
+   "slow": false,
+   "text": "Woof woof! Week!"
+  },
+  "woof woof weep": {
+   "slow": false,
+   "text": "Woof woof! Weep!"
+  },
+  "woof woof weigh": {
+   "slow": false,
+   "text": "Woof woof! Weigh!"
+  },
+  "woof woof whale": {
+   "slow": false,
+   "text": "Woof woof! Whale!"
+  },
+  "woof woof wheel": {
+   "slow": false,
+   "text": "Woof woof! Wheel!"
+  },
+  "woof woof whip": {
+   "slow": false,
+   "text": "Woof woof! Whip!"
+  },
+  "woof woof white": {
+   "slow": false,
+   "text": "Woof woof! White!"
+  },
+  "woof woof wing": {
+   "slow": false,
+   "text": "Woof woof! Wing!"
+  },
+  "woof woof wink": {
+   "slow": false,
+   "text": "Woof woof! Wink!"
+  },
+  "woof woof wipe": {
+   "slow": false,
+   "text": "Woof woof! Wipe!"
+  },
+  "woof woof witch": {
+   "slow": false,
+   "text": "Woof woof! Witch!"
+  },
+  "woof woof wizard": {
+   "slow": false,
+   "text": "Woof woof! Wizard!"
+  },
+  "woof woof yacht": {
+   "slow": false,
+   "text": "Woof woof! Yacht!"
+  },
+  "woof woof yam": {
+   "slow": false,
+   "text": "Woof woof! Yam!"
+  },
+  "woof woof yap": {
+   "slow": false,
+   "text": "Woof woof! Yap!"
+  },
+  "woof woof yawn": {
+   "slow": false,
+   "text": "Woof woof! Yawn!"
+  },
+  "woof woof yay": {
+   "slow": false,
+   "text": "Woof woof! Yay!"
+  },
+  "woof woof yes": {
+   "slow": false,
+   "text": "Woof woof! Yes!"
+  },
+  "woof woof yip": {
+   "slow": false,
+   "text": "Woof woof! Yip!"
+  },
+  "woof woof young": {
+   "slow": false,
+   "text": "Woof woof! Young!"
+  },
+  "woof woof yuck": {
+   "slow": false,
+   "text": "Woof woof! Yuck!"
+  },
+  "yacht you got it": {
+   "slow": false,
+   "text": "Yacht! You got it!"
+  },
+  "yacht |slow": {
+   "slow": true,
+   "text": "yacht"
+  },
+  "yam you got it": {
+   "slow": false,
+   "text": "Yam! You got it!"
+  },
+  "yam |slow": {
+   "slow": true,
+   "text": "yam"
+  },
+  "yap you got it": {
+   "slow": false,
+   "text": "Yap! You got it!"
+  },
+  "yap |slow": {
+   "slow": true,
+   "text": "yap"
+  },
+  "yawn you got it": {
+   "slow": false,
+   "text": "Yawn! You got it!"
+  },
+  "yawn |slow": {
+   "slow": true,
+   "text": "yawn"
+  },
+  "yay you got it": {
+   "slow": false,
+   "text": "Yay! You got it!"
+  },
+  "yay |slow": {
+   "slow": true,
+   "text": "yay"
   },
   "yes ball": {
    "slow": false,
@@ -748,17 +2284,273 @@
    "slow": false,
    "text": "Yes! Funny!"
   },
+  "yes lake": {
+   "slow": false,
+   "text": "Yes! Lake!"
+  },
+  "yes lamb": {
+   "slow": false,
+   "text": "Yes! Lamb!"
+  },
+  "yes lap": {
+   "slow": false,
+   "text": "Yes! Lap!"
+  },
+  "yes lawn": {
+   "slow": false,
+   "text": "Yes! Lawn!"
+  },
+  "yes lay": {
+   "slow": false,
+   "text": "Yes! Lay!"
+  },
+  "yes leak": {
+   "slow": false,
+   "text": "Yes! Leak!"
+  },
+  "yes leap": {
+   "slow": false,
+   "text": "Yes! Leap!"
+  },
+  "yes leather": {
+   "slow": false,
+   "text": "Yes! Leather!"
+  },
+  "yes less": {
+   "slow": false,
+   "text": "Yes! Less!"
+  },
+  "yes light": {
+   "slow": false,
+   "text": "Yes! Light!"
+  },
+  "yes link": {
+   "slow": false,
+   "text": "Yes! Link!"
+  },
+  "yes lip": {
+   "slow": false,
+   "text": "Yes! Lip!"
+  },
+  "yes lizard": {
+   "slow": false,
+   "text": "Yes! Lizard!"
+  },
+  "yes lock": {
+   "slow": false,
+   "text": "Yes! Lock!"
+  },
+  "yes lose": {
+   "slow": false,
+   "text": "Yes! Lose!"
+  },
+  "yes lot": {
+   "slow": false,
+   "text": "Yes! Lot!"
+  },
+  "yes luck": {
+   "slow": false,
+   "text": "Yes! Luck!"
+  },
+  "yes lung": {
+   "slow": false,
+   "text": "Yes! Lung!"
+  },
+  "yes one": {
+   "slow": false,
+   "text": "Yes! One!"
+  },
   "yes phone": {
    "slow": false,
    "text": "Yes! Phone!"
+  },
+  "yes rag": {
+   "slow": false,
+   "text": "Yes! Rag!"
+  },
+  "yes rail": {
+   "slow": false,
+   "text": "Yes! Rail!"
+  },
+  "yes rake": {
+   "slow": false,
+   "text": "Yes! Rake!"
+  },
+  "yes read": {
+   "slow": false,
+   "text": "Yes! Read!"
+  },
+  "yes reel": {
+   "slow": false,
+   "text": "Yes! Reel!"
+  },
+  "yes rich": {
+   "slow": false,
+   "text": "Yes! Rich!"
+  },
+  "yes ring": {
+   "slow": false,
+   "text": "Yes! Ring!"
+  },
+  "yes ripe": {
+   "slow": false,
+   "text": "Yes! Ripe!"
+  },
+  "yes rock": {
+   "slow": false,
+   "text": "Yes! Rock!"
+  },
+  "yes run": {
+   "slow": false,
+   "text": "Yes! Run!"
+  },
+  "yes use": {
+   "slow": false,
+   "text": "Yes! Use!"
+  },
+  "yes wag": {
+   "slow": false,
+   "text": "Yes! Wag!"
+  },
+  "yes wake": {
+   "slow": false,
+   "text": "Yes! Wake!"
+  },
+  "yes walk": {
+   "slow": false,
+   "text": "Yes! Walk!"
+  },
+  "yes weather": {
+   "slow": false,
+   "text": "Yes! Weather!"
+  },
+  "yes weed": {
+   "slow": false,
+   "text": "Yes! Weed!"
+  },
+  "yes week": {
+   "slow": false,
+   "text": "Yes! Week!"
+  },
+  "yes weep": {
+   "slow": false,
+   "text": "Yes! Weep!"
+  },
+  "yes weigh": {
+   "slow": false,
+   "text": "Yes! Weigh!"
+  },
+  "yes whale": {
+   "slow": false,
+   "text": "Yes! Whale!"
+  },
+  "yes wheel": {
+   "slow": false,
+   "text": "Yes! Wheel!"
+  },
+  "yes whip": {
+   "slow": false,
+   "text": "Yes! Whip!"
+  },
+  "yes white": {
+   "slow": false,
+   "text": "Yes! White!"
+  },
+  "yes wing": {
+   "slow": false,
+   "text": "Yes! Wing!"
+  },
+  "yes wink": {
+   "slow": false,
+   "text": "Yes! Wink!"
+  },
+  "yes wipe": {
+   "slow": false,
+   "text": "Yes! Wipe!"
+  },
+  "yes witch": {
+   "slow": false,
+   "text": "Yes! Witch!"
+  },
+  "yes wizard": {
+   "slow": false,
+   "text": "Yes! Wizard!"
+  },
+  "yes yacht": {
+   "slow": false,
+   "text": "Yes! Yacht!"
+  },
+  "yes yam": {
+   "slow": false,
+   "text": "Yes! Yam!"
+  },
+  "yes yap": {
+   "slow": false,
+   "text": "Yes! Yap!"
+  },
+  "yes yawn": {
+   "slow": false,
+   "text": "Yes! Yawn!"
+  },
+  "yes yay": {
+   "slow": false,
+   "text": "Yes! Yay!"
+  },
+  "yes yes": {
+   "slow": false,
+   "text": "Yes! Yes!"
+  },
+  "yes yip": {
+   "slow": false,
+   "text": "Yes! Yip!"
+  },
+  "yes you got it": {
+   "slow": false,
+   "text": "Yes! You got it!"
+  },
+  "yes young": {
+   "slow": false,
+   "text": "Yes! Young!"
+  },
+  "yes yuck": {
+   "slow": false,
+   "text": "Yes! Yuck!"
+  },
+  "yes |slow": {
+   "slow": true,
+   "text": "yes"
+  },
+  "yip you got it": {
+   "slow": false,
+   "text": "Yip! You got it!"
+  },
+  "yip |slow": {
+   "slow": true,
+   "text": "yip"
   },
   "you filled the candy jar joke time": {
    "slow": false,
    "text": "You filled the candy jar! Joke time!"
   },
+  "young you got it": {
+   "slow": false,
+   "text": "Young! You got it!"
+  },
+  "young |slow": {
+   "slow": true,
+   "text": "young"
+  },
   "your turn say the magic word": {
    "slow": false,
    "text": "Your turn! Say the magic word!"
+  },
+  "yuck you got it": {
+   "slow": false,
+   "text": "Yuck! You got it!"
+  },
+  "yuck |slow": {
+   "slow": true,
+   "text": "yuck"
   }
  }
 }
