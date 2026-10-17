@@ -11,12 +11,12 @@ Read this before changing, fixing, or reusing any game in this project.
 
 What's in `library/`:
 
-- `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles)
-- `assets/`: characters, rocket, side-view worlds, Lumina map art, icons, 7 songs
-- `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists
+- `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles, obstacle runs with a level solver, picture jigsaw, letter-guessing with a fuel tank, walkable side-view hub)
+- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs
+- `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists, science clue words, obstacle-run chunks
 - `games/<id>/`: each game's own parts and its `game.json` (build list plus every release link); single-file legacy versions in `legacy/`
 - `build/build.py`: joins a game's files into one page, checks load order, writes `catalog.json`
-- `build/playtest.py`: the automated play-test (headers, build, every page loading, and a full Starward playthrough)
+- `build/playtest.py`: the automated play-test (headers, build, every page loading, and full Starward and Mini Game Survival playthroughs)
 - `dist/`: built games, committed so they can be downloaded and played
 - `README.md`: full architecture, file header rules, and conventions
 - `catalog.json`: one entry per file with what it does, what it provides and needs, and which games use it
@@ -25,6 +25,7 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
+| Mini Game Survival | **Home page, always the newest version** (now v1, 2026-10-17: first version) | (link added when published) | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v1.html` |
 | Starward | **Home page, always the newest version** (now v6, 2026-10-17: dig tips, auto-advance after right answers, tap friends for hints) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v6.html` |
 | Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/X1f6WeveqRtYrnDTKFzuWY (archive) | `library/dist/starward-v5.html` |
 | Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/dist/starward-v4.html` (the live page still shows a name) |
@@ -46,18 +47,20 @@ What's in `library/`:
 1. Edit source files under `library/` only, never a built page. Shared pieces go in `kit/`, `assets/`, or `content/`; game-only pieces in `games/<id>/`. Keep each file's `@file`, `@about`, `@provides`, and `@requires` header accurate.
 2. If a game's behavior changes, bump `version` and `output` in `games/<id>/game.json`. A change that only touches docs or comments doesn't need a new version.
 3. From `library/`, run `python3 build/build.py --all`. It must finish without load-order errors.
-4. Run `python3 library/build/playtest.py` until it ends with `PASS` (about 2 minutes; `--quick` skips the full playthrough while iterating). It plays Starward start to finish. For a change to how something looks, also screenshot the page and look at it. A new game needs its own playthrough added to `playtest.py`.
+4. Run `python3 library/build/playtest.py` until it ends with `PASS` (about 5 minutes; `--quick` skips the full playthroughs while iterating). It plays Starward and Mini Game Survival start to finish. For a change to how something looks, also screenshot the page and look at it (`--shots=DIR` saves every Mini Game Survival screen). A new game needs its own playthrough added to `playtest.py`.
 5. Fetch and rebase on `main`, commit with a message saying what changed, and push. Don't force-push, and don't touch `child-l/`. No need to ask first.
 
 ### Publish a new game version
 
 Each game has one **permanent home page** (`home` in its `game.json`; Starward's is https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw). It always runs the newest version, so its link, its QR card, and its high scores (the shared board and the scores saved in each player's browser) all carry across updates. Before an update, the version it was running is saved as its own **archive page**, so every earlier version stays playable exactly as it was.
 
+**A brand-new game** has nothing to archive: publish its dist file as a new artifact (with its capabilities, `{"db": {}}` for a high score board), confirm it matches the dist file as in step 3, and that page is its permanent home page. Put the link in `home` in its `game.json`, then carry on from step 4.
+
 1. With `playtest.py` passing, **archive the current version first.** Publish the current version's dist file (`library/dist/<id>-v<N-1>.html`, unchanged) as a new artifact (no `url`), with the same capabilities (Starward: `{"db": {}}`). Read it back and confirm it matches the dist file. In `game.json`, change release N-1's `url` to this archive page. Never skip this step: it is what keeps earlier versions playable.
 2. **Update the home page.** Read the home page (`Artifact` read with its `url`), then publish `library/dist/<id>-v<N>.html` to it with `url` set to `home`. Leave out `capabilities` so the stored ones (and the high score board) carry over. Never publish a new version as a separate page.
 3. Read the home page back (`Artifact` read with `path` `index.html`). Remove the page wrapper claude.ai adds (the doctype, html, head, and body tags it puts around the page) and confirm the rest is identical to the dist file. If it differs, find out why before telling Mom it's live. Then `ArtifactData` list its `scores` and confirm the board still has the scores it had before the update.
 4. Add the release (version, date, `home` as its link, notes) to `game.json`, run `build.py --all`, update the table above and the game's own doc.
-5. **Make the QR card (every release).** From `library/`, run `python3 build/qr.py games/<id>/game.json` (needs Pillow and `opencv-python-headless`; it uses the `qrcode` package when installed and OpenCV's own encoder when PyPI can't be reached). It draws the card in the game's own colors and icons with the new version number, pointing at the home page, and must end with `scan check: ok`. Commit `dist/<id>-v<N>-qr.png` with the release, then commit and push.
+5. **Make the QR card (every release).** From `library/`, run `python3 build/qr.py games/<id>/game.json` (needs Pillow and `opencv-python-headless`; it uses the `qrcode` package when installed and OpenCV's own encoder when PyPI can't be reached). It draws the card in the game's own colors and icons (the `qr` block in `game.json`, or Starward's look by default) with the new version number, pointing at the home page, and must end with `scan check: ok`. Commit `dist/<id>-v<N>-qr.png` with the release, then commit and push.
 6. Send Mom the QR card with the link, and the archive link for the version it replaced.
 7. Redeploy the Library page: `Artifact` read its link, list its published files, then publish `library/index.html` to it with `root` set to `library/` and `files` mapping every file under `library/` except `index.html` and `dist/`. Send `.html`, `.svg`, `.py`, and `.md` as `text/plain`. Map to `null` any published path the repo no longer has. Read every file back and check its sha256 against the repo.
 

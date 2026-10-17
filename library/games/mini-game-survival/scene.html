@@ -1,0 +1,30 @@
+<!-- @file games/mini-game-survival/scene.html
+     @about Mini Game Survival's page layout: the top bar (ship parts, clues, music and sound), the scene window (one canvas for the hub, the runs, and story scenes, plus the jigsaw board, the run buttons, the countdown, and the high score board on the title screen), and the side panel.
+     @requires nothing -->
+<div class="app">
+  <header class="hud">
+    <h1 class="logo"><span class="glitchy" data-text="Mini Game Survival">Mini Game Survival</span></h1>
+    <ul class="crew parts" aria-label="Spaceship parts" id="partSlots">
+      <li class="lbl" aria-hidden="true">Parts</li>
+    </ul>
+    <p class="cluecount" id="clueCount" aria-live="polite"><span class="lbl">Clues</span> <b>0/4</b></p>
+    <div class="toggles">
+      <button class="btn ghost small" id="musicBtn" type="button" aria-pressed="true">Music on</button>
+      <button class="btn ghost small" id="soundBtn" type="button" aria-pressed="true">Sound on</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="scene attract" id="scene" role="img" aria-label="A little green T-Rex in a glitchy neon nebula.">
+      <canvas id="cv" aria-hidden="true"></canvas>
+      <div class="boardhost" id="boardHost"></div>
+      <div class="runui" id="runUi"></div>
+      <div class="countdown" id="countdown" aria-live="assertive"></div>
+      <div class="board scene-board" id="boardScene" data-scoreboard></div>
+      <p class="place" id="place"></p>
+      <p class="toast" id="toast" role="status"></p>
+    </section>
+
+    <section class="console" id="panel" aria-live="polite"></section>
+  </main>
+</div>

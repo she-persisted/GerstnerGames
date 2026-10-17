@@ -64,6 +64,12 @@ Copy `games/starward/game.json` and keep only the kit modules, assets, and conte
 
 Starward's skills: typing speed 1 to 10, math 1 to 5 (about 2nd to 4th grade), word puzzles 1 to 3. Questions are picked when they appear, so they always match the current level.
 
+Mini Game Survival's skills: runs 1 to 5 (speed and obstacles), jigsaw 1 to 3 (3x3, 3x4, 4x4), clue words 1 to 3 (word length and fuel), typing 1 to 3 (how long the clue line is).
+
+## Obstacle runs
+
+`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it.
+
 ## Question format
 
 `{ id, kind, q, a: [accepted answers, first one shown], clue, clue2, d: 1 | 2 | 3 }`. Banks add more fields when needed: `seq` for number patterns, `tiles` for odd one out, `len` for scrambles. Add a written question by adding a row to a bank in `content/questions/`. Add a new kind of generated question by adding a function to `Kit.questions.gens` that takes a level and returns a question.

@@ -1,7 +1,7 @@
 /**
  * @file site/page.js
- * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.
- * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js
+ * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.
+ * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js
  */
 const { $, esc } = Kit.util;
 const CAT = JSON.parse($("#catalog").textContent);
@@ -12,7 +12,7 @@ const base = p => p.split("/").pop().replace(/\.[a-z]+$/, "");
 const ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.3 5.3a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 1 1-1.4-1.4l4.3-4.3H4a1 1 0 1 1 0-2h13.6l-4.3-4.3a1 1 0 0 1 0-1.4z"/></svg>`;
 
 /* Header numbers */
-$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · 4 characters`;
+$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · ${document.querySelectorAll("#cast figure:not(.rocket-tile)").length} characters`;
 
 /* Games and versions */
 $("#gameList").innerHTML = GAMES.map(g => {
@@ -39,7 +39,7 @@ $("#gameList").innerHTML = GAMES.map(g => {
   $("#flowmap").innerHTML = `
     <div class="stack">
       <div class="node"><h3>Content <span>${count("Content")} files</span></h3><p>Questions tagged easy to hard, question generators, word lists</p>${chip(names("Content", /\.js$/))}</div>
-      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(names("Assets", /\.(js|svg)$/).filter(n => !/^(theme|lumina|nimbus|glacia|meridian|corona|reborn|gradients|defs|plain-ground)$/.test(n)).concat(["7 songs"]))}</div>
+      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(FILES.filter(f => f.layer === "Assets" && /\.(js|svg)$/.test(f.path) && !f.path.startsWith("assets/music/") && !/\/(gradients|defs|plain-ground)\.svg$/.test(f.path)).map(f => base(f.path)).concat([`${FILES.filter(f => f.path.startsWith("assets/music/")).length} songs`]))}</div>
       <div class="node"><h3>Kit <span>${count("Kit")} files</span></h3><p>Engines any game can use</p>${chip(names("Kit", /\.js$/))}</div>
     </div>
     <div class="arrow">${ARROW}</div>
@@ -76,11 +76,30 @@ function drawRocket() { $("#rocketArt").innerHTML = R.svg(rocketCfg, { flame: tr
 $("#rocketControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; rocketCfg[s.dataset.k] = s.value || undefined; drawRocket(); });
 drawRocket();
 
+/* T-Rexy, Nova, and the glitch ship */
+const TX = Kit.art.trexy, NV = Kit.art.nova, SH = Kit.art.ship;
+const trexyFaces = [["smile", "Smile"], ["happy", "Happy"], ["worried", "Worried"], ["surprised", "Surprised"], ["think", "Thinking"], ["dizzy", "Dizzy"]];
+$("#trexyFaces").innerHTML = trexyFaces.map(([f, l], i) => `<button type="button" data-tface="${f}" aria-pressed="${i === 0}">${l}</button>`).join("");
+const drawTrexy = f => { $("#galleryTrexy").innerHTML = TX.g({ face: f }); };
+$("#trexyFaces").addEventListener("click", e => { const b = e.target.closest("[data-tface]"); if (!b) return; $("#trexyFaces").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); drawTrexy(b.dataset.tface); });
+drawTrexy("smile");
+const drawNova = () => { $("#galleryNova").innerHTML = $("#shadowBox").checked ? NV.shadow("#000") : NV.g({ face: "happy" }); };
+$("#shadowBox").addEventListener("change", drawNova);
+drawNova();
+const shipCfg = { cockpit: "dino", wings: "fern", thrusters: "two", core: "pink", paint: "cyan" };
+const shipField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${shipCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
+$("#shipControls").innerHTML = SH.PART_ORDER.map(k => shipField(k, SH.PARTS[k].name, [["", "Not found yet"], ...SH.PARTS[k].options])).join("")
+  + shipField("paint", "Paint", SH.PAINT_ORDER.map(p => [p, SH.PAINTS[p].label]));
+const pilot = `<g transform="translate(13,-14) scale(.27)">${TX.g({ face: "happy" })}</g>`;
+function drawShip() { $("#shipArt").innerHTML = SH.svg(shipCfg, { flame: true, ghost: true, pilot }); }
+$("#shipControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; shipCfg[s.dataset.k] = s.value || undefined; drawShip(); });
+drawShip();
+
 /* Songs */
 const player = Kit.music.create(Kit.songs);
 player.setEnabled(false);
 let playing = null;
-const songFile = id => FILES.find(f => f.path === `assets/music/${id}.js`) || {};
+const songFile = id => FILES.find(f => f.path.startsWith("assets/music/") && f.provides === `Kit.songs.${id}`) || {};
 function renderSongs() {
   $("#songList").innerHTML = Object.keys(Kit.songs).map(id => {
     const s = Kit.songs[id], on = playing === id, about = (songFile(id).about || "").replace(/^"[^"]*":\s*/, "").replace(/ Song format is described in kit\/music\.js\.$/, "");

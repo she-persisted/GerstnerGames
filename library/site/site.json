@@ -1,7 +1,7 @@
 {
   "id": "library",
   "title": "Child I's Game Library",
-  "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, music, and engines as the games so they can be previewed live.",
+  "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, ship, music, and engines as the games so they can be previewed live.",
   "output": "index.html",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap",
@@ -25,7 +25,18 @@
     "assets/music/glacia.js",
     "assets/music/meridian.js",
     "assets/music/corona.js",
-    "assets/music/reborn.js"
+    "assets/music/reborn.js",
+    "assets/characters/trexy.js",
+    "assets/characters/nova.js",
+    "assets/ship/glitch-ship.js",
+    "assets/music/glitch-hub.js",
+    "assets/music/echo-rings.js",
+    "assets/music/fern-moon.js",
+    "assets/music/lantern-lab.js",
+    "assets/music/whirlpool.js",
+    "assets/music/shadow-run.js",
+    "assets/music/nova-lullaby.js",
+    "assets/music/home-stomp.js"
   ],
   "parts": [
     "site/page.js"

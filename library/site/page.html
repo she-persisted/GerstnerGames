@@ -1,5 +1,5 @@
 <!-- @file site/page.html
-     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.
+     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters, rocket, and ship, songs, the file browser, and how to change a game later.
      @requires site/page.css, catalog.json -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <!-- @include assets/fx/defs.svg -->
@@ -58,6 +58,27 @@
       <figure class="tile stagebox">
         <svg class="art" viewBox="-34 -56 68 62" aria-label="Professor Kepler"><!-- @include assets/characters/kepler.svg --></svg>
         <figcaption><p class="name">Professor Kepler <code>assets/characters/kepler.svg</code></p></figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" id="galleryTrexy" viewBox="-62 -98 116 104" aria-label="T-Rexy"></svg>
+        <figcaption>
+          <p class="name">T-Rexy <code>assets/characters/trexy.js</code></p>
+          <div class="faces" role="group" aria-label="T-Rexy's face" id="trexyFaces"></div>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" id="galleryNova" viewBox="-58 -66 110 70" aria-label="Nova, and her shadow Shadowspine"></svg>
+        <figcaption>
+          <p class="name">Nova <code>assets/characters/nova.js</code></p>
+          <label class="check"><input type="checkbox" id="shadowBox"> Show as Shadowspine (her shadow)</label>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox rocket-tile ship-tile">
+        <svg class="art" id="shipArt" viewBox="-80 -44 160 88" aria-label="The glitch ship"></svg>
+        <figcaption>
+          <p class="name">Glitch ship <code>assets/ship/glitch-ship.js</code></p>
+          <div class="selects" id="shipControls"></div>
+        </figcaption>
       </figure>
       <figure class="tile stagebox rocket-tile">
         <svg class="art" id="rocketArt" viewBox="-38 -112 76 144" aria-label="The rocket"></svg>

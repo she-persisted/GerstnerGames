@@ -1,0 +1,114 @@
+/**
+ * @file games/mini-game-survival/game.css
+ * @about Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.
+ * @requires kit/base.css
+ */
+:root{
+  --void:#0a0620; --nebula:#170c3a; --nebula-hi:#2e1b66; --starlight:#f6f0ff; --dust:#b7a9ea;
+  --ember:#ff3ec8; --ember-gold:#ffe94a; --on-ember:#1a0420; --good:#5cffb0; --oops:#ff6b8b; --warn:#ffb86b;
+  --cyan:#3ef2ff; --c-hero:#5ee35b; --c-shadow:#ff2e7a; --c-nova:#36c9d8; --c-family:#ffb46e;
+}
+body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
+.btn{box-shadow:0 0 18px -6px var(--ember)}
+.btn:hover{background:var(--cyan)}
+.btn.ghost{box-shadow:none}
+
+/* Glitchy title: two colored copies sit a hair to each side, and jump once every few seconds. */
+.logo{font:400 clamp(.85rem,.7rem + .5vw,1.1rem)/1.3 var(--font-arcade);letter-spacing:.02em}
+.glitchy{position:relative;display:inline-block;color:var(--starlight);text-shadow:0 0 14px color-mix(in srgb,var(--ember) 60%,transparent)}
+.glitchy::before,.glitchy::after{content:attr(data-text);position:absolute;inset:0;pointer-events:none}
+.glitchy::before{color:var(--cyan);transform:translate(-2px,0);opacity:.7;clip-path:inset(0 0 55% 0);animation:gl1 7s steps(1) infinite}
+.glitchy::after{color:var(--ember);transform:translate(2px,0);opacity:.7;clip-path:inset(55% 0 0 0);animation:gl2 7s steps(1) infinite}
+@keyframes gl1{0%,93%,100%{transform:translate(-2px,0)}94%{transform:translate(-6px,-1px)}96%{transform:translate(3px,1px)}}
+@keyframes gl2{0%,93%,100%{transform:translate(2px,0)}95%{transform:translate(6px,1px)}97%{transform:translate(-3px,0)}}
+.big.glitchy-big{font:400 clamp(1.6rem,1.1rem + 2.2vw,2.5rem)/1.25 var(--font-arcade);letter-spacing:.01em}
+.big .hot{color:var(--ember-gold);text-shadow:0 0 22px color-mix(in srgb,var(--ember) 70%,transparent)}
+.byline{color:var(--cyan)}
+
+/* Top bar */
+.parts .slot{border-color:var(--nebula-hi)}
+.parts .slot.on{border:2px solid var(--cyan);background:var(--nebula);box-shadow:0 0 12px -3px var(--cyan)}
+.parts .slot svg{width:24px;height:24px}
+.parts .pi{fill:var(--dust);opacity:.35}.parts .pi2{fill:var(--void)}
+.parts .slot.on .pi{fill:var(--cyan);opacity:1}
+.cluecount{margin:0;display:flex;align-items:baseline;gap:6px}
+.cluecount b{font:400 .85rem var(--font-arcade);color:var(--ember-gold)}
+
+/* Scene */
+.scene{background:var(--void)}
+.scene canvas{touch-action:none}
+.stage.wide{grid-template-columns:minmax(0,1fr)}
+.stage.wide .console{display:none}
+.boardhost{position:absolute;inset:14px;display:none;container-type:size;z-index:2}
+.scene.jigmode .boardhost{display:grid;place-items:center}
+.runui{position:absolute;right:14px;top:40px;display:flex;gap:8px;z-index:3}
+.runui .btn{font-size:.95rem}
+.runui .btn.nudge{animation:nudge .9s ease-in-out 4}
+.runui .on{background:var(--good)}
+.scene-board{position:absolute;right:16px;top:16px;width:min(340px,calc(100% - 32px));max-height:calc(100% - 32px);overflow:auto;display:none;z-index:2}
+.scene.attract .scene-board{display:block}
+.panel-board{display:none}
+.place{border:1px solid color-mix(in srgb,var(--cyan) 40%,transparent)}
+.place:empty{display:none}
+.stage.wide .place{top:auto;bottom:12px}
+
+/* Story lines */
+.who{color:var(--who,var(--dust))}
+.say[data-who="shadow"] .line{font-family:var(--font-display);font-weight:800;letter-spacing:.01em;color:#ffd1e6;text-shadow:0 0 16px color-mix(in srgb,var(--c-shadow) 70%,transparent)}
+.say[data-who="nova"] .line{font-size:clamp(1.05rem,1rem + .4vw,1.25rem)}
+.portrait{width:58px;height:48px;flex:none;overflow:hidden}
+.whorow{display:flex;align-items:center;gap:10px}
+
+/* Hub panel: the clue notebook */
+.notebook{display:flex;flex-direction:column;gap:10px}
+.nb-head{margin:0;display:flex;align-items:center;gap:.5em;font:800 1.35rem/1.2 var(--font-display);color:var(--ember-gold)}
+.nb-next{margin:0;font:700 1.1rem/1.3 var(--font-display);color:var(--cyan)}
+.clue-note{margin:0;padding:.6em .85em;border-radius:12px;background:var(--nebula-hi);border-left:4px solid var(--cyan);font-size:1rem;line-height:1.45}
+.clue-note b{color:var(--cyan);font-weight:600}
+.clue-note.empty{background:transparent;border:1.5px dashed var(--nebula-hi);color:var(--dust)}
+.diary{margin:0;padding:.7em .9em;border-radius:6px 14px 14px 6px;background:#fff6d6;color:#3a1f0a;font:600 1rem/1.45 var(--font-display);box-shadow:inset 6px 0 0 #ffb46e;transform:rotate(-.6deg)}
+.diary:nth-child(2n){transform:rotate(.5deg)}
+.diary .paw{display:inline-block;margin-left:.4em;color:#1f8a96}
+.walkhint{margin:0;font:700 1rem/1.3 var(--font-display);color:var(--dust)}
+.walkhint .kbd{background:var(--nebula-hi);color:var(--starlight)}
+
+/* Clue card and clue typing */
+.cluecard{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--void);border:2px solid var(--cyan);box-shadow:0 0 22px -10px var(--cyan)}
+.cluecard h3{margin:0;font:800 1.15rem/1.2 var(--font-display);color:var(--cyan)}
+.cluecard p{margin:0;font-size:1.05rem;line-height:1.5}
+.cluecard .fact{color:var(--ember-gold)}
+.typehost .card{margin-block:0}
+.typehost .target{font-size:clamp(1.4rem,1.1rem + 1.4vw,2rem)}
+
+/* Choosing parts, paint, and mystery answers */
+.opt svg{width:120px;height:80px}
+.opt{border-color:var(--nebula-hi)}
+.opt:hover,.opt:focus-visible{border-color:var(--cyan)}
+.opt .k{font:400 .7rem var(--font-arcade);color:var(--dust)}
+.swatch{width:46px;height:46px;border-radius:50%;border:3px solid var(--starlight)}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:flex;align-items:center;gap:12px;text-align:left;font:600 1.08rem/1.35 var(--font-body);padding:.75em 1em;border-radius:14px;border:2px solid var(--nebula-hi);background:var(--void);color:var(--starlight);cursor:pointer}
+.choice:hover{border-color:var(--cyan)}
+.choice:focus-visible{outline:3px solid var(--ember-gold);outline-offset:3px}
+.choice .n{flex:none;width:1.9em;height:1.9em;display:grid;place-items:center;border-radius:8px;background:var(--nebula-hi);font:400 .8rem var(--font-arcade);color:var(--ember-gold)}
+.choice.no{border-color:var(--oops);opacity:.55;animation:fwshake .25s}
+.choice.yes{border-color:var(--good);background:color-mix(in srgb,var(--good) 18%,var(--void))}
+.choice:disabled{cursor:default}
+
+/* Run results, jigsaw progress */
+.statrow{display:flex;gap:10px;flex-wrap:wrap}
+.stat{padding:.35em .85em;border-radius:999px;background:var(--nebula-hi);font-size:.95rem;color:var(--dust)}
+.stat b{color:var(--starlight);font-weight:600}
+.levels{display:flex;flex-wrap:wrap;gap:8px}
+.lvl{padding:.3em .8em;border-radius:999px;background:var(--nebula-hi);font-size:.9rem;color:var(--dust)}
+.lvl b{color:var(--starlight);font-weight:600}
+.secret-end{margin:0;padding:.7em .9em;border-radius:12px;background:#fff6d6;color:#3a1f0a;font:700 1.05rem/1.45 var(--font-display)}
+
+@media (max-width:860px){
+  .scene.attract .scene-board{display:none}
+  .panel-board{display:block}
+  .stage.wide .scene{height:min(70vh,520px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .glitchy::before,.glitchy::after,.runui .btn.nudge,.choice.no{animation:none !important}
+}

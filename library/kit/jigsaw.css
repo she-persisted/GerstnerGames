@@ -1,0 +1,19 @@
+/**
+ * @file kit/jigsaw.css
+ * @about Styles for the picture jigsaw: the tile grid, the selected tile, tiles that are home (locked with a glow), the peek overlay, and the solved picture.
+ * @requires kit/base.css
+ */
+.jig{position:relative;display:grid;grid-template-columns:repeat(var(--cols),1fr);grid-template-rows:repeat(var(--rows),1fr);gap:4px;aspect-ratio:4/3;width:min(100%,calc((100cqh - 8px) * 4 / 3));margin:auto;padding:4px;box-sizing:border-box;border-radius:14px;background:color-mix(in srgb,var(--void) 80%,transparent);border:2px solid var(--nebula-hi);transition:gap .5s,padding .5s,box-shadow .5s}
+.jt{all:unset;box-sizing:border-box;cursor:pointer;border-radius:6px;background-image:var(--img);background-size:calc(var(--cols) * 100%) calc(var(--rows) * 100%);background-repeat:no-repeat;outline:2px solid transparent;outline-offset:-2px;transition:outline-color .15s,transform .15s,filter .2s}
+.jt:hover{filter:brightness(1.12)}
+.jt.cur{outline-color:var(--starlight)}
+.jt.sel{outline:4px solid var(--ember-gold);outline-offset:-4px;transform:scale(.94)}
+.jt.home{cursor:default;box-shadow:0 0 0 2px var(--good),0 0 16px -2px var(--good)}
+.jt.pop{animation:jpop .3s cubic-bezier(.3,1.6,.5,1)}
+@keyframes jpop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.jpeek{position:absolute;inset:4px;border-radius:10px;background-image:var(--img);background-size:100% 100%;opacity:0;pointer-events:none;transition:opacity .25s}
+.jpeek.on{opacity:1}
+.jig.solved{gap:0;padding:0;box-shadow:0 0 40px -6px var(--good)}
+.jig.solved .jt{border-radius:0;box-shadow:none;outline:0}
+.jig.solved .jt:first-child{border-top-left-radius:12px}
+@media (prefers-reduced-motion:reduce){ .jt.pop{animation:none !important} .jig,.jpeek{transition:none !important} }

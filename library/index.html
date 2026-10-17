@@ -231,7 +231,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 }
 </style>
 <!-- @file site/page.html
-     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.
+     @about Layout of the Game Library page: games and versions, how the pieces fit, live characters, rocket, and ship, songs, the file browser, and how to change a game later.
      @requires site/page.css, catalog.json -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
   <!-- @file assets/fx/defs.svg
@@ -380,6 +380,27 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 </svg>
         <figcaption><p class="name">Professor Kepler <code>assets/characters/kepler.svg</code></p></figcaption>
       </figure>
+      <figure class="tile stagebox">
+        <svg class="art" id="galleryTrexy" viewBox="-62 -98 116 104" aria-label="T-Rexy"></svg>
+        <figcaption>
+          <p class="name">T-Rexy <code>assets/characters/trexy.js</code></p>
+          <div class="faces" role="group" aria-label="T-Rexy's face" id="trexyFaces"></div>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox">
+        <svg class="art" id="galleryNova" viewBox="-58 -66 110 70" aria-label="Nova, and her shadow Shadowspine"></svg>
+        <figcaption>
+          <p class="name">Nova <code>assets/characters/nova.js</code></p>
+          <label class="check"><input type="checkbox" id="shadowBox"> Show as Shadowspine (her shadow)</label>
+        </figcaption>
+      </figure>
+      <figure class="tile stagebox rocket-tile ship-tile">
+        <svg class="art" id="shipArt" viewBox="-80 -44 160 88" aria-label="The glitch ship"></svg>
+        <figcaption>
+          <p class="name">Glitch ship <code>assets/ship/glitch-ship.js</code></p>
+          <div class="selects" id="shipControls"></div>
+        </figcaption>
+      </figure>
       <figure class="tile stagebox rocket-tile">
         <svg class="art" id="rocketArt" viewBox="-38 -112 76 144" aria-label="The rocket"></svg>
         <figcaption>
@@ -419,7 +440,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 4889,
+   "bytes": 5526,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -451,6 +472,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "provides": "",
    "requires": "assets/characters/characters.css",
    "notes": ""
+  },
+  {
+   "path": "assets/characters/nova.js",
+   "layer": "Assets",
+   "bytes": 5088,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline, filled solid black and made huge, is also the giant shadow everyone calls Shadowspine.",
+   "provides": "Kit.art.nova { SHAPES, g(options), shadow(fill), svg(options, size), url(options, size), path2d() }",
+   "requires": "nothing",
+   "notes": "options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 62 units tall (x from -54 to 50, y from -62 to 2).\nSHAPES are the outline pieces (tail, sail, body, legs, head, arm) as SVG path strings. shadow() fills them all one color,\nwhich is how Shadowspine is drawn, and path2d() gives the same pieces for canvas drawing."
   },
   {
    "path": "assets/characters/penguin.svg",
@@ -516,6 +550,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "motion = { moving, phase, fx, fy } from kit/topdown-map.js; glow = 0 to 1 chest brightness.\ntokens needs: metal, metalShade, copper, glass, snow, void, cRobot"
   },
   {
+   "path": "assets/characters/trexy.js",
+   "layer": "Assets",
+   "bytes": 7983,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting, and faces for happy, worried, surprised, thinking, dizzy, and sleepy.",
+   "provides": "Kit.art.trexy { COLORS, g(options), svg(options, size), url(options, size) }",
+   "requires": "nothing",
+   "notes": "options = { pose: stand | run1 | run2 | hop | sit, face: smile | happy | worried | surprised | think | dizzy | sleepy,\n            who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap, flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).\nsvg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL."
+  },
+  {
    "path": "assets/fx/defs.svg",
    "layer": "Assets",
    "bytes": 437,
@@ -533,6 +580,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Assets",
    "bytes": 2175,
    "usedBy": [
+    "Mini Game Survival",
     "Starward",
     "Child I's Game Library"
    ],
@@ -554,6 +602,18 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "Every draw function takes the canvas context first and a tokens object T (colors read from CSS) last.\nT needs: void, gold, good, cPeng, stoneSh, metalShade, wall, roof, win, leaf, trunk, dome, scope"
   },
   {
+   "path": "assets/memories/memories.js",
+   "layer": "Assets",
+   "bytes": 12590,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Four memory pictures for jigsaw puzzles, drawn in SVG: home in Fern Valley at night, the family dinner, the bedroom window at 11:11, and the swirly galaxy swoop. Each one hides a clue for the mystery if you look closely.",
+   "provides": "Kit.art.memories { home, dinner, window, swoop } (each a function returning a standalone 400 x 300 <svg>), galaxy(cx, cy, r, turn, colors), note(x, y, scale, color)",
+   "requires": "assets/characters/trexy.js, assets/characters/nova.js",
+   "notes": "Clues hidden in the pictures: a tiny glowing music box on the hill (home), a little teal tail sneaking out the door with the fish (dinner),\ntiny three-toed footprints on the windowsill and a huge shadow made by a teeny moth near the lamp (window), and someone small holding\na star lantern (swoop)."
+  },
+  {
    "path": "assets/music/corona.js",
    "layer": "Assets",
    "bytes": 763,
@@ -567,6 +627,32 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": ""
   },
   {
+   "path": "assets/music/echo-rings.js",
+   "layer": "Assets",
+   "bytes": 811,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Echo Rings\": the first portal: bouncy and bright, and it hides the first piece of the weird music. 168 bpm, A major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.echo",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/fern-moon.js",
+   "layer": "Assets",
+   "bytes": 818,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Fern Moon Feast\": the second portal: a happy, leafy stomp with the second piece of the weird music. 170 bpm, G major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.fern",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
    "path": "assets/music/glacia.js",
    "layer": "Assets",
    "bytes": 713,
@@ -576,6 +662,45 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    ],
    "about": "\"Glacia Twinkle\": a high, icy, plucked tune for the frozen planet. 92 bpm, E major. Song format is described in kit/music.js.",
    "provides": "Kit.songs.glacia",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/glitch-hub.js",
+   "layer": "Assets",
+   "bytes": 843,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Glitch Hub Stomp\": the stompy theme for the title screen and the crash pad. 166 bpm, D minor, hardcore kick on every beat. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.glitchHub",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/home-stomp.js",
+   "layer": "Assets",
+   "bytes": 793,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Home Stomp\": the ending: the lullaby turned into a big hardcore party. 170 bpm, C major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.homeStomp",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/lantern-lab.js",
+   "layer": "Assets",
+   "bytes": 816,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Lantern Lab\": the third portal: glowing and quick, with the third piece of the weird music. 172 bpm, F major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.lantern",
    "requires": "nothing",
    "notes": ""
   },
@@ -619,6 +744,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": ""
   },
   {
+   "path": "assets/music/nova-lullaby.js",
+   "layer": "Assets",
+   "bytes": 731,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Nova's Lullaby\": the weird music itself: a high, squeaky music-box lullaby. 100 bpm, C major, no drums. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.lullaby",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
    "path": "assets/music/reborn.js",
    "layer": "Assets",
    "bytes": 680,
@@ -632,6 +770,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": ""
   },
   {
+   "path": "assets/music/shadow-run.js",
+   "layer": "Assets",
+   "bytes": 799,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Shadow Run\": the chase through the Shadow Gate: dark, pounding, and a little spooky. 176 bpm, D minor. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.shadowRun",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
    "path": "assets/music/theme.js",
    "layer": "Assets",
    "bytes": 675,
@@ -641,6 +792,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    ],
    "about": "\"Starward Theme\": the cheerful main tune for the title screen and flights. 104 bpm, C major. Song format is described in kit/music.js.",
    "provides": "Kit.songs.theme",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "assets/music/whirlpool.js",
+   "layer": "Assets",
+   "bytes": 816,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Whirlpool Warp\": the fourth portal: swirly and fast, and its melody is the whole weird tune at last. 174 bpm, E major. Song format is described in kit/music.js.",
+   "provides": "Kit.songs.whirl",
    "requires": "nothing",
    "notes": ""
   },
@@ -670,6 +834,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "config  = { nose, fins, boost, engine, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: show engine flames, face: robot peeking out, plainFlame: no <use> refs (for images) }\nDrawing space: viewBox -38 -112 76 144, base of the rocket at y = 0."
   },
   {
+   "path": "assets/ship/glitch-ship.js",
+   "layer": "Assets",
+   "bytes": 7534,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, and a pilot can peek out of the cockpit.",
+   "provides": "Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }",
+   "requires": "nothing",
+   "notes": "config  = { cockpit, wings, thrusters, core, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit }\nDrawing space: facing right, centered on 0,0, viewBox -64 -42 128 84."
+  },
+  {
    "path": "assets/worlds/corona.svg",
    "layer": "Assets",
    "bytes": 672,
@@ -692,6 +869,18 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "provides": "",
    "requires": "assets/worlds/worlds.css",
    "notes": ""
+  },
+  {
+   "path": "assets/worlds/glitch-nebula.js",
+   "layer": "Assets",
+   "bytes": 11644,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Canvas backgrounds for the Glitch Nebula: bright neon clouds, swirling galaxies, stars, a landmark for each world (a ringed planet, a fern moon, a giant lantern star, a whirlpool galaxy), and gentle glitches that nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
+   "provides": "Kit.art.nebula { THEMES, create() -> { draw(ctx, view, options) } }",
+   "requires": "assets/characters/nova.js, assets/memories/memories.js",
+   "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off }\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins."
   },
   {
    "path": "assets/worlds/gradients.svg",
@@ -778,22 +967,34 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 20244,
+   "bytes": 38745,
    "usedBy": [],
-   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward start to finish (map, puzzles, digging, flights, the brave words, the ending and high score). Must pass before every commit that changes library/.",
+   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
    "requires": "build/build.py",
-   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival playthrough, with a fresh browser:\n     - Title, then the story lines (Enter), then the crash pad: type ROAR and poke Shadowspine (Easter eggs), click each portal.\n     - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the\n       Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and\n       takes the secret route, so all four hidden diary pages must be found.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the high score saves and the secret ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
    "path": "build/qr.py",
    "layer": "Build",
-   "bytes": 11016,
+   "bytes": 16571,
    "usedBy": [],
-   "about": "Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the game's permanent home page (\"home\" in game.json). Checks that the finished card scans back to the right link.",
+   "about": "Makes the shareable QR card for a game's newest release in that game's own colors and icons, with the title and version and a QR code that opens the game's permanent home page (\"home\" in game.json). Starward gets its night sky, gold four-point stars, and rocket; a game can set its own look with a \"qr\" block in game.json (Mini Game Survival: neon colors, spikes, jigsaw pieces, and T-Rexy's head). Checks that the finished card scans back to the right link.",
    "provides": "",
-   "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js (colors and icon shapes are copied from these)",
-   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs Pillow and opencv-python-headless (pip install opencv-python-headless).\nUses the qrcode package when installed (pip install \"qrcode[pil]\"); otherwise OpenCV's own QR encoder makes the code.\nExits 1 if the card does not scan back to the release link."
+   "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/characters/trexy.js (colors and icon shapes are copied from these)",
+   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs Pillow and opencv-python-headless (pip install opencv-python-headless).\nUses the qrcode package when installed (pip install \"qrcode[pil]\"); otherwise OpenCV's own QR encoder makes the code.\nExits 1 if the card does not scan back to the release link.\n\nOptional \"qr\" block in game.json:\n  { \"colors\": { void, nebula, nebulaHi, starlight, dust, glow, accent, gold, onGold }, \"badge\": \"star\" | \"trexy\", \"cta\": \"Scan to play!\" }"
+  },
+  {
+   "path": "content/levels/runner-chunks.js",
+   "layer": "Content",
+   "bytes": 3693,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Building blocks for obstacle runs: short stretches of spikes, steps, bounce pads, gaps, ship tunnels, and one secret stretch with a hidden box up high. A run is put together from these, easier ones at low levels and trickier ones at high levels.",
+   "provides": "Kit.levels.runner (list of chunks)",
+   "requires": "nothing",
+   "notes": "Format is described in kit/runner.js. min and max are the run levels (1 to 5) a chunk can appear at, w is how often it is picked.\nEvery chunk starts with at least 2 tiles of flat ground. The hero's hop is tiny (about 1.25 tiles), so two spikes in a row\nor anything 2 tiles high needs a bounce pad. The level generator plays each chunk with its solver before using it.\ntag \"ship\" = a ship tunnel (between a ship portal S and a hero portal C). tag \"secret\" = holds the hidden box x, reached by\nhopping onto a thin ledge with a pad on it; running straight under the ledge is the normal way through."
   },
   {
    "path": "content/questions/blanks.js",
@@ -892,6 +1093,18 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": ""
   },
   {
+   "path": "content/words/clue-words.js",
+   "layer": "Content",
+   "bytes": 5257,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Science words with kid-friendly hints for word-guessing games, in four topics: sound and music, food and dinosaurs, light and shadows, and space. Each word is tagged easy (1), medium (2), or hard (3).",
+   "provides": "Kit.words.clues { sound, food, light, space } each a list of [WORD, difficulty, hint]",
+   "requires": "nothing",
+   "notes": "Easy words are 4 or 5 letters, medium 5 to 7, hard 6 to 11. Hints never use the word itself. No word appears in two topics,\nso one game never asks the same word twice."
+  },
+  {
    "path": "content/words/typing-words.js",
    "layer": "Content",
    "bytes": 1651,
@@ -926,6 +1139,102 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "provides": "",
    "requires": "",
    "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/boot.js",
+   "layer": "Games",
+   "bytes": 2290,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Starts Mini Game Survival: connects each story step type to its screen, resumes saved games (rebuilding the scene from the story so far), turns on Enter-to-continue, and keeps the game going through live page updates.",
+   "provides": "",
+   "requires": "kit/flow.js, games/mini-game-survival/story.js, games/mini-game-survival/screens.js",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/game.css",
+   "layer": "Games",
+   "bytes": 7313,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/game.json",
+   "layer": "Games",
+   "bytes": 2647,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/scene.html",
+   "layer": "Games",
+   "bytes": 1646,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's page layout: the top bar (ship parts, clues, music and sound), the scene window (one canvas for the hub, the runs, and story scenes, plus the jigsaw board, the run buttons, the countdown, and the high score board on the title screen), and the side panel.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/scene.js",
+   "layer": "Games",
+   "bytes": 18777,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces and hops, Shadowspine on the clouds, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs. Also the music, the toggles, the top bar, and toasts.",
+   "provides": "",
+   "requires": "kit/runner.js, kit/side-hub.js, kit/music.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/screens.js",
+   "layer": "Games",
+   "bytes": 23493,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's screens: title (high scores and jukebox), story lines, the crash pad with the clue notebook, obstacle runs, memory jigsaws, glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here. Right answers cheer and move on by themselves.",
+   "provides": "",
+   "requires": "kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/state.js",
+   "layer": "Games",
+   "bytes": 8947,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's settings and save data: storage keys, the portals and what each one gives, the clue cards, the mystery questions, the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), run speeds, and the clue-word chooser.",
+   "provides": "",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js",
+   "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/story.js",
+   "layer": "Games",
+   "bytes": 9785,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's story, in order: every line, every scene change, and every mini game. To change the story, edit this list. Step types: stage, say, hub, run, jigsaw, word, clue, part, song, paint, final, deduce, shrink, end.",
+   "provides": "",
+   "requires": "games/mini-game-survival/state.js",
+   "notes": "stage:  { theme, face, acc, nova, novaFace, shadow (size, 0 = gone), lantern, ship, family }  changes what the scene shows; only the keys given change\nsay:    { who: narrator | trexy | shadow | nova | family, x: text, face?: smile | happy | worried | surprised | think | dizzy | sleepy, hop?: true }\nrun, jigsaw, word, clue, part: { p: portal id from PORTALS in state.js }      hub: walk the crash pad to the next portal\nfinal:  the Shadow Gate run      deduce: { n: question number in DEDUCE }      shrink: the giant shadow shrinks away"
   },
   {
    "path": "games/starward/boot.js",
@@ -1050,6 +1359,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 2495,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Adaptive difficulty. Tracks how the player is doing in each skill and moves that skill's level up or down. Levels are remembered on that computer for that game.",
@@ -1062,6 +1372,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 4285,
    "usedBy": [
+    "Mini Game Survival",
     "Starward",
     "Child I's Game Library"
    ],
@@ -1075,6 +1386,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 8228,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Core look shared by every game: color and font tokens, the one-screen layout (top bar, scene, side panel), buttons, text boxes, choice tiles, title text, and toasts. Single dark space theme by design.",
@@ -1111,6 +1423,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 1682,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Runs a game's story as a list of steps (say a line, show a puzzle, fly, and so on). Each step type has a handler. Also holds the cleanup for whatever screen is showing, so leaving a screen always stops its timers and key listeners.",
@@ -1119,10 +1432,59 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "A handler returns true when its step is instant (change world, add a friend); the flow then moves straight to the next step.\ntoken() and alive(t) let slow actions (countdowns, walks) check they still belong to the current screen.\nreplay(upto, { type: fn }) re-applies instant steps when resuming a saved game."
   },
   {
+   "path": "kit/fuel-word.css",
+   "layer": "Kit",
+   "bytes": 2528,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Styles for the letter-guessing game: the hint, the secret word's letter boxes, the fuel tank cells (they flicker when zapped), and the on-screen letter keys.",
+   "provides": "",
+   "requires": "kit/base.css, kit/puzzle-ui.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/fuel-word.js",
+   "layer": "Kit",
+   "bytes": 6819,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "A friendly letter-guessing game (no hangman): a secret word, a riddle-style hint, and a fuel tank. Type or tap letters to guess. Right letters light up in the word; each wrong letter drains one fuel cell. If the fuel runs out, the word is shown and the player types it to refuel and keep going, so nobody gets stuck.",
+   "provides": "Kit.fuelWord.render(panel, options) -> { use(key) }",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js",
+   "notes": "options = { head (HTML), tip (one short line), word, hint, fuel (number of cells), cheers, autoNext (ms, default 1700),\n            scanAfter (wrong letters before the Scan helper pulses, default 2), helperHtml (icon for the Scan button),\n            onGuess(letter, ok), onScan(), onOut(), onWin({ misses, scans, out, fuelLeft, cheer }), onDone() }\nuse(\"scan\") presses the Scan helper from outside the panel (for example, tapping the hero); it reveals one letter, once."
+  },
+  {
+   "path": "kit/jigsaw.css",
+   "layer": "Kit",
+   "bytes": 1761,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Styles for the picture jigsaw: the tile grid, the selected tile, tiles that are home (locked with a glow), the peek overlay, and the solved picture.",
+   "provides": "",
+   "requires": "kit/base.css",
+   "notes": ""
+  },
+  {
+   "path": "kit/jigsaw.js",
+   "layer": "Kit",
+   "bytes": 5475,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Picture jigsaw: a picture is cut into a grid of tiles and shuffled. Swap two tiles to fix it. Works with arrow keys and Enter, or by clicking two tiles. Tiles that are home lock in place with a glow. Helpers can peek at the whole picture or put one tile home.",
+   "provides": "Kit.jigsaw.render(board, options) -> { peek(), fix(), stop(), placed(), total }",
+   "requires": "kit/util.js, kit/audio.js",
+   "notes": "options = { svg (a standalone <svg> string), rows, cols, label, onMove(placed, total), onDone({ moves, best, peeks, fixes }) }\nbest = the fewest swaps that could have solved it, so a game can score how close the player came."
+  },
+  {
    "path": "kit/jukebox.css",
    "layer": "Kit",
    "bytes": 1109,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Styles for the jukebox song list and the \"New song!\" title.",
@@ -1135,6 +1497,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 2252,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "A list of collected songs with play and stop buttons. Songs not found yet show as locked.",
@@ -1147,6 +1510,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 4293,
    "usedBy": [
+    "Mini Game Survival",
     "Starward",
     "Child I's Game Library"
    ],
@@ -1160,6 +1524,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 3143,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback (a big popping cheer for a right answer).",
@@ -1192,10 +1557,23 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "Question shape: { id, kind, q, a: [accepted answers; the first is the one shown], clue, clue2?, d (difficulty 1 easy, 2 medium, 3 hard), seq?, tiles?, eq?, len? }\nBanks live in content/questions/*.js and register with addBank(name, kind, idPrefix, rows), rows = [id, d, question, answers, clue, clue2?].\nGenerators live in content/questions/*.js too: Kit.questions.gens.name = level => question."
   },
   {
+   "path": "kit/runner.js",
+   "layer": "Kit",
+   "bytes": 24026,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes, bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks, and a built-in solver plays every chunk before it is used, so every level can be beaten.",
+   "provides": "Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), state } }",
+   "requires": "kit/util.js, kit/audio.js",
+   "notes": "Units are tiles and seconds. The ground's top is y = 0, and y goes up. The physics runs in fixed 1/120 s steps,\nso a list of button presses (one per step) always replays exactly the same way.\n\nChunk format (see content/levels/runner-chunks.js): { id, min, max, len, w, tag, gaps: [[x0, x1]], o: [[kind, x, y, w, h]] }\n  kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),\n         S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.\n\ngenerate({ chunks, level, speed, length, pieces, rng, secret }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }\n  Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.\n\nplay(canvas, { gen, theme, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onAttempt(n), onCrash(n),\n              onCollect(obj), onMode(mode), onFinish(result), autopilot(), speedup(), tip })\n  result = { attempts, crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }"
+  },
+  {
    "path": "kit/scoreboard.css",
    "layer": "Kit",
    "bytes": 2019,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Arcade look for the high score board, the name entry box, and the end-of-game score card.",
@@ -1208,12 +1586,25 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 3713,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Arcade-style high score board. Uses the page's shared database when it's available and falls back to scores saved on this computer. Draws into every element marked data-scoreboard.",
    "provides": "Kit.scoreboard.create({ storeKey, collection, size }) -> { init(), render(), save(entry) -> rank, all() }",
    "requires": "kit/util.js",
    "notes": "The published page must declare capabilities: { db: {} } for the shared board.\nEntry shape: { name, score, at (ISO date), ...any extra fields }"
+  },
+  {
+   "path": "kit/side-hub.js",
+   "layer": "Kit",
+   "bytes": 5884,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "A walkable side-view home area. The hero walks left and right with the arrow keys or A and D, or walks to wherever you click. Stops along the way (like portals) can be entered with Enter, Space, or the up arrow, or by clicking them. The game draws everything; this module handles walking, the camera, clicks, and typed secret words.",
+   "provides": "Kit.sidehub.create(canvas, options) -> { stop(), hero, view(), walkTo(x, enterId), setStops(stops), say(text, ms) }",
+   "requires": "kit/util.js",
+   "notes": "options = { width (tiles), start (tile x), speed (tiles per second), stops: [{ id, x, open }],\n            draw(ctx, view, hero, bubble), onEnter(stop), onNear(stop or null), onTap(worldX, worldY, view) -> true if handled,\n            onFirstMove(), onType(lastLetters) }\nview = { w, h, T, camX, camY: 0, t, dpr, ground (pixel y of the floor) }; hero = { x, facing (1 right, -1 left), walking, near }\nbubble = { text, until } for a speech bubble over the hero, set with say()."
   },
   {
    "path": "kit/starfield.js",
@@ -1244,6 +1635,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 4157,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Two untimed typing challenges. dig: type the words written on clumps of dirt to dig something up. line: type one sentence exactly (like a brave promise).",
@@ -1256,6 +1648,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 5051,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Styles for typing challenges: falling word chips, the countdown, the big word display, the accuracy goal bar, the caught-star row, and the dirt clumps for digging.",
@@ -1268,6 +1661,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 2710,
    "usedBy": [
+    "Mini Game Survival",
     "Starward"
    ],
    "about": "Shared screen helpers: the main Next button, progress dots, toasts, focus, Enter-to-continue, and reading theme colors for canvas drawing.",
@@ -1280,6 +1674,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "layer": "Kit",
    "bytes": 2648,
    "usedBy": [
+    "Mini Game Survival",
     "Starward",
     "Child I's Game Library"
    ],
@@ -1303,11 +1698,11 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/page.html",
    "layer": "Library page",
-   "bytes": 5453,
+   "bytes": 6577,
    "usedBy": [
     "Child I's Game Library"
    ],
-   "about": "Layout of the Game Library page: games and versions, how the pieces fit, live characters and rocket, songs, the file browser, and how to change a game later.",
+   "about": "Layout of the Game Library page: games and versions, how the pieces fit, live characters, rocket, and ship, songs, the file browser, and how to change a game later.",
    "provides": "",
    "requires": "site/page.css, catalog.json",
    "notes": ""
@@ -1315,23 +1710,23 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/page.js",
    "layer": "Library page",
-   "bytes": 9680,
+   "bytes": 11879,
    "usedBy": [
     "Child I's Game Library"
    ],
-   "about": "Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.",
+   "about": "Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.",
    "provides": "",
-   "requires": "kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js",
    "notes": ""
   },
   {
    "path": "site/site.json",
    "layer": "Library page",
-   "bytes": 1008,
+   "bytes": 1388,
    "usedBy": [
     "Child I's Game Library"
    ],
-   "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, music, and engines as the games so they can be previewed live.",
+   "about": "Build list for the Game Library page itself: it reuses the same characters, rocket, ship, music, and engines as the games so they can be previewed live.",
    "provides": "",
    "requires": "",
    "notes": ""
@@ -1354,6 +1749,33 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    ],
    "source": "games/inner-flame",
    "fileCount": 0
+  },
+  {
+   "id": "mini-game-survival",
+   "title": "Mini Game Survival v1",
+   "version": 1,
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
+   "output": "dist/mini-game-survival-v1.html",
+   "home": "",
+   "qr": {
+    "colors": {
+     "void": "#0a0620",
+     "nebula": "#170c3a",
+     "nebulaHi": "#3a1a7a",
+     "starlight": "#f6f0ff",
+     "dust": "#b7a9ea",
+     "glow": "#ff3ec8",
+     "accent": "#3ef2ff",
+     "gold": "#ffe94a",
+     "onGold": "#1a0420"
+    },
+    "badge": "trexy",
+    "cta": "Scan to play!"
+   },
+   "body": "games/mini-game-survival/scene.html",
+   "releases": [],
+   "source": "games/mini-game-survival",
+   "fileCount": 43
   },
   {
    "id": "starward",
@@ -1872,14 +2294,407 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     chords: [[0,4,7],[-5,-1,2],[-3,0,4],[-7,-3,0]], bass: [1,0,1,0,1,0,2,0], hat: [0,1,0,1,0,1,0,1], kick: [1,0,0,0,1,0,0,0]
   };
 })(window.Kit = window.Kit || {});
+/* ==== assets/characters/trexy.js ==== */
+/**
+ * @file assets/characters/trexy.js
+ * @about T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting, and faces for happy, worried, surprised, thinking, dizzy, and sleepy.
+ * @provides Kit.art.trexy { COLORS, g(options), svg(options, size), url(options, size) }
+ * @requires nothing
+ *
+ * options = { pose: stand | run1 | run2 | hop | sit, face: smile | happy | worried | surprised | think | dizzy | sleepy,
+ *             who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap, flip: true to face left }
+ * Drawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).
+ * svg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL.
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  const COLORS = {
+    trexy: { body: "#5ee35b", belly: "#dcfca0", bump: "#3cbf48", line: "#12452c", cheek: "#ff8fb1" },
+    mom: { body: "#3fd6b0", belly: "#cffff1", bump: "#26ad8d", line: "#0f4038", cheek: "#ff8fb1" },
+    dad: { body: "#46a84c", belly: "#d3eca6", bump: "#2f8237", line: "#123a19", cheek: "#ff9d8f" },
+    sis: { body: "#a6ec5a", belly: "#f4ffd2", bump: "#83cc3a", line: "#2c4a12", cheek: "#ff8fb1" }
+  };
+
+  function leg(x, angle, c, far) {
+    const fill = far ? c.bump : c.body;
+    return `<g transform="translate(${x},-15) rotate(${angle})"><path d="M-5 0 h10 v11 q0 2 3 2 h4 q3 0 3 3 v1 h-20 z" fill="${fill}" stroke="${c.line}" stroke-width="2.4" stroke-linejoin="round"/></g>`;
+  }
+
+  function face(f, c) {
+    const L = c.line;
+    const eyeOpen = (rx = 8, ry = 9, px = 22, py = -69, pr = 5) =>
+      `<ellipse cx="20" cy="-70" rx="${rx}" ry="${ry}" fill="#fff" stroke="${L}" stroke-width="2.2"/><circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/><circle cx="${px + 2}" cy="${py - 2.5}" r="1.9" fill="#fff"/>`;
+    const teeth = `<path d="M33 -53.5 l2.2 3.6 l2.2 -3.9 Z M40 -54.6 l2 3.4 l2 -3.7 Z" fill="#fff" stroke="${L}" stroke-width=".8"/>`;
+    const smile = `<path d="M27 -55 Q38 -50 49 -57" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
+    switch (f) {
+      case "happy": return `<path d="M13 -69 Q20 -78 27 -69" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>
+        <path d="M27 -56 Q38 -45 50 -58 Q38 -51 27 -56 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>${teeth}`;
+      case "worried": return `${eyeOpen(8, 9, 19, -67, 4.6)}<path d="M11 -82 Q19 -84 27 -79" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M29 -54 q3.5 -3 7 0 t7 0 t6 -1" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>`;
+      case "surprised": return `${eyeOpen(9.5, 10.5, 21, -70, 3.6)}<path d="M12 -84 Q20 -88 28 -84" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
+        <ellipse cx="40" cy="-53" rx="3.6" ry="4.6" fill="#7a1f3d" stroke="${L}" stroke-width="1.8"/>`;
+      case "think": return `${eyeOpen(8, 9, 24, -74, 4.4)}<path d="M33 -55.5 L45 -56.5" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
+      case "dizzy": return `<path d="M20 -70 m-6 0 a6 6 0 1 1 6 6 a4 4 0 1 1 -4 -4 a2 2 0 1 1 2 2" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M28 -54 q3 -3 6 0 t6 0 t6 0" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>`;
+      case "sleepy": return `<path d="M13 -68 Q20 -64 27 -68" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>${smile}`;
+      default: return `${eyeOpen()}${smile}${teeth}`;
+    }
+  }
+
+  function acc(a) {
+    switch (a) {
+      case "flower": return `<g transform="translate(6,-88)">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-5" rx="3.6" ry="5.4" fill="#ff7ac8" transform="rotate(${r})" stroke="#7a1f5a" stroke-width="1"/>`).join("")}<circle r="3" fill="#ffe94a" stroke="#7a5a00" stroke-width="1"/></g>`;
+      case "glasses": return `<g fill="none" stroke="#1b1030" stroke-width="2.4"><circle cx="20" cy="-70" r="11"/><path d="M31 -71 Q36 -74 41 -71"/><path d="M9 -71 L0 -74"/></g>`;
+      case "bow": return `<g transform="translate(4,-86) rotate(-12)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#ff5fa2" stroke="#7a1f3d" stroke-width="1.4" stroke-linejoin="round"/><circle r="2.6" fill="#ffd1e6" stroke="#7a1f3d" stroke-width="1.2"/></g>`;
+      case "cap": return `<g><path d="M-6 -80 Q6 -98 30 -86 Q14 -84 -2 -74 Z" fill="#4f6bff" stroke="#1b1030" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -80 Q-14 -76 -16 -68" fill="none" stroke="#4f6bff" stroke-width="4" stroke-linecap="round"/><circle cx="-16" cy="-66" r="4" fill="#fff" stroke="#1b1030" stroke-width="1.6"/></g>`;
+      default: return "";
+    }
+  }
+
+  // The whole dinosaur, as SVG markup with no <svg> wrapper.
+  function g(o = {}) {
+    const c = COLORS[o.who] || COLORS.trexy, L = c.line, pose = o.pose || "stand";
+    const legs = {
+      stand: [leg(-7, 0, c, true), leg(6, 0, c)],
+      run1: [leg(-6, 24, c, true), leg(5, -26, c)],
+      run2: [leg(-6, -22, c, true), leg(5, 20, c)],
+      hop: [leg(-6, -38, c, true), leg(5, -48, c)],
+      sit: [`<ellipse cx="-2" cy="-6" rx="16" ry="7" fill="${c.bump}" stroke="${L}" stroke-width="2.4"/>`, `<ellipse cx="14" cy="-4" rx="9" ry="4.5" fill="${c.body}" stroke="${L}" stroke-width="2.4"/>`]
+    }[pose] || [];
+    const lift = pose === "sit" ? 8 : pose === "hop" ? -3 : 0;
+    const tail = pose === "hop" ? "M-12 -36 C-30 -42 -46 -44 -58 -38 C-48 -32 -34 -26 -12 -22 Z" : "M-12 -36 C-30 -36 -46 -30 -58 -16 C-50 -14 -34 -18 -12 -21 Z";
+    const arm = pose === "hop"
+      ? `<path d="M14 -40 q6 -6 11 -9" fill="none" stroke="${L}" stroke-width="6.4" stroke-linecap="round"/><path d="M14 -40 q6 -6 11 -9" fill="none" stroke="${c.body}" stroke-width="3.6" stroke-linecap="round"/>`
+      : `<path d="M15 -37 q7 0 9 5" fill="none" stroke="${L}" stroke-width="6.4" stroke-linecap="round"/><path d="M15 -37 q7 0 9 5" fill="none" stroke="${c.body}" stroke-width="3.6" stroke-linecap="round"/>
+         <path d="M24 -32 l1.6 2.6 M22.4 -31 l.4 3" stroke="${L}" stroke-width="1.4" stroke-linecap="round"/>`;
+    const body = `<g transform="translate(0,${lift})">
+      ${legs[0]}
+      <path d="${tail}" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
+      <ellipse cx="0" cy="-31" rx="21" ry="22" fill="${c.body}" stroke="${L}" stroke-width="2.4"/>
+      <ellipse cx="7" cy="-28" rx="12" ry="15" fill="${c.belly}"/>
+      <path d="M2 -36 q5 2 10 0 M1 -29 q6 2 12 0 M2 -22 q5 2 10 0" fill="none" stroke="${c.bump}" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+      ${legs[1]}
+      <circle cx="-8" cy="-60" r="3.6" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
+      <circle cx="-12" cy="-51" r="3.4" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
+      <circle cx="-15" cy="-42" r="3.2" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
+      <path d="M-6 -58 C-8 -80 12 -91 30 -85 C46 -80 53 -71 51 -60 C50 -50 41 -46 25 -46 C9 -46 -4 -46 -6 -58 Z" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
+      <ellipse cx="44" cy="-71" rx="1.8" ry="1.3" fill="${L}"/>
+      <ellipse cx="33" cy="-61" rx="4.6" ry="3" fill="${c.cheek}" opacity=".75"/>
+      ${face(o.face, c)}
+      ${acc(o.acc)}
+      ${arm}
+    </g>`;
+    return o.flip ? `<g transform="scale(-1,1)">${body}</g>` : body;
+  }
+
+  const svg = (o = {}, size = 120) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * 100 / 116)}" viewBox="${o.flip ? "-58" : "-62"} -96 116 100">${g(o)}</svg>`;
+  const url = (o, size) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg(o, size));
+
+  art.trexy = { COLORS, g, svg, url };
+})(window.Kit = window.Kit || {});
+/* ==== assets/characters/nova.js ==== */
+/**
+ * @file assets/characters/nova.js
+ * @about Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline, filled solid black and made huge, is also the giant shadow everyone calls Shadowspine.
+ * @provides Kit.art.nova { SHAPES, g(options), shadow(fill), svg(options, size), url(options, size), path2d() }
+ * @requires nothing
+ *
+ * options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }
+ * Drawing space: facing right, feet at y = 0, about 62 units tall (x from -54 to 50, y from -62 to 2).
+ * SHAPES are the outline pieces (tail, sail, body, legs, head, arm) as SVG path strings. shadow() fills them all one color,
+ * which is how Shadowspine is drawn, and path2d() gives the same pieces for canvas drawing.
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  const ell = (cx, cy, rx, ry) => `M${cx - rx} ${cy} A${rx} ${ry} 0 1 0 ${cx + rx} ${cy} A${rx} ${ry} 0 1 0 ${cx - rx} ${cy} Z`;
+  const SHAPES = {
+    tail: "M-12 -24 C-28 -24 -42 -16 -54 -4 C-42 -5 -28 -9 -10 -12 Z",
+    sail: "M-14 -30 C-16 -50 -4 -62 8 -60 C18 -58 22 -46 18 -30 Z",
+    body: ell(2, -20, 17, 14),
+    legBack: "M-9 -12 h8 v10 q0 2 3 2 h2 v2 h-13 z",
+    legFront: "M5 -12 h8 v10 q0 2 3 2 h2 v2 h-13 z",
+    head: "M10 -28 C13 -40 24 -43 31 -39 L46 -35 C51 -34 51 -27 46 -26 L28 -23 C19 -21 12 -23 10 -28 Z",
+    arm: "M14 -18 Q22 -16 26 -11 L23 -9 Q19 -13 13 -14 Z"
+  };
+  const C = { body: "#36c9d8", belly: "#fff3d6", sail: "#ff8a5c", stripe: "#ffd27a", line: "#0e3b52", cheek: "#ff8fb1" };
+
+  function face(f) {
+    const L = C.line;
+    const eye = (pr = 3, py = -34) => `<ellipse cx="24" cy="-34" rx="5.4" ry="6" fill="#fff" stroke="${L}" stroke-width="1.8"/><circle cx="25.5" cy="${py}" r="${pr}" fill="#1b1030"/><circle cx="26.6" cy="${py - 1.6}" r="1.1" fill="#fff"/>`;
+    switch (f) {
+      case "happy": return `<path d="M19 -34 Q24 -40 29 -34" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/><path d="M31 -27 Q38 -23 45 -28" fill="none" stroke="${L}" stroke-width="2" stroke-linecap="round"/>`;
+      case "worried": return `${eye(2.8, -33)}<path d="M18 -42 Q24 -44 29 -41" fill="none" stroke="${L}" stroke-width="1.8" stroke-linecap="round"/><path d="M32 -27 q3 -2 6 0 t6 0" fill="none" stroke="${L}" stroke-width="1.8" stroke-linecap="round"/>`;
+      case "surprised": return `${eye(2.2, -34)}<ellipse cx="40" cy="-27" rx="2.4" ry="2.8" fill="#7a1f3d"/>`;
+      default: return `${eye()}<path d="M31 -27 Q38 -25 45 -28" fill="none" stroke="${L}" stroke-width="1.8" stroke-linecap="round"/>`;
+    }
+  }
+
+  const lanternMarkup = () => `<g transform="translate(27,-6)">
+      <circle r="15" fill="url(#novaGlow)"/>
+      <path d="M0 -12 V-7" stroke="${C.line}" stroke-width="1.6"/>
+      <rect x="-5.5" y="-7" width="11" height="12" rx="3" fill="#fff8d6" stroke="${C.line}" stroke-width="1.6"/>
+      <path d="M0 -4.5 L1.3 -1.3 L4.5 0 L1.3 1.3 L0 4.5 L-1.3 1.3 L-4.5 0 L-1.3 -1.3 Z" fill="#ffd43b" transform="translate(0,-1)"/>
+    </g>`;
+
+  function g(o = {}) {
+    const L = C.line, sw = `stroke="${L}" stroke-width="2" stroke-linejoin="round"`;
+    const body = `
+      <path d="${SHAPES.tail}" fill="${C.body}" ${sw}/>
+      <path d="${SHAPES.sail}" fill="${C.sail}" ${sw}/>
+      <path d="M-8 -32 L-8 -54 M0 -32 L1 -59 M8 -32 L10 -58 M14 -32 L16 -50" stroke="${C.stripe}" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="${SHAPES.legBack}" fill="${C.body}" ${sw} opacity=".92"/>
+      <path d="${SHAPES.body}" fill="${C.body}" ${sw}/>
+      <ellipse cx="6" cy="-17" rx="9" ry="8" fill="${C.belly}"/>
+      <path d="${SHAPES.legFront}" fill="${C.body}" ${sw}/>
+      <path d="${SHAPES.head}" fill="${C.body}" ${sw}/>
+      <circle cx="44" cy="-33" r="1" fill="${L}"/>
+      <ellipse cx="31" cy="-29" rx="3" ry="2" fill="${C.cheek}" opacity=".8"/>
+      ${face(o.face)}
+      ${o.lantern === false ? "" : lanternMarkup()}
+      <path d="${SHAPES.arm}" fill="${C.body}" ${sw}/>`;
+    const defs = `<defs><radialGradient id="novaGlow"><stop offset="0" stop-color="#fff3a8" stop-opacity=".95"/><stop offset=".45" stop-color="#ffd43b" stop-opacity=".45"/><stop offset="1" stop-color="#ffd43b" stop-opacity="0"/></radialGradient></defs>`;
+    return defs + (o.flip ? `<g transform="scale(-1,1)">${body}</g>` : body);
+  }
+
+  // Shadowspine: Nova's outline, all one color. Same shapes, so the giant shadow really is her.
+  const shadow = (fill = "#000") => Object.values(SHAPES).map(d => `<path d="${d}" fill="${fill}"/>`).join("");
+  let p2d = null;
+  const path2d = () => p2d || (p2d = Object.values(SHAPES).map(d => new Path2D(d)));
+
+  const svg = (o = {}, size = 80) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * 70 / 110)}" viewBox="${o.flip ? "-52" : "-58"} -64 110 70">${g(o)}</svg>`;
+  const url = (o, size) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg(o, size));
+
+  art.nova = { SHAPES, COLORS: C, g, shadow, svg, url, path2d };
+})(window.Kit = window.Kit || {});
+/* ==== assets/ship/glitch-ship.js ==== */
+/**
+ * @file assets/ship/glitch-ship.js
+ * @about A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, and a pilot can peek out of the cockpit.
+ * @provides Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }
+ * @requires nothing
+ *
+ * config  = { cockpit, wings, thrusters, core, paint } (any can be missing)
+ * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit }
+ * Drawing space: facing right, centered on 0,0, viewBox -64 -42 128 84.
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  const PARTS = {
+    cockpit: { name: "Cockpit", options: [["bubble", "Bubble dome"], ["dino", "Dino head"], ["crystal", "Crystal"]] },
+    wings: { name: "Wings", options: [["fern", "Fern leaf"], ["bat", "Bat wings"], ["bolt", "Lightning"]] },
+    thrusters: { name: "Thrusters", options: [["one", "One big blaster"], ["two", "Twin jets"], ["three", "Triple jets"]] },
+    core: { name: "Glitch Core", options: [["pink", "Hot pink"], ["cyan", "Laser cyan"], ["lime", "Glitch lime"], ["gold", "Star gold"]] }
+  };
+  const PART_ORDER = ["thrusters", "wings", "core", "cockpit"];
+  const PAINTS = {
+    lime: { label: "Glitch Lime", hull: "#8dff5a", trim: "#2a0f5c", wing: "#ffe94a" },
+    magenta: { label: "Hot Magenta", hull: "#ff5ad9", trim: "#fff36b", wing: "#9b6bff" },
+    cyan: { label: "Laser Cyan", hull: "#55f2ff", trim: "#ff3ec8", wing: "#ff3ec8" },
+    orange: { label: "Lava Orange", hull: "#ff9b45", trim: "#3a1bff", wing: "#ffe94a" },
+    purple: { label: "Midnight Purple", hull: "#9468ff", trim: "#5cffb0", wing: "#5cffb0" }
+  };
+  const PAINT_ORDER = ["lime", "magenta", "cyan", "orange", "purple"];
+  const CORES = { pink: ["#ffd1f3", "#ff3ec8"], cyan: ["#d6fcff", "#21d9ff"], lime: ["#efffd0", "#8cf21f"], gold: ["#fff6c2", "#ffc21a"] };
+  const LINE = "#140a2e";
+
+  function svg(c, o = {}) {
+    const P = PAINTS[c.paint] || { hull: "#cfc8ff", trim: "#5b4bb0", wing: "#a99be0" }, hull = P.hull, trim = P.trim, wf = P.wing;
+    const core = CORES[c.core] || CORES.pink;
+    const G = `fill="none" stroke="#a99be0" stroke-width="1.6" stroke-dasharray="3 3"`;
+    const HL = `fill="rgba(255,233,74,.2)" stroke="#ffe94a" stroke-width="2" stroke-dasharray="3 3"`;
+    const S = `stroke="${LINE}" stroke-width="2" stroke-linejoin="round"`;
+    const part = (key, has, full, ghost) => has ? full : (o.hl === key ? ghost.replaceAll(G, HL) : (o.ghost ? ghost : ""));
+    let s = "";
+
+    // Thrusters and flames (behind the hull)
+    const nz = { one: [0], two: [-8, 8], three: [-11, 0, 11] }[c.thrusters] || [];
+    const nh = { one: 9, two: 5.5, three: 4.2 }[c.thrusters] || 6;
+    if (o.flame && c.thrusters) s += `<g class="sflame">` + nz.map(y => `<path d="M-44 ${y - nh * .8} C-58 ${y - nh * .6} -66 ${y} -74 ${y} C-66 ${y} -58 ${y + nh * .6} -44 ${y + nh * .8} Z" fill="${core[1]}"/><path d="M-44 ${y - nh * .45} C-52 ${y - nh * .3} -57 ${y} -62 ${y} C-57 ${y} -52 ${y + nh * .3} -44 ${y + nh * .45} Z" fill="${core[0]}"/>`).join("") + `</g>`;
+    s += part("thrusters", c.thrusters, nz.map(y => `<path d="M-32 ${y - nh} L-45 ${y - nh - 2} L-45 ${y + nh + 2} L-32 ${y + nh} Z" fill="#4a4470" ${S}/><rect x="-47" y="${y - nh - 3}" width="4" height="${nh * 2 + 6}" rx="1.5" fill="${trim}" ${S}/>`).join(""),
+      `<path d="M-32 -9 L-45 -11 L-45 11 L-32 9 Z" ${G}/>`);
+
+    // Wings (under and behind the hull)
+    const wing = {
+      fern: `<path d="M-2 10 C-6 30 -26 42 -52 40 C-44 28 -30 14 -14 7 Z" fill="${wf}" ${S}/><path d="M-6 14 L-46 38 M-14 19 L-18 30 M-22 25 L-26 35 M-18 16 L-28 19 M-28 24 L-38 26" stroke="${LINE}" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+             <path d="M-2 -18 C-8 -32 -22 -38 -36 -36 C-28 -28 -20 -22 -12 -17 Z" fill="${wf}" ${S}/>`,
+      bat: `<path d="M0 8 L-48 38 Q-40 28 -33 35 Q-28 25 -20 30 Q-17 20 -8 21 Z" fill="${wf}" ${S}/><path d="M-4 -18 L-36 -38 Q-29 -30 -24 -33 Q-20 -25 -13 -25 Z" fill="${wf}" ${S}/>`,
+      bolt: `<path d="M2 8 L-18 19 L-9 21 L-42 40 L-7 24 L-16 21 L6 12 Z" fill="${wf}" ${S}/><path d="M-2 -18 L-18 -27 L-11 -28 L-34 -40 L-6 -29 L-13 -27 L2 -20 Z" fill="${wf}" ${S}/>`
+    };
+    s += part("wings", c.wings, wing[c.wings] || "", `<path d="M-2 10 C-6 30 -26 42 -52 40 C-44 28 -30 14 -14 7 Z" ${G}/>`);
+
+    // Hull, with a trim stripe
+    s += `<path d="M-34 -10 C-34 -18 -26 -20 -16 -20 L20 -20 C30 -20 37 -11 39 0 C37 11 30 18 20 18 L-16 18 C-26 18 -34 16 -34 8 Z" fill="${hull}" ${S}/>`;
+    s += `<path d="M-30 6 H34" stroke="${trim}" stroke-width="4" stroke-linecap="round"/><path d="M-24 -14 H12" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>`;
+
+    // Glitch core: a glowing porthole
+    s += part("core", c.core, `<circle cx="-10" cy="-3" r="8.5" fill="${core[1]}" opacity=".35"/><circle cx="-10" cy="-3" r="6" fill="${core[1]}" ${S}/><circle cx="-10" cy="-3" r="2.6" fill="${core[0]}"/>`,
+      `<circle cx="-10" cy="-3" r="6" ${G}/>`);
+
+    // Cockpit, with an optional pilot
+    const pilot = o.pilot || "";
+    const cockpit = {
+      bubble: `${pilot}<path d="M2 -19 C4 -38 28 -38 32 -17 Z" fill="#bff6ff" fill-opacity=".55" ${S}/><path d="M9 -27 Q14 -33 21 -33" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`,
+      dino: `${pilot}<path d="M4 -19 C6 -34 24 -34 28 -19 Z" fill="#bff6ff" fill-opacity=".55" ${S}/>
+             <path d="M30 -16 C42 -22 56 -18 59 -7 C60 2 54 7 46 7 L38 6 C38 0 36 -10 30 -16 Z" fill="${hull}" ${S}/>
+             <circle cx="46" cy="-11" r="3.4" fill="#fff" ${S}/><circle cx="47" cy="-11" r="1.7" fill="${LINE}"/>
+             <path d="M40 6 l2.6 4.4 l2.6 -4.4 l2.6 4.4 l2.6 -4.4" fill="#fff" stroke="${LINE}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="56" cy="-9" r="1" fill="${LINE}"/>`,
+      crystal: `${pilot}<path d="M3 -19 L11 -36 L25 -36 L33 -19 Z" fill="#e7c9ff" fill-opacity=".6" ${S}/><path d="M11 -36 L15 -19 M25 -36 L21 -19 M7 -27 H29" stroke="#fff" stroke-width="1.4" opacity=".75"/>`
+    };
+    s += part("cockpit", c.cockpit, cockpit[c.cockpit] || "", `<path d="M2 -19 C4 -38 28 -38 32 -17 Z" ${G}/>`);
+    return s;
+  }
+  const box = (inner, cls = "") => `<svg class="${cls}" viewBox="-64 -42 128 84" aria-hidden="true">${inner}</svg>`;
+  const url = (c, o, size = 160) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * 84 / 160)}" viewBox="-80 -42 160 84">${svg(c, o)}</svg>`);
+
+  // Small silhouettes for the "parts found" slots. The game sets fill and stroke.
+  const partIcons = {
+    thrusters: `<svg viewBox="-16 -16 32 32"><path d="M-4 -9 L10 -12 L10 12 L-4 9 Z M-12 -4 L-4 -6 L-4 6 L-12 4 Z" class="pi"/></svg>`,
+    wings: `<svg viewBox="-16 -16 32 32"><path d="M8 -4 C2 6 -6 12 -14 13 C-9 6 -2 -2 4 -8 Z" class="pi"/></svg>`,
+    core: `<svg viewBox="-16 -16 32 32"><circle r="10" class="pi"/><circle r="4" class="pi2"/></svg>`,
+    cockpit: `<svg viewBox="-16 -16 32 32"><path d="M-12 8 C-10 -12 10 -12 12 8 Z" class="pi"/></svg>`
+  };
+
+  art.ship = { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg, box, url, partIcons };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/glitch-hub.js ==== */
+/**
+ * @file assets/music/glitch-hub.js
+ * @about "Glitch Hub Stomp": the stompy theme for the title screen and the crash pad. 166 bpm, D minor, hardcore kick on every beat. Song format is described in kit/music.js.
+ * @provides Kit.songs.glitchHub
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).glitchHub = {
+    title: "Glitch Hub Stomp", bpm: 166, root: 50, oct: 12, wave: "square", pluck: true, leadVol: .032, leadLen: 1.1, pad: .016, padWave: "sawtooth", bassWave: "sawtooth", bassVol: .05, bassLen: .8, hatVol: .028,
+    lead: [0,_,0,12, 0,_,10,_, 7,_,7,12, 7,_,5,3, 0,_,0,12, 0,_,10,_, 12,_,15,_, 14,12,10,7],
+    chords: [[0,3,7],[-2,2,5],[-4,0,3],[-5,-1,2]], bass: [0,1,0,1,0,1,0,2], kick: [1,0,1,0,1,0,1,0], hat: [0,1,0,1,0,1,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/echo-rings.js ==== */
+/**
+ * @file assets/music/echo-rings.js
+ * @about "Echo Rings": the first portal: bouncy and bright, and it hides the first piece of the weird music. 168 bpm, A major. Song format is described in kit/music.js.
+ * @provides Kit.songs.echo
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).echo = {
+    title: "Echo Rings", bpm: 168, root: 57, oct: 12, wave: "square", pluck: true, leadVol: .03, leadLen: 1.2, pad: .016, padWave: "triangle", bassWave: "sawtooth", bassVol: .05, bassLen: .8, hatVol: .026,
+    lead: [7,_,4,_,5,7,9,_, 12,_,12,_,9,_,7,_, 7,_,4,_,5,7,9,_, 12,14,12,9,7,_,4,_],
+    chords: [[0,4,7],[5,9,12],[-3,0,4],[7,11,14]], bass: [0,1,0,1,0,1,0,1], kick: [1,0,1,0,1,0,1,0], hat: [0,1,0,1,0,1,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/fern-moon.js ==== */
+/**
+ * @file assets/music/fern-moon.js
+ * @about "Fern Moon Feast": the second portal: a happy, leafy stomp with the second piece of the weird music. 170 bpm, G major. Song format is described in kit/music.js.
+ * @provides Kit.songs.fern
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).fern = {
+    title: "Fern Moon Feast", bpm: 170, root: 55, oct: 12, wave: "triangle", pluck: true, leadVol: .055, leadLen: 1.2, pad: .018, padWave: "sawtooth", bassWave: "square", bassVol: .04, bassLen: .8, hatVol: .026,
+    lead: [0,_,4,7, 12,_,7,4, 7,_,4,_,2,_,0,_, 0,_,4,7, 12,_,14,12, 7,_,4,_,2,_,0,_],
+    chords: [[0,4,7],[-3,0,4],[5,9,12],[7,11,14]], bass: [0,1,0,1,0,1,0,2], kick: [1,0,1,0,1,0,1,0], hat: [0,1,0,1,0,1,1,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/lantern-lab.js ==== */
+/**
+ * @file assets/music/lantern-lab.js
+ * @about "Lantern Lab": the third portal: glowing and quick, with the third piece of the weird music. 172 bpm, F major. Song format is described in kit/music.js.
+ * @provides Kit.songs.lantern
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).lantern = {
+    title: "Lantern Lab", bpm: 172, root: 53, oct: 12, wave: "sawtooth", pluck: true, leadVol: .024, leadLen: 1.1, pad: .016, padWave: "triangle", bassWave: "sawtooth", bassVol: .05, bassLen: .8, hatVol: .028,
+    lead: [4,5,7,_,12,_,11,9, 7,_,5,_,4,_,2,_, 4,5,7,_,12,_,11,9, 12,_,14,_,16,_,_,_],
+    chords: [[0,4,7],[2,5,9],[5,9,12],[7,11,14]], bass: [0,1,0,1,0,1,0,1], kick: [1,0,1,0,1,0,1,0], hat: [0,1,0,1,0,1,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/whirlpool.js ==== */
+/**
+ * @file assets/music/whirlpool.js
+ * @about "Whirlpool Warp": the fourth portal: swirly and fast, and its melody is the whole weird tune at last. 174 bpm, E major. Song format is described in kit/music.js.
+ * @provides Kit.songs.whirl
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).whirl = {
+    title: "Whirlpool Warp", bpm: 174, root: 52, oct: 12, wave: "square", pluck: true, leadVol: .03, leadLen: 1.2, pad: .018, padWave: "sawtooth", bassWave: "sawtooth", bassVol: .05, bassLen: .8, hatVol: .028,
+    lead: [7,_,4,_,5,7,9,_, 7,_,4,_,2,_,0,_, 4,5,7,_,12,_,11,9, 7,_,_,7,9,_,12,_],
+    chords: [[0,4,7],[5,9,12],[-3,0,4],[7,11,14]], bass: [0,1,0,1,0,1,0,2], kick: [1,0,1,0,1,0,1,0], hat: [1,1,0,1,1,1,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/shadow-run.js ==== */
+/**
+ * @file assets/music/shadow-run.js
+ * @about "Shadow Run": the chase through the Shadow Gate: dark, pounding, and a little spooky. 176 bpm, D minor. Song format is described in kit/music.js.
+ * @provides Kit.songs.shadowRun
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).shadowRun = {
+    title: "Shadow Run", bpm: 176, root: 50, oct: 12, wave: "sawtooth", pluck: true, leadVol: .026, leadLen: 1, pad: .02, padWave: "sawtooth", bassWave: "sawtooth", bassVol: .06, bassLen: .8, hatVol: .03,
+    lead: [0,_,0,_,3,_,0,_, 6,_,5,_,3,_,0,_, 0,_,0,_,3,_,7,_, 6,_,3,_,1,_,0,_],
+    chords: [[0,3,7],[0,3,6],[-2,1,5],[-4,0,3]], bass: [0,1,0,1,0,1,0,1], kick: [1,0,1,0,1,0,1,1], hat: [0,1,0,1,0,1,0,1]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/nova-lullaby.js ==== */
+/**
+ * @file assets/music/nova-lullaby.js
+ * @about "Nova's Lullaby": the weird music itself: a high, squeaky music-box lullaby. 100 bpm, C major, no drums. Song format is described in kit/music.js.
+ * @provides Kit.songs.lullaby
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).lullaby = {
+    title: "Nova's Lullaby", bpm: 100, root: 72, oct: 0, wave: "sine", pluck: true, leadVol: .07, leadLen: 2.4, pad: .012, padWave: "sine", bassWave: "sine", bassVol: .03, bassLen: 6,
+    lead: [7,_,4,_,5,7,9,_, 7,_,4,_,2,_,0,_, 4,5,7,_,12,_,11,9, 7,_,_,_,_,_,_,_],
+    chords: [[0,4,7],[0,4,7],[-3,0,4],[-5,-1,2]], bass: [1,0,0,0,0,0,0,0]
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/home-stomp.js ==== */
+/**
+ * @file assets/music/home-stomp.js
+ * @about "Home Stomp": the ending: the lullaby turned into a big hardcore party. 170 bpm, C major. Song format is described in kit/music.js.
+ * @provides Kit.songs.homeStomp
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  const _ = null;
+  (Kit.songs = Kit.songs || {}).homeStomp = {
+    title: "Home Stomp", bpm: 170, root: 60, oct: 12, wave: "square", pluck: true, leadVol: .032, leadLen: 1.2, pad: .018, padWave: "sawtooth", bassWave: "sawtooth", bassVol: .05, bassLen: .8, hatVol: .028,
+    lead: [7,_,4,_,5,7,9,_, 7,_,4,_,2,_,0,_, 4,5,7,_,12,_,11,9, 7,_,12,_,7,_,12,_],
+    chords: [[0,4,7],[-3,0,4],[5,9,12],[7,11,14]], bass: [0,1,0,1,0,1,0,2], kick: [1,0,1,0,1,0,1,0], hat: [0,1,0,1,0,1,1,1]
+  };
+})(window.Kit = window.Kit || {});
 /* ==== library: parts share one scope ==== */
 (() => {
 "use strict";
 /* ==== site/page.js ==== */
 /**
  * @file site/page.js
- * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot and rocket previews, the song player, and the file browser that can show any file's source.
- * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js
+ * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.
+ * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js
  */
 const { $, esc } = Kit.util;
 const CAT = JSON.parse($("#catalog").textContent);
@@ -1890,7 +2705,7 @@ const base = p => p.split("/").pop().replace(/\.[a-z]+$/, "");
 const ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.3 5.3a1 1 0 0 1 1.4 0l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 1 1-1.4-1.4l4.3-4.3H4a1 1 0 1 1 0-2h13.6l-4.3-4.3a1 1 0 0 1 0-1.4z"/></svg>`;
 
 /* Header numbers */
-$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · 4 characters`;
+$("#stats").textContent = `${FILES.length} files · ${GAMES.length} games · ${Object.keys(Kit.songs).length} songs · ${document.querySelectorAll("#cast figure:not(.rocket-tile)").length} characters`;
 
 /* Games and versions */
 $("#gameList").innerHTML = GAMES.map(g => {
@@ -1917,7 +2732,7 @@ $("#gameList").innerHTML = GAMES.map(g => {
   $("#flowmap").innerHTML = `
     <div class="stack">
       <div class="node"><h3>Content <span>${count("Content")} files</span></h3><p>Questions tagged easy to hard, question generators, word lists</p>${chip(names("Content", /\.js$/))}</div>
-      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(names("Assets", /\.(js|svg)$/).filter(n => !/^(theme|lumina|nimbus|glacia|meridian|corona|reborn|gradients|defs|plain-ground)$/.test(n)).concat(["7 songs"]))}</div>
+      <div class="node"><h3>Assets <span>${count("Assets")} files</span></h3><p>Characters, rocket, worlds, map art, songs, icons</p>${chip(FILES.filter(f => f.layer === "Assets" && /\.(js|svg)$/.test(f.path) && !f.path.startsWith("assets/music/") && !/\/(gradients|defs|plain-ground)\.svg$/.test(f.path)).map(f => base(f.path)).concat([`${FILES.filter(f => f.path.startsWith("assets/music/")).length} songs`]))}</div>
       <div class="node"><h3>Kit <span>${count("Kit")} files</span></h3><p>Engines any game can use</p>${chip(names("Kit", /\.js$/))}</div>
     </div>
     <div class="arrow">${ARROW}</div>
@@ -1954,11 +2769,30 @@ function drawRocket() { $("#rocketArt").innerHTML = R.svg(rocketCfg, { flame: tr
 $("#rocketControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; rocketCfg[s.dataset.k] = s.value || undefined; drawRocket(); });
 drawRocket();
 
+/* T-Rexy, Nova, and the glitch ship */
+const TX = Kit.art.trexy, NV = Kit.art.nova, SH = Kit.art.ship;
+const trexyFaces = [["smile", "Smile"], ["happy", "Happy"], ["worried", "Worried"], ["surprised", "Surprised"], ["think", "Thinking"], ["dizzy", "Dizzy"]];
+$("#trexyFaces").innerHTML = trexyFaces.map(([f, l], i) => `<button type="button" data-tface="${f}" aria-pressed="${i === 0}">${l}</button>`).join("");
+const drawTrexy = f => { $("#galleryTrexy").innerHTML = TX.g({ face: f }); };
+$("#trexyFaces").addEventListener("click", e => { const b = e.target.closest("[data-tface]"); if (!b) return; $("#trexyFaces").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); drawTrexy(b.dataset.tface); });
+drawTrexy("smile");
+const drawNova = () => { $("#galleryNova").innerHTML = $("#shadowBox").checked ? NV.shadow("#000") : NV.g({ face: "happy" }); };
+$("#shadowBox").addEventListener("change", drawNova);
+drawNova();
+const shipCfg = { cockpit: "dino", wings: "fern", thrusters: "two", core: "pink", paint: "cyan" };
+const shipField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${shipCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
+$("#shipControls").innerHTML = SH.PART_ORDER.map(k => shipField(k, SH.PARTS[k].name, [["", "Not found yet"], ...SH.PARTS[k].options])).join("")
+  + shipField("paint", "Paint", SH.PAINT_ORDER.map(p => [p, SH.PAINTS[p].label]));
+const pilot = `<g transform="translate(13,-14) scale(.27)">${TX.g({ face: "happy" })}</g>`;
+function drawShip() { $("#shipArt").innerHTML = SH.svg(shipCfg, { flame: true, ghost: true, pilot }); }
+$("#shipControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; shipCfg[s.dataset.k] = s.value || undefined; drawShip(); });
+drawShip();
+
 /* Songs */
 const player = Kit.music.create(Kit.songs);
 player.setEnabled(false);
 let playing = null;
-const songFile = id => FILES.find(f => f.path === `assets/music/${id}.js`) || {};
+const songFile = id => FILES.find(f => f.path.startsWith("assets/music/") && f.provides === `Kit.songs.${id}`) || {};
 function renderSongs() {
   $("#songList").innerHTML = Object.keys(Kit.songs).map(id => {
     const s = Kit.songs[id], on = playing === id, about = (songFile(id).about || "").replace(/^"[^"]*":\s*/, "").replace(/ Song format is described in kit\/music\.js\.$/, "");

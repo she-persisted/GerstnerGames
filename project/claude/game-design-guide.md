@@ -1,6 +1,6 @@
 # Game Design Guide for Child I
 
-Read this before designing or building any new game in this project. It records what Mom and Child I asked for while making The Inner Flame and Starward (October 10 to 11, 2026), so new games start from here instead of relearning it. All game source lives in the Game Library, in the GitHub repo she-persisted/GerstnerGames; see claude/game-library.md.
+Read this before designing or building any new game in this project. It records what Mom and Child I asked for while making The Inner Flame and Starward (October 10 to 11, 2026) and Mini Game Survival (October 17, 2026), so new games start from here instead of relearning it. All game source lives in the Game Library, in the GitHub repo she-persisted/GerstnerGames; see claude/game-library.md.
 
 Tags after each item:
 - [asked] Mom or Child I requested or approved it directly.
@@ -15,9 +15,12 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - He likes building rockets and he likes music. [asked]
 - He plays on his Chromebook. Every game should build typing skills. [asked]
 - Friends play too, and the games should let them compete. [asked]
+- Friends help design, too. Mini Game Survival was designed with Child I and two friends for grades 2 through 6, so its adaptive levels reach lower and higher than Starward's. [asked]
 
 ## How Mom likes to work
 - Designing happens out loud in voice mode, with Claude asking Child I one question at a time. Building happens in text mode. [asked]
+- When friends design together, Mom points to a kid for each question. When a question invites it, every kid adds an idea (for Mini Game Survival, each of the three kids invented one mini game). [asked]
+- When the kids say "surprise us" (for example, the mystery's twist), don't ask for the answer. Build it, keep it out of the conversation, and put a spoiler warning on the game doc. [asked]
 - For learning content, quiz interactively and make it fun instead of lecturing. [asked]
 - Before building, read the full design list back and get a yes. [asked]
 - Changes arrive in batches. Restate each batch as a numbered list, test each item, and report back against the list. [observed]
@@ -36,11 +39,17 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Child I's own ideas come first. He came up with the tall, scared robot hero who starts alone and gains friends who help, plus a magic dog. [asked]
 - The dog looks like a fluffy Bernedoodle. Call it a puppy and never name the breed. [asked]
 - No copyrighted characters. When she asked for a robot that looks like it's from Star Wars, Claude made an original robot instead. [limit]
+- Mysteries have to hang together: every clue points at one answer, and kids can solve it from what they collected. Mini Game Survival gives four clues (each with a real science fact), then asks four questions before the reveal. [asked]
+- Easter eggs should add depth to the story, not only jokes: secret diary pages that explain the villain's plan, a hidden word to type, footprints and a whispered glitch message that hint at the twist. [asked]
+- A villain can turn out to be a friend when the reason makes sense: Shadowspine was a tiny, lonely, scared baby Spinosaurus making a giant shadow. [built]
 
 ## Gameplay
 - Difficulty adapts to how he plays: harder when he's doing well, easier when he struggles. [asked] In Starward v4, typing speed, math, and word puzzles each have their own level. Two clean answers in a row raise a level, two hard-won answers or one "Show me" lower it, and questions are picked when they appear so they match the current level. [built]
 - Every playthrough must be different. [asked] Starward does this with large question banks, freshly generated math problems, and a list of questions already seen on that computer so they don't repeat. [built]
 - Mix puzzle types. She asked for riddles plus fill-in-the-blank sentences. [asked] Claude added word scrambles, math word problems, missing numbers, place value, rounding, number patterns, planet order, and odd one out. [built]
+- A game can trade typing races for other mini games. For Mini Game Survival the kids asked for no typing games, and to type in the clues they find instead. Typing practice stays (each clue is typed into a notebook), next to obstacle runs, memory jigsaws, and a letter-guessing game. [asked]
+- Obstacle runs like Geometry Dash: the hero runs by himself, hops, bounces on pads, flies a little ship, and touching a spike sends him back to the start. [asked] After three crashes a Checkpoints helper appears, and every level is checked by a solver before it's used, so it can always be beaten. [built]
+- Letter-guessing games are kind: wrong letters burn fuel cells instead of drawing a hangman, and running out shows the word to type. [built]
 - Puzzles should match the game's world. For a space game that means space, robotics, and science. [asked]
 - Rewards take effort. He has to explore and solve puzzles to earn each item, and each rocket part takes three challenges, not one. [asked]
 - Upgrades come only from the home area. Out in the wider world he collects something else instead (songs, in Starward). [asked]
@@ -52,14 +61,20 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Helpers make sure he never stays stuck. [asked] After three wrong answers, a "Show me" button appears, and he types the answer to move on. [built]
 - Kids can tap the dog to sniff for a hint. [asked] In Starward v6, tapping any friend on the stage or in the friends bar during a puzzle uses that friend's helper (Sunny sniffs, Rigel peeks, Professor Kepler ponders); outside a puzzle the friend just hops and Sunny woofs. Sunny tells him "Tap me when you're stuck!" when she joins, and a friend hops when their hint button starts pulsing. [built]
 - Give positive reinforcement through the hero's face: happy and surprised reactions to what he does. [asked]
+- Tap the hero for help when there are no friends to tap: in Mini Game Survival, tapping T-Rexy uses Scan or Fix one. [built]
 - Building and customizing: he picks the style of each rocket part and the paint color. [built]
 
 ## Music and sound
 - Each place has its own background music. [asked]
 - Songs are collectibles, kept in a jukebox on the home screen. [asked]
 - She rejected the idea of correct answers adding notes to a melody. [asked]
+- Music can match the game's energy: Mini Game Survival's songs are hardcore (fast, a kick on every beat). [asked] Its mystery hides in the music: each portal's song carries a piece of the weird tune. [built]
 - All music and sound effects are generated in code, so nothing is copyrighted. [built]
 - Music starts after the first click or key press, because browsers block sound until then. [limit]
+
+## Art
+- The hero should stand out: cute and cartoony against the world. Mini Game Survival puts a cute green T-Rex in a glitchy, bright, flashing neon nebula, and the villain is a solid black silhouette. [asked]
+- Keep flashing gentle: no more than about one glitch a second, never more than three flashes a second, and none at all when the computer asks for reduced motion. [limit]
 
 ## Scoring
 - An arcade-style high score board sits on the home screen: one list for everyone, no logins, and players type a name at the end. [asked]
@@ -68,14 +83,14 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - High scores carry over to every new version, both the shared board and the scores saved on each computer, because new versions update the game's permanent home page instead of starting a new page. Archive pages of older versions start with an empty board. [asked]
 
 ## Sharing
-- Every new version ships with a QR card that opens it, styled with the game's own colors and icons (`library/build/qr.py`), checked to scan before it's sent to Mom. [asked]
+- Every new version ships with a QR card that opens it, styled with the game's own colors and icons (`library/build/qr.py`; a game sets its look with a "qr" block in its game.json), checked to scan before it's sent to Mom. [asked]
 
 ## Technical defaults that worked
 - Source lives in the Game Library as separate files: shared engines in kit/, art and music in assets/, questions and words in content/, game-only parts in games/<id>/. Every file starts with a header saying what it does, what it provides, and what it needs. [asked]
 - Each game is built into one self-contained web page, published as an artifact, that runs in Chrome on the Chromebook with no install.
 - Keyboard first: arrow keys or WASD to move, Enter to continue, and typing for answers. The mouse and touchscreen also work, including tapping friends for hints.
 - Progress and skill levels save in the browser, so he can stop and pick up later.
-- Every change passes `library/build/playtest.py`, which plays Starward start to finish in a headless browser. Visual changes also get a screenshot check. [asked]
+- Every change passes `library/build/playtest.py`, which plays Starward and Mini Game Survival start to finish in a headless browser (Mini Game Survival's runs are finished by the level's own solution). Visual changes also get a screenshot check; `--shots=DIR` saves one of every Mini Game Survival screen. [asked]
 
 ## Starting a new game: questions for Child I, one at a time
 1. What is the game about, and where does it happen?

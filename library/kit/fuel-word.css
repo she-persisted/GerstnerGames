@@ -1,0 +1,30 @@
+/**
+ * @file kit/fuel-word.css
+ * @about Styles for the letter-guessing game: the hint, the secret word's letter boxes, the fuel tank cells (they flicker when zapped), and the on-screen letter keys.
+ * @requires kit/base.css, kit/puzzle-ui.css
+ */
+.fw-hint{margin:0;font-size:clamp(1.05rem,1rem + .4vw,1.25rem);line-height:1.45;max-width:40ch}
+.fw-hint b{color:var(--ember-gold);font-weight:700}
+.fw-word{margin:0;display:flex;flex-wrap:wrap;gap:8px;min-height:3rem}
+.fw-word .ch{width:2.4rem;height:2.9rem;display:grid;place-items:center;border-bottom:4px solid var(--dust);font:700 1.8rem/1 var(--font-type);color:var(--starlight);text-transform:uppercase}
+.fw-word .ch.on{border-color:var(--good);color:var(--good)}
+.fw-word .sp{width:1rem}
+.fw-word.won .ch{border-color:var(--good);color:var(--good);animation:fwhop .5s cubic-bezier(.3,1.6,.5,1) both}
+.fw-word.won .ch:nth-child(2n){animation-delay:.06s}
+@keyframes fwhop{0%{transform:translateY(0)}40%{transform:translateY(-10px)}100%{transform:none}}
+.fw-tank{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:12px;border:2px solid var(--nebula-hi);background:var(--void);align-self:flex-start}
+.fw-tank .cell{width:22px;height:26px;border-radius:5px;background:var(--nebula-hi);transition:background .25s}
+.fw-tank .cell.on{background:linear-gradient(180deg,var(--good),color-mix(in srgb,var(--good) 55%,var(--void)));box-shadow:0 0 10px -2px var(--good)}
+.fw-tank.low .cell.on{background:var(--warn);box-shadow:0 0 10px -2px var(--warn)}
+.fw-tank.zap{animation:fwzap .4s steps(2) 1}
+@keyframes fwzap{50%{transform:translateX(4px);filter:hue-rotate(80deg)}}
+.fw-lbl{margin-left:6px;font:400 .7rem var(--font-arcade);color:var(--dust)}
+.fw-keys{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:5px}
+.fw-key{font:700 1rem/1 var(--font-type);padding:.55em 0;border-radius:8px;border:1.5px solid var(--nebula-hi);background:var(--void);color:var(--starlight);cursor:pointer}
+.fw-key:hover:not(:disabled){border-color:var(--ember-gold)}
+.fw-key:focus-visible{outline:3px solid var(--ember-gold);outline-offset:2px}
+.fw-key:disabled{cursor:default}
+.fw-key.ok{background:color-mix(in srgb,var(--good) 30%,var(--void));border-color:var(--good);color:var(--good)}
+.fw-key.no{opacity:.35;text-decoration:line-through}
+@media (max-width:520px){ .fw-keys{grid-template-columns:repeat(7,minmax(0,1fr))} }
+@media (prefers-reduced-motion:reduce){ .fw-word.won .ch,.fw-tank.zap{animation:none !important} .fw-tank .cell{transition:none !important} }

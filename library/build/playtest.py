@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
 @file build/playtest.py
-@about Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward start to finish (map, puzzles, digging, flights, the brave words, the ending and high score). Must pass before every commit that changes library/.
+@about Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.
 @requires build/build.py
 
 Usage, from anywhere:
-  python3 library/build/playtest.py            everything (about 2 minutes)
-  python3 library/build/playtest.py --quick    skip the full Starward playthrough
+  python3 library/build/playtest.py            everything (about 4 minutes)
+  python3 library/build/playtest.py --quick    skip the full playthroughs
+  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen
 
 Needs Python 3 and Playwright. If missing:
   pip install playwright            (add --break-system-packages on Claude's workspace)
@@ -32,6 +33,16 @@ Checks:
        "Fly again"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.
      - All planet puzzles answered, the brave words typed, and the ending reached.
      - High score: a name saves, gets a rank, and shows on the board as a score on this computer.
+  5. Mini Game Survival playthrough, with a fresh browser:
+     - Title, then the story lines (Enter), then the crash pad: type ROAR and poke Shadowspine (Easter eggs), click each portal.
+     - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the
+       Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and
+       takes the secret route, so all four hidden diary pages must be found.
+     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles.
+     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
+     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
+     - After the first portal the page is reloaded, and "Keep going" must resume on the crash pad with the clue saved.
+     - Right answers move on by themselves; the high score saves and the secret ending shows (all four pages).
 Prints PASS or FAIL with the reasons, and exits 1 on FAIL.
 """
 import filecmp
@@ -57,6 +68,8 @@ WRAP_HEAD = ('<!doctype html><html><head><meta charset=utf8><meta name=viewport 
              'img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>\n')
 WRAP_TAIL = "\n</body></html>"
 failures = []
+DEBUG = "-v" in sys.argv[1:]                     # print every screen the playthroughs see
+SHOTS = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--shots=")), "")  # save a screenshot of each screen here
 
 
 def fail(msg):
@@ -405,6 +418,344 @@ def playthrough(browser, base, rel):
     ctx.close()
 
 
+# 5. Mini Game Survival playthrough ------------------------------------------
+
+MGS_STATE_JS = r"""() => {
+  const panel = document.querySelector('#panel'), M = window.__mgs || {}, vis = el => el && !el.hidden && el.offsetParent !== null;
+  const sig = (panel.innerText || '').slice(0, 140) + '|' + (M.step ?? '');
+  if (document.querySelector('#hsForm')) return { kind: 'end', sig };
+  if (document.querySelector('#playBtn')) return { kind: 'title', sig, resume: !!document.querySelector('#resumeBtn') };
+  if (M.mode === 'hub') return { kind: 'hub', sig };
+  if (M.mode === 'run') { const r = M.run(); return { kind: 'run', sig: sig + '|' + (r ? r.attempts + ':' + Math.floor(r.x) : ''), run: r }; }
+  const jig = document.querySelector('.jig:not(.solved)');
+  if (jig && document.querySelector('#scene.jigmode')) return { kind: 'jigsaw', sig: sig + '|' + [...jig.querySelectorAll('.jt')].map(t => t.dataset.home).join(',') };
+  const fw = panel.querySelector('.fuelword');
+  if (fw) {
+    const out = panel.querySelector('#fwAns');
+    if (out && !out.disabled) return { kind: 'refuel', sig };
+    if (panel.querySelector('.fw-key:not(:disabled)')) return { kind: 'word', sig: sig + '|' + panel.querySelectorAll('.fw-key:disabled').length };
+    return { kind: 'busy', sig };
+  }
+  const cur = panel.querySelector('#typeHost .target span.cur');
+  if (cur) { const spans = [...cur.parentElement.children]; return { kind: 'typing', sig, rest: spans.slice(spans.indexOf(cur)).map(s => s.textContent).join('') }; }
+  if (panel.querySelector('.opt[data-opt]')) return { kind: 'part', sig };
+  if (panel.querySelector('.opt[data-paint]')) return { kind: 'paint', sig };
+  if (panel.querySelector('.choice:not(:disabled)')) return { kind: 'deduce', sig };
+  const prim = panel.querySelector('[data-primary]');
+  if (vis(prim) && !prim.disabled) return { kind: 'primary', sig };
+  return { kind: 'busy', sig };
+}"""
+
+
+ART_CHECK_JS = r"""() => {
+  const A = Kit.art, bad = [], ok = (name, svg) => {
+    const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+    if (doc.querySelector("parsererror")) bad.push(name);
+  };
+  for (const pose of ["stand", "run1", "run2", "hop", "sit"])
+    for (const face of ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"])
+      for (const acc of ["none", "flower", "glasses", "bow", "cap"]) ok(`trexy ${pose} ${face} ${acc}`, A.trexy.svg({ pose, face, acc }));
+  for (const face of ["smile", "happy", "worried", "surprised"]) ok(`nova ${face}`, A.nova.svg({ face }));
+  const S = A.ship, opts = k => [undefined, ...S.PARTS[k].options.map(o => o[0])];
+  for (const cockpit of opts("cockpit")) for (const wings of opts("wings")) for (const thrusters of opts("thrusters")) for (const core of opts("core"))
+    for (const paint of [undefined, ...S.PAINT_ORDER]) {
+      const cfg = { cockpit, wings, thrusters, core, paint };
+      const svg = decodeURIComponent(S.url(cfg, { flame: true, ghost: true, pilot: "<g/>" }).split(",").slice(1).join(","));
+      ok("ship " + JSON.stringify(cfg), svg);
+    }
+  for (const m of ["home", "dinner", "window", "swoop"]) ok(`memory ${m}`, A.memories[m]());
+  return bad.slice(0, 5);
+}"""
+
+
+def mgs_save(pg):
+    return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v1')); } catch (e) { return null; } }") or {}
+
+
+def mgs_answers():
+    """Right answers to the mystery questions, read from the game's source in order."""
+    state = (LIB / "games/mini-game-survival/state.js").read_text(encoding="utf-8")
+    return [int(a) for a in re.findall(r'opts: \[[^\]]*\], a: (\d)', state)]
+
+
+def mgs_hub_click(pg, x_tiles, y_tiles=.6):
+    v = pg.evaluate("window.__mgs.hub()")
+    if not v:
+        return False  # already left the crash pad (a walk just arrived at a portal)
+    box = pg.locator("#cv").bounding_box()
+    x = box["x"] + (x_tiles - v["camX"]) * v["T"]
+    x = max(box["x"] + 4, min(box["x"] + box["width"] - 4, x))
+    pg.mouse.click(x, box["y"] + v["ground"] - v["T"] * y_tiles)
+    return True
+
+
+def mgs_playthrough(browser, base, rel):
+    print("Mini Game Survival playthrough")
+    answers = mgs_answers()
+    ctx, pg = new_page(browser, "mgs playthrough")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    # Every picture the canvas draws is SVG turned into an image, which fails silently if the SVG isn't valid XML
+    # (a repeated attribute is enough), so check every pose, face, ship combination, and memory picture first.
+    bad = pg.evaluate(ART_CHECK_JS)
+    for b in bad:
+        fail(f"art is not valid SVG: {b}")
+    seen = {"runs": 0, "jigsaws": 0, "words": 0, "clues": 0, "parts": 0, "paints": 0, "deduce": 0, "songs": 0,
+            "crashrestart": False, "checkpoints": False, "peek": False, "fix": False, "scan": False, "refuel": False,
+            "wrongclue": False, "roar": False, "poke": False, "resumed": False}
+    reloaded = False
+    last_sig, last_change, started = None, time.time(), time.time()
+    run_seen, song_steps = None, set()
+    shot_names, shot_kinds = set(), set()
+
+    while True:
+        if time.time() - started > 420:
+            fail(f"Mini Game Survival took over 7 minutes; stopped at: {last_sig!r}")
+            break
+        st = pg.evaluate(MGS_STATE_JS)
+        if st["sig"] != last_sig:
+            last_sig, last_change = st["sig"], time.time()
+        elif time.time() - last_change > 25:
+            fail(f"stuck for 25 seconds on a {st['kind']} screen: {st['sig']!r}")
+            break
+        k = st["kind"]
+        if DEBUG:
+            print("   ", k, st["sig"][:70].replace("\n", " "))
+        if SHOTS and k != "busy":
+            name = f"{k}-{pg.evaluate('window.__mgs.step')}"
+            if name not in shot_names and (k not in shot_kinds or k in ("primary", "hub")):
+                shot_names.add(name); shot_kinds.add(k)
+                pg.wait_for_timeout(350)
+                pg.screenshot(path=str(pathlib.Path(SHOTS) / f"mgs-{len(shot_names):03d}-{name}.png"))
+
+        if k == "title":
+            if reloaded and not seen["resumed"]:
+                if not st["resume"]:
+                    fail('"Keep going" was missing after reloading a saved game')
+                    break
+                pg.click("#resumeBtn")
+                seen["resumed"] = True
+                pg.wait_for_timeout(400)
+                if pg.evaluate("window.__mgs.mode") != "hub":
+                    fail("Keep going did not return to the crash pad")
+                if "Clue 1:" not in pg.inner_text("#panel") or "???" in pg.inner_text("#panel").split("Clue 2")[0]:
+                    fail("the first clue was not kept in the notebook after reloading")
+            else:
+                pg.click("#playBtn")
+                pg.wait_for_timeout(350)
+
+        elif k == "primary":
+            pg.locator("#panel [data-primary]").click()
+            pg.wait_for_timeout(260)
+            if "new song" in st["sig"].lower():
+                song_steps.add(st["sig"])  # the step number is part of the signature, so each song counts once
+                seen["songs"] = len(song_steps)
+
+        elif k == "hub":
+            s = mgs_save(pg)
+            done = s.get("done") or []
+            if len(done) == 1 and not reloaded:
+                reloaded = True
+                pg.reload()
+                pg.wait_for_selector("#playBtn")
+                continue
+            if not seen["roar"]:
+                pg.keyboard.type("roar")
+                pg.wait_for_timeout(200)
+                seen["roar"] = bool(mgs_save(pg).get("roared"))
+                if not seen["roar"]:
+                    fail("typing ROAR on the crash pad did nothing")
+            if not seen["poke"]:
+                before = mgs_save(pg).get("pokes", 0)
+                mgs_hub_click(pg, (pg.evaluate("window.__mgs.hub()") or {}).get("heroX", 17), 4.6)
+                pg.wait_for_timeout(200)
+                seen["poke"] = mgs_save(pg).get("pokes", 0) == before + 1
+                if not seen["poke"]:
+                    fail("poking Shadowspine on the crash pad did nothing")
+            order = ["echo", "fern", "lantern", "whirl"]
+            target = next((p for p in order if p not in done), "gate")
+            hub = pg.evaluate("window.__mgs.hub()")
+            if hub:
+                mgs_hub_click(pg, hub["portals"][target])
+            pg.wait_for_timeout(900)
+
+        elif k == "run":
+            r = st["run"] or {}
+            key = pg.evaluate("window.__mgs.step")
+            if key != run_seen:
+                run_seen = key
+                seen["runs"] += 1
+            if seen["runs"] == 1 and not seen["checkpoints"]:
+                if r.get("crashes", 0) >= 1 and r.get("attempts", 1) >= 2:
+                    seen["crashrestart"] = True
+                if r.get("crashes", 0) >= 3:
+                    try:
+                        pg.wait_for_selector("#cpBtn", timeout=3000)
+                        pg.click("#cpBtn")
+                        seen["checkpoints"] = bool(pg.evaluate("window.__mgs.run().checkpoints"))
+                    except Exception:
+                        fail("the Checkpoints button did not appear after three crashes")
+                        seen["checkpoints"] = True
+                    pg.evaluate("window.__mgsAutopilot = 'secret'; window.__mgsSpeedup = 4")
+                pg.wait_for_timeout(200)
+            else:
+                pg.evaluate("window.__mgsAutopilot = 'secret'; window.__mgsSpeedup = 4")
+                pg.wait_for_timeout(250)
+
+        elif k == "jigsaw":
+            pg.evaluate("window.__mgsAutopilot = false; window.__mgsSpeedup = 1")
+            first = seen["jigsaws"] == 0
+            if first and not seen["peek"]:
+                pg.click('[data-help="peek"]')
+                seen["peek"] = True
+                before = pg.locator(".jt.home").count()
+                pg.click('[data-help="fix"]')
+                pg.wait_for_timeout(150)
+                seen["fix"] = pg.locator(".jt.home").count() > before
+                if not seen["fix"]:
+                    fail('"Fix one" did not put a piece home')
+            tiles = pg.evaluate("[...document.querySelectorAll('.jig .jt')].map(t => +t.dataset.home)")
+            i = next((i for i, h in enumerate(tiles) if h != i), None)
+            if i is not None:
+                j = tiles.index(i)
+                pg.locator(f'.jig .jt[data-pos="{i}"]').click()
+                pg.locator(f'.jig .jt[data-pos="{j}"]').click()
+                pg.wait_for_timeout(60)
+            else:
+                pg.wait_for_timeout(100)
+            if pg.locator(".jig.solved").count():
+                seen["jigsaws"] += 1
+                try:
+                    pg.wait_for_function("!document.querySelector('#jigProg')", timeout=6000)
+                except Exception:
+                    fail("a solved jigsaw did not move on by itself")
+                    break
+
+        elif k == "word":
+            s = mgs_save(pg)
+            portal = ["echo", "fern", "lantern", "whirl"][seen["words"]]
+            word = ((s.get("words") or {}).get(portal) or {}).get("word", "")
+            if not word:
+                fail("clue word missing from the save data")
+                break
+            wrong = [c for c in "ZQXJVKWYBFGHPMUC" if c not in word]
+            if seen["words"] == 0 and not seen["scan"]:
+                full = pg.locator(".fw-tank .cell.on").count()
+                pg.keyboard.type((wrong[0] + wrong[1]).lower())
+                pg.wait_for_timeout(120)
+                if pg.locator(".fw-tank .cell.on").count() != full - 2:
+                    fail("two wrong letters did not burn two fuel cells")
+                pg.click('[data-help="scan"]')
+                seen["scan"] = pg.locator('[data-help="scan"]').is_disabled()
+            if seen["words"] == 1 and not seen["refuel"]:
+                cells = pg.locator(".fw-tank .cell").count()
+                pg.keyboard.type("".join(wrong[:cells]).lower())
+                pg.wait_for_timeout(200)
+                if not pg.locator("#fwAns").count():
+                    fail("running out of fuel did not ask to type the word")
+                    break
+                continue
+            left = [c for c in dict.fromkeys(word) if c != " " and not pg.locator(f'.fw-key[data-k="{c}"]:disabled').count()]
+            pg.keyboard.type("".join(left).lower())
+            try:
+                pg.wait_for_selector("#fb.good.cheer", timeout=3000)
+            except Exception:
+                fail(f"guessing every letter of {word!r} did not win")
+                break
+            seen["words"] += 1
+            if pg.locator("#panel [data-primary]").count():
+                fail("a Next button appeared after a clue word")
+            pg.wait_for_function("!document.querySelector('.fuelword')", timeout=5000)
+
+        elif k == "refuel":
+            s = mgs_save(pg)
+            portal = ["echo", "fern", "lantern", "whirl"][seen["words"]]
+            word = ((s.get("words") or {}).get(portal) or {}).get("word", "")
+            pg.fill("#fwAns", word.lower())
+            pg.press("#fwAns", "Enter")
+            try:
+                pg.wait_for_selector("#fb.good.cheer", timeout=3000)
+                seen["refuel"] = True
+                seen["words"] += 1
+                pg.wait_for_function("!document.querySelector('.fuelword')", timeout=5000)
+            except Exception:
+                fail("typing the word after running out of fuel did not refuel")
+                break
+
+        elif k == "typing":
+            pg.keyboard.type(st["rest"])
+            try:
+                pg.wait_for_selector("#typeHost .cheer", timeout=3000)
+                seen["clues"] += 1
+                pg.wait_for_function("!document.querySelector('#typeHost')", timeout=5000)
+            except Exception:
+                fail("typing the clue did not save it")
+                break
+
+        elif k == "part":
+            pg.locator("#panel .opt[data-opt]").first.click()
+            seen["parts"] += 1
+            pg.wait_for_timeout(300)
+
+        elif k == "paint":
+            pg.locator("#panel .opt[data-paint]").nth(2).click()
+            seen["paints"] += 1
+            pg.wait_for_timeout(300)
+
+        elif k == "deduce":
+            n = seen["deduce"]
+            right = answers[n]
+            if n == 0:
+                pages = len(mgs_save(pg).get("pages") or [])
+                if pages != 4:
+                    fail(f"the autopilot took every secret route but found {pages} of 4 diary pages")
+                wrong_btn = pg.locator(f'#panel .choice:not([data-i="{right}"])').first
+                wrong_btn.click()
+                pg.wait_for_timeout(150)
+                seen["wrongclue"] = "Clue" in pg.inner_text("#nope")
+                if not seen["wrongclue"]:
+                    fail("a wrong mystery answer did not point to a clue")
+            step = pg.evaluate("window.__mgs.step")
+            pg.locator(f'#panel .choice[data-i="{right}"]').click()
+            try:
+                pg.wait_for_selector("#fb.good.cheer", timeout=3000)
+                seen["deduce"] += 1
+                pg.wait_for_function(f"window.__mgs.step !== {step}", timeout=5000)
+            except Exception:
+                fail(f"the right mystery answer was not accepted (question {n + 1})")
+                break
+
+        elif k == "end":
+            if "Secret ending" not in pg.inner_text("#panel"):
+                fail("all four diary pages were found but the secret ending did not show")
+            pg.fill("#hsName", "TESTER")
+            pg.press("#hsName", "Enter")
+            try:
+                pg.wait_for_function("document.querySelector('#rankMsg').textContent.trim().length > 0", timeout=5000)
+            except Exception:
+                fail("high score did not save")
+            if "TESTER" not in pg.inner_text(".end-board"):
+                fail("saved name is missing from the high score board")
+            break
+
+        else:
+            pg.wait_for_timeout(150)
+
+    secs = round(time.time() - started)
+    print(f"  {seen['runs']} runs, {seen['jigsaws']} jigsaws, {seen['words']} words, {seen['clues']} clues, {seen['parts']} parts, "
+          f"{seen['deduce']} mystery answers, {seen['songs']} songs, {secs}s")
+    print("  " + ", ".join(f"{n} {'ok' if seen[n] else 'not seen'}" for n in
+                           ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed")))
+    expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7}
+    for name, n in expect.items():
+        if seen[name] != n:
+            fail(f"Mini Game Survival: expected {n} {name}, got {seen[name]}")
+    for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed"):
+        if not seen[name]:
+            fail(f"Mini Game Survival never exercised: {name}")
+    ctx.close()
+
+
 def main():
     quick = "--quick" in sys.argv[1:]
     header_check()
@@ -418,6 +769,8 @@ def main():
             if not quick:
                 out = json.loads((LIB / "games/starward/game.json").read_text(encoding="utf-8"))["output"]
                 playthrough(browser, base, out)
+                out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
+                mgs_playthrough(browser, base, out)
             browser.close()
     finally:
         srv.shutdown()

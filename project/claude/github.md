@@ -27,3 +27,4 @@ A browser upload of a zip puts every file in the repo root and renames files tha
 - 2026-10-11: the repo became the source for Child I's games; the Library page became a deployed copy.
 - 2026-10-11: added `library/build/playtest.py`; moved notes about Child I himself to the project-only doc claude/child-i-notes.md.
 - 2026-10-11: privacy cleanup. Names replaced with Child I, Child L and Mom; Child L's folder renamed `child-l/`; birth date and other personal details moved to the claude.ai projects (claude/child-i-profile.md, child-l-profile.md). History was squashed into one commit so no earlier commit holds them. Keep names out of the repo, including commit messages.
+- 2026-10-17: Mini Game Survival v1, new shared engines (runs, jigsaw, letter fuel game, side-view hub), and per-game QR card colors.
