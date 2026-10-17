@@ -58,12 +58,13 @@ const CAST = {
 
 // Easy or Hard, picked on the title screen (and switchable on the crash pad). ramp = the run level for each portal in order,
 // ending with the Shadow Gate, so runs get harder as the game goes on. secs = about how long each run lasts.
-// Easy turns checkpoints on from the start. Hard sends T-Rexy back to the portal entrance, and its runs score double.
+// Checkpoints are always on in both modes. allPieces: in Hard, a portal run must catch every memory piece before the story
+// moves on (the Shadow Gate's star shards are a bonus in both modes). Hard runs score double.
 const MODES = {
-  easy: { label: "Easy", ramp: [1, 2, 2, 3, 3], secs: [14, 16, 18, 20, 24], checkpoints: true, runMult: 1, starts: { jigsaw: 1, words: 1, typing: 1 },
-    about: "Slower runs, checkpoints on, smaller puzzles." },
-  hard: { label: "Hard", ramp: [2, 3, 4, 5, 6], secs: [18, 20, 22, 24, 30], checkpoints: false, runMult: 2, starts: { jigsaw: 2, words: 2, typing: 2 },
-    about: "Faster runs, back to the start when you crash. Runs score double." }
+  easy: { label: "Easy", ramp: [1, 2, 2, 3, 3], secs: [14, 16, 18, 20, 24], allPieces: false, runMult: 1, starts: { jigsaw: 1, words: 1, typing: 1 },
+    about: "Slower runs and smaller puzzles." },
+  hard: { label: "Hard", ramp: [2, 3, 4, 5, 6], secs: [18, 20, 22, 24, 30], allPieces: true, runMult: 2, starts: { jigsaw: 2, words: 2, typing: 2 },
+    about: "Faster runs, and you need every memory piece to move on. Runs score double." }
 };
 // Run levels 1 to 6: speed (tiles a second), space (extra flat tiles before each obstacle), ships (ship tunnels per run).
 const RUN_LEVELS = [null,

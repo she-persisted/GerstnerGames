@@ -122,7 +122,7 @@ function renderHub() {
     panel.innerHTML = notebookHTML();
     $("#modeSwitch").addEventListener("click", () => {
       setMode(S.mode === "hard" ? "easy" : "hard"); save(); paint(); blurActive();
-      toast(S.mode === "hard" ? "Hard mode! Runs score double." : "Easy mode! Checkpoints on, slower runs.");
+      toast(S.mode === "hard" ? "Hard mode! Catch every memory piece. Runs score double." : "Easy mode! Slower runs, smaller puzzles.");
     });
   };
   paint();
@@ -147,7 +147,9 @@ async function countdown(alive) {
 // key = where the result is kept (S.stats.runs[key]). Running it again builds the very same run (same level and layout,
 // made from the game's seed), and pieces caught before stay caught, so a second try only needs the missing ones.
 // Points: base + per piece (double in Hard mode), plus FULL_BONUS for catching every one. A second try never lowers them.
-function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, onPiecePage, done }) {
+// Checkpoints are always on. needAll (Hard mode portal runs): the run isn't finished until every piece is caught, so R can't
+// skip it and the story can't move past it.
+function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, needAll, onPiecePage, done }) {
   const M = modeOf(), prev = S.stats.runs[key] || null;
   const level = prev ? prev.level : runLevel(n), RL = RUN_LEVELS[level];
   const ships = prev ? prev.ships : (n === 4 ? RL.ships + 1 : RL.ships);
@@ -157,38 +159,29 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, onP
   const tok = flow.token(), firstRun = !S.tipped;
   startStage(); applyStage({ theme, face: "smile" }); stageEl.classList.add("wide"); blurActive();
   panel.innerHTML = ""; // nothing left over from the last screen (like its buttons) during the run
-  const ui = $("#runUi"), autoCp = M.checkpoints;
+  const ui = $("#runUi");
   navKeys("letters"); // the arrow keys are too close to the hop key here, so only L and R skip around
-  let cpOn = false, started = false, over = false, spot = "", spotCrashes = 0;
-  function turnOnCp() {
-    if (cpOn || !runCtl) return; cpOn = true; runCtl.checkpoints(true);
-    const b = $("#cpBtn"); if (b) { b.classList.remove("nudge"); b.classList.add("on"); b.setAttribute("aria-pressed", "true"); b.blur(); }
-    toast("Checkpoints on! Crash, and you start from the last one.");
-  }
-  function showCp() {
-    if (ui.querySelector("#cpBtn")) return;
-    ui.innerHTML = `<button type="button" class="btn small nudge" id="cpBtn" aria-pressed="false">${ICON.check} Checkpoints <span class="kbd">C</span></button>`;
-    $("#cpBtn").addEventListener("click", turnOnCp);
-  }
-  const cKey = e => { if ((e.key === "c" || e.key === "C") && ui.querySelector("#cpBtn")) turnOnCp(); };
-  document.addEventListener("keydown", cKey);
-  flow.setCleanup(() => document.removeEventListener("keydown", cKey));
+  let started = false, over = false, spot = "", spotCrashes = 0;
   function finishRun(res) {
     if (over) return; over = true;
-    document.removeEventListener("keydown", cKey); hideHint();
+    hideHint();
     const all = res.piecesTotal > 0 && res.pieces >= res.piecesTotal;
     const pts = res.skipped ? 0 : Math.round((base + per * res.pieces) * M.runMult) + (all ? FULL_BONUS : 0);
     S.stats.runs[key] = { level, secs, ships, total: res.piecesTotal, have: res.gotIdx, pieces: res.pieces, secret: !!(res.secret || (prev && prev.secret)), pts: Math.max(pts, prev ? prev.pts || 0 : 0), full: all || !!(prev && prev.full) };
     if (!res.skipped) skills.record("run", runOutcome(res));
-    markPassed(); save();
+    if (all || !needAll) markPassed();
+    save();
     done(res, level, all);
   }
-  // R (forward) skips the run. Pieces already caught still count; skipping earns no run points.
-  onForward(() => {
+  // R (forward) skips the run. Pieces already caught still count; skipping earns no run points. In Hard mode, a portal run
+  // can't be skipped: R just reminds you to catch every piece.
+  const forward = () => {
+    if (needAll) { showHint("Hard mode: catch every glowing memory piece to move on!"); onForward(forward); return; }
     if (started && runCtl) { runCtl.skip(); return; }
     const count = gen.L.objs.filter(o => o.k === "m").length;
     finishRun({ crashes: 0, pieces: have.length, piecesTotal: count, gotIdx: have.slice(), secret: false, usedCheckpoints: false, skipped: true, ms: 0 });
-  });
+  };
+  onForward(forward);
   if (shadow) setTimeout(() => { if (flow.alive(tok)) shadowLaugh(); }, 300);
   if (have.length && have.length < total) toast(`Same run! Your ${have.length} pieces are still yours. Grab the other ${total - have.length}!`);
   countdown(() => flow.alive(tok) && !over).then(ok => {
@@ -196,8 +189,7 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, onP
     startRun({
       gen, theme, shadow, label: name, have, tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
       onCrash: (c, info = {}) => {
-        if (c === 1 && firstRun) toast(autoCp ? "Oops! Back to the last checkpoint." : "Oops! Back to the start.");
-        if (c >= 3 && !autoCp) showCp();
+        if (c === 1 && firstRun) toast("Oops! Back to the last checkpoint.");
         // Hints only when needed: right away if no key has been pressed yet, or after two crashes at the same spot.
         if (!info.pressed) { showHint("Press [Space], [\u2191], or click to hop!"); return; }
         const here = info.chunk ? info.chunk.id : "start";
@@ -210,7 +202,7 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, onP
       onFinish: finishRun
     });
     started = true;
-    if (autoCp) { runCtl.checkpoints(true); ui.innerHTML = `<span class="cpchip">${ICON.check} Checkpoints on</span>`; }
+    runCtl.checkpoints(true); ui.innerHTML = `<span class="cpchip">${ICON.check} Checkpoints on</span>`;
     if (firstRun) { S.tipped = true; save(); }
     blurActive();
   });
@@ -235,25 +227,25 @@ function runHint(info) {
 }
 // Feeds the run level. The crash count is only looked at here and is never shown or saved.
 function runOutcome(res) {
-  if (res.usedCheckpoints && !modeOf().checkpoints) return "struggle";
   return res.crashes <= 1 ? "clean" : res.crashes <= 4 ? "ok" : "struggle";
 }
 function renderRun(st) {
   const P = PORTALS[st.p], [rows, cols] = JIG_GRID[skills.level("jigsaw")];
   const i = PORTAL_ORDER.indexOf(st.p);
   runPortal({
-    key: st.p, theme: P.theme, name: P.name, n: i, pieces: rows * cols, secret: true, base: 300, per: 20,
+    key: st.p, theme: P.theme, name: P.name, n: i, pieces: rows * cols, secret: true, base: 300, per: 20, needAll: modeOf().allPieces,
     onPiecePage: () => {
       if (!S.pages.includes(i)) { S.pages.push(i); save(); }
       toast("A secret page! Someone's diary...");
     },
-    done: (res, level, all) => afterRun(P, res, level, { all, what: "memory pieces", memory: true })
+    done: (res, level, all) => afterRun(P, res, level, { all, what: "memory pieces", memory: true, needAll: modeOf().allPieces })
   });
 }
 const RUN_CHEERS = ["Tiny arms, mighty legs!", "Boing, boing, BOOM!", "Spikes? What spikes?", "That run was dino-MITE!", "Out of this world!", "Jurassic-ly awesome!", "You're a shooting STAR!", "The glitch never saw you coming!"];
 // After a run. Every piece caught: a bonus, then on to the next step. Some missing: keep going without them
-// (the memory jigsaw will have holes), or run it again to catch the rest for the bonus.
-function afterRun(P, res, level, { all, what, memory }) {
+// (the memory jigsaw will have holes), or run it again to catch the rest for the bonus. In Hard mode a portal run
+// has to be run again until every piece is caught (needAll).
+function afterRun(P, res, level, { all, what, memory, needAll }) {
   clearHints();
   const missing = res.piecesTotal - res.pieces;
   startStage(); applyStage({ theme: P.theme, face: all ? "happy" : "smile" }); express(all || !missing ? "happy" : "think", 2400); hop();
@@ -272,22 +264,41 @@ function afterRun(P, res, level, { all, what, memory }) {
     setTimeout(() => { if (flow.alive(t)) next(); }, all ? 2800 : 2400);
     return;
   }
+  const again = () => go(S.step), one = missing === 1 ? what.replace(/s$/, "") : what;
+  let ready = false;
+  const unlock = first => setTimeout(() => { if (!flow.alive(t)) return; ready = true; panel.querySelectorAll(".choicebtns .btn").forEach(b => { b.disabled = false; }); focusSoon($(first)); }, 600);
+  if (needAll) {
+    panel.innerHTML = `<div class="card">
+      <p class="eyebrow">${esc(P.name)}</p>
+      <h2 class="big">So <span class="hot">close!</span></h2>
+      ${stats}
+      <p class="gapnote">${missing} ${one} got away. In Hard mode, T-Rexy needs every piece of the memory to move on. The pieces you caught stay caught, so you only need the ones you missed!</p>
+      <div class="actions choicebtns">
+        <button type="button" class="btn" data-primary id="runAgain" disabled>${ICON.retry} Run it again <span class="kbd">Enter</span></button>
+      </div>
+    </div>`;
+    bindPrimary(again);
+    unlock("#runAgain");
+    const aKey = e => { if (ready && (e.key === "a" || e.key === "A") && !e.repeat) { e.preventDefault(); again(); } };
+    document.addEventListener("keydown", aKey);
+    flow.setCleanup(() => document.removeEventListener("keydown", aKey));
+    onForward(again);
+    hintIfIdle("Press [Enter] to run it again. Grab the glowing pieces you missed!", 12000);
+    return;
+  }
   panel.innerHTML = `<div class="card">
     <p class="eyebrow">${esc(P.name)}</p>
     <h2 class="big">${head}</h2>
     ${stats}
-    <p class="gapnote">${missing} ${missing === 1 ? what.replace(/s$/, "") : what} got away${memory ? ", so the memory will have holes in it" : ""}. Catch every one for <b>+${FULL_BONUS}</b> bonus points!</p>
+    <p class="gapnote">${missing} ${one} got away${memory ? ", so the memory will have holes in it" : ""}. Catch every one for <b>+${FULL_BONUS}</b> bonus points!</p>
     <div class="actions choicebtns">
       <button type="button" class="btn" data-primary id="keepGoing" disabled>Keep going <span class="kbd">Enter</span></button>
       <button type="button" class="btn ghost" id="runAgain" disabled>${ICON.retry} Run it again <span class="kbd">A</span></button>
     </div>
   </div>`;
-  const again = () => go(S.step);
   bindPrimary(next);
   $("#runAgain").addEventListener("click", again);
-  // A short pause first, so a hop pressed as the run ends doesn't pick for you.
-  let ready = false;
-  setTimeout(() => { if (!flow.alive(t)) return; ready = true; panel.querySelectorAll(".choicebtns .btn").forEach(b => { b.disabled = false; }); focusSoon($("#keepGoing")); }, 600);
+  unlock("#keepGoing"); // a short pause first, so a hop pressed as the run ends doesn't pick for you
   const aKey = e => { if (ready && (e.key === "a" || e.key === "A") && !e.repeat) { e.preventDefault(); again(); } };
   document.addEventListener("keydown", aKey);
   flow.setCleanup(() => document.removeEventListener("keydown", aKey));
