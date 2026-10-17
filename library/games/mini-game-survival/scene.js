@@ -1,12 +1,32 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop). Also the music, the toggles, the top bar, and toasts.
+ * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop). Also the music, the toggles, the top bar, and toasts.
  * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
 const THEMES = Kit.art.nebula.THEMES;
 const music = Kit.groove.create(Kit.songs);
 const toastEl = $("#toast"), toast = Kit.ui.toaster(toastEl);
+
+/* Hints, only when a player seems stuck. [Key] in a hint shows as a key button. */
+const hintEl = $("#hint");
+let hintIdle = { text: "", ms: 0, timer: 0 }, hintHide = 0;
+const keyHtml = text => esc(text).replace(/\[([^\]]+)\]/g, (m, k) => `<span class="kbd">${k}</span>`);
+function showHint(text, ms = 6500) {
+  hintEl.innerHTML = `<b>Hint:</b> ${keyHtml(text)}`; hintEl.classList.add("on");
+  clearTimeout(hintHide); if (ms) hintHide = setTimeout(() => hintEl.classList.remove("on"), ms);
+}
+function hideHint() { clearTimeout(hintHide); hintEl.classList.remove("on"); }
+// Shows a hint after the player does nothing for a while on this screen. Doing anything hides it and starts the wait again.
+function hintIfIdle(text, ms) { clearTimeout(hintIdle.timer); hintIdle = { text, ms, timer: setTimeout(() => showHint(text, 0), ms) }; }
+function clearHints() { clearTimeout(hintIdle.timer); hintIdle = { text: "", ms: 0, timer: 0 }; hideHint(); }
+function hintActivity() {
+  if (!hintIdle.text) return;
+  hideHint(); clearTimeout(hintIdle.timer);
+  hintIdle.timer = setTimeout(() => showHint(hintIdle.text, 0), hintIdle.ms);
+}
+document.addEventListener("keydown", hintActivity, true);
+document.addEventListener("pointerdown", hintActivity, true);
 const THEME_SONG = { night: "lullaby", whirl: "whirl", hub: "glitchHub", echo: "echo", fern: "fern", lantern: "lantern", shadow: "shadowRun", valley: "homeStomp" };
 
 /* Images: SVG art turned into pictures the canvas can draw */
@@ -313,11 +333,12 @@ function startRun(opts) {
   stageEl.classList.add("wide");
   const th = THEMES[opts.theme] || THEMES.hub;
   const ctl = Kit.runner.play(cv, {
-    gen: opts.gen, theme: th, tip: opts.tip, label: opts.label,
+    gen: opts.gen, theme: th, tip: opts.tip, label: opts.label, have: opts.have,
     drawBackground: (ctx, v) => nebula.draw(ctx, { ...v, dpr: Math.min(2, window.devicePixelRatio || 1) }, { theme: opts.theme, shadow: opts.shadow ? { x: .78, k: .9, lantern: false, ...shadowAnim(v.t) } : null }),
     drawHero: heroDraw,
     autopilot: () => window.__mgsAutopilot || false,
     speedup: () => window.__mgsSpeedup || 1,
+    drop: () => window.__mgsDrop || 0, // play-test hook: miss this many pieces on purpose
     onCrash: opts.onCrash, onCollect: opts.onCollect, onMode: opts.onMode, onDouble: opts.onDouble, onFinish: opts.onFinish
   });
   runCtl = ctl;

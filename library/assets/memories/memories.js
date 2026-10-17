@@ -1,7 +1,7 @@
 /**
  * @file assets/memories/memories.js
  * @about Four detailed memory pictures for jigsaw puzzles, drawn in SVG: home in Fern Valley at night, the family dinner, the bedroom at 11:11, and the swirly galaxy swoop. Each one hides a clue for the mystery if you look closely. Also draws the spiral galaxies used everywhere in the game.
- * @provides Kit.art.memories { home, dinner, window, swoop } (each a function returning a standalone 400 x 300 <svg>), galaxy(cx, cy, r, turn, colors, arms), note(x, y, scale, color)
+ * @provides Kit.art.memories { home, dinner, window, swoop } (each a function returning a standalone 400 x 300 <svg>), galaxy(cx, cy, r, turn, colors, arms), note(x, y, scale, color), CLUE_SPOTS, clueTiles(name, rows, cols)
  * @requires assets/characters/trexy.js, assets/characters/nova.js
  *
  * Clues hidden in the pictures: a tiny glowing music box on the hill (home), salad AND meat on the table plus a little teal tail sneaking
@@ -235,5 +235,15 @@
     <g transform="translate(52,262) scale(.36)">${N().shadow("#140a30", 2)}</g>
     <g transform="translate(62.6,256.4)"><path d="M0 -3.4 L1 -1 L3.4 0 L1 1 L0 3.4 L-1 1 L-3.4 0 L-1 -1 Z" fill="#fff8d6"/></g>`);
 
-  art.memories = { home, dinner, window: window_, swoop, galaxy, note };
+  // Where each picture's clues sit (x, y in the 400 x 300 picture). A game leaving gaps in a memory keeps these tiles.
+  const CLUE_SPOTS = {
+    home: [[56, 174], [150, 132]],
+    dinner: [[96, 228], [176, 222], [388, 262], [362, 272]],
+    window: [[277, 165], [229, 181], [100, 124], [194, 202]],
+    swoop: [[62, 256], [226, 150]]
+  };
+  // Tile numbers (left to right, top to bottom) that hold a clue, for a grid of rows x cols.
+  const clueTiles = (name, rows, cols) => new Set((CLUE_SPOTS[name] || []).map(([x, y]) => Math.min(rows - 1, Math.floor(y / 300 * rows)) * cols + Math.min(cols - 1, Math.floor(x / 400 * cols))));
+
+  art.memories = { home, dinner, window: window_, swoop, galaxy, note, CLUE_SPOTS, clueTiles };
 })(window.Kit = window.Kit || {});

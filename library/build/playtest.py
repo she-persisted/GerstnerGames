@@ -447,9 +447,10 @@ MGS_STATE_JS = r"""() => {
   if (panel.querySelector('.opt[data-opt]')) return { kind: 'part', sig };
   if (panel.querySelector('.opt[data-paint]')) return { kind: 'paint', sig };
   if (panel.querySelector('.choice:not(:disabled)')) return { kind: 'deduce', sig };
+  if (panel.querySelector('#runAgain')) return { kind: 'choice', sig, ready: !panel.querySelector('#runAgain').disabled };
   const prim = panel.querySelector('[data-primary]');
   if (vis(prim) && !prim.disabled) return { kind: 'primary', sig };
-  return { kind: 'busy', sig };
+  return { kind: 'busy', sig, bonus: !!panel.querySelector('.bonusline') };
 }"""
 
 
@@ -477,7 +478,7 @@ ART_CHECK_JS = r"""() => {
 
 
 def mgs_save(pg):
-    return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v2')); } catch (e) { return null; } }") or {}
+    return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v3')); } catch (e) { return null; } }") or {}
 
 
 QBANK_CHECK_JS = r"""() => {
@@ -493,6 +494,72 @@ QBANK_CHECK_JS = r"""() => {
 }"""
 
 
+# Every memory piece in every run must be catchable: on the winning path AND on the secret route, not touching anything,
+# and sitting on the ground (not floating up high). Builds many runs at every level, the way the game does, and checks each.
+RUN_CHECK_JS = r"""() => {
+  const R = Kit.runner, LV = window.__mgs.levels, bad = [], t0 = performance.now();
+  let made = 0, short = 0;
+  const rngOf = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const SECS = [14, 16, 18, 20, 22, 24, 30];
+  for (let level = 1; level <= 6; level++) {
+    const L = LV[level];
+    const runs = [9, 12, 16].flatMap(pieces => [1, 2, 3, 4].map(seed => ({ pieces, seed, secret: true, ships: L.ships })))
+      .concat([1, 2, 3].map(seed => ({ pieces: 8, seed: seed + 50, secret: false, ships: L.ships + 1 })));
+    for (const r of runs) {
+      const secs = SECS[(r.seed * 7 + level) % SECS.length];
+      const G = R.generate({ chunks: Kit.levels.runner, level, speed: L.speed, space: L.space, ships: r.ships, length: L.speed * secs, pieces: r.pieces, secret: r.secret, rng: rngOf(level * 1000 + r.seed * 31 + r.pieces) });
+      made++;
+      const got = G.L.objs.filter(o => o.k === "m").length;
+      if (got < r.pieces) { short++; bad.push(`level ${level}, ${secs}s run: only ${got} of ${r.pieces} pieces placed`); }
+      for (const p of R.sim.checkPieces(G)) bad.push(`level ${level}, ${r.pieces} pieces, seed ${r.seed}: ${p}`);
+    }
+  }
+  return { made, short, bad: bad.slice(0, 12), count: bad.length, ms: Math.round(performance.now() - t0) };
+}"""
+
+
+def mgs_pieces_check(browser, base, rel):
+    ctx, pg = new_page(browser, "mgs memory pieces")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    r = pg.evaluate(RUN_CHECK_JS)
+    for b in r["bad"]:
+        fail(f"memory pieces: {b}")
+    if r["count"] > len(r["bad"]):
+        fail(f"memory pieces: {r['count'] - len(r['bad'])} more problems")
+    print(f"  memory pieces: {r['made']} runs built at levels 1 to 6, {'every piece catchable' if not r['count'] else str(r['count']) + ' problems'} ({r['ms'] // 1000}s)")
+    # The recorded villain laughs must decode in Chrome, and last about as long as the game thinks (it animates Shadowspine's jaw to them).
+    laughs = pg.evaluate("""async () => Promise.all((Kit.sounds && Kit.sounds.villainLaughs || []).map(async c => {
+      const b = await Kit.voices.clipBuffer(new OfflineAudioContext(1, 24000, 24000), c);
+      return { id: c.id, want: c.seconds, got: b ? b.duration : 0 };
+    }))""")
+    if not laughs:
+        fail("no recorded villain laughs in the game")
+    for l in laughs:
+        if not l["got"] or abs(l["got"] - l["want"]) > .15:
+            fail(f"villain laugh {l['id']} did not decode right ({l['got']:.2f}s, expected {l['want']}s)")
+    print("  villain laughs: " + ", ".join(f"{l['id']} {l['got']:.1f}s" for l in laughs))
+    ctx.close()
+
+
+def mgs_wait_kind(pg, kinds, tries=60, click_next=True):
+    """Clicks visible Next buttons until the screen is one of kinds. Returns the state, or None."""
+    for _ in range(tries):
+        st = pg.evaluate(MGS_STATE_JS)
+        if st["kind"] in kinds:
+            return st
+        if click_next and st["kind"] == "primary":
+            nxt = pg.locator("#panel [data-primary]")
+            if nxt.count() and nxt.first.is_visible():
+                nxt.first.click()
+        pg.wait_for_timeout(200)
+    return None
+
+
+def mgs_step_type(pg):
+    return pg.evaluate("window.__mgs.steps[window.__mgs.step]")
+
+
 def mgs_easy_check(browser, base, rel):
     """Easy mode: slower first run with checkpoints already on, and the double hop works."""
     ctx, pg = new_page(browser, "mgs easy mode")
@@ -500,6 +567,19 @@ def mgs_easy_check(browser, base, rel):
     pg.wait_for_selector("#playBtn")
     pg.keyboard.press("e")
     pg.click("#playBtn")
+    pg.wait_for_selector("#panel .say [data-primary]")
+    s0 = pg.evaluate("window.__mgs.step")
+    pg.wait_for_timeout(250)
+    pg.keyboard.press("r"); pg.wait_for_timeout(250)
+    s1 = pg.evaluate("window.__mgs.step")
+    pg.keyboard.press("l"); pg.wait_for_timeout(250)
+    s2 = pg.evaluate("window.__mgs.step")
+    pg.keyboard.press("ArrowRight"); pg.wait_for_timeout(250)
+    s3 = pg.evaluate("window.__mgs.step")
+    if not (s1 > s0 and s2 == s0 and s3 == s1):
+        fail(f"L and R did not move through the story lines (steps {s0}, then R {s1}, L {s2}, right arrow {s3})")
+    if not pg.locator("#panel .say .navhint").count():
+        fail("story lines don't show the L and R keys")
     for _ in range(80):
         if pg.evaluate("window.__mgs.mode") == "hub":
             break
@@ -544,6 +624,33 @@ def mgs_easy_check(browser, base, rel):
     if pg.evaluate("window.__mgs.run().air") != 0:
         fail("pressing again in the air did not double hop")
     print("  easy mode: first run at level 1 with checkpoints on, double hop ok")
+    # R skips the run. Nothing was caught, so it offers to run it again. L goes back a story line, and R from there
+    # skips the finished run and lands on the jigsaw, with glitchy holes for every piece that got away.
+    run_step = pg.evaluate("window.__mgs.step")
+    pg.wait_for_timeout(250)
+    pg.keyboard.press("r")
+    st = mgs_wait_kind(pg, ["choice"], tries=20, click_next=False)
+    if not st:
+        fail("R did not skip the run")
+        ctx.close()
+        return
+    if "skipped" not in pg.inner_text("#panel"):
+        fail("the screen after a skipped run doesn't say it was skipped")
+    pg.wait_for_timeout(250)
+    pg.keyboard.press("l"); pg.wait_for_timeout(300)
+    back = pg.evaluate("window.__mgs.step")
+    if not (back < run_step and mgs_step_type(pg) == "say"):
+        fail(f"L after a run did not go back to a story line (step {back})")
+    pg.keyboard.press("r"); pg.wait_for_timeout(500)
+    if mgs_step_type(pg) != "jigsaw":
+        fail(f"R did not skip the finished run (landed on a {mgs_step_type(pg)} step)")
+    else:
+        gaps = pg.evaluate("""() => { const t = document.querySelectorAll('.jig .jt').length, g = document.querySelectorAll('.jig .jt.gone').length;
+          const side = Math.round(Math.sqrt(t)), grid = t === 12 ? [3, 4] : [side, side];
+          return { t, g, keep: Kit.art.memories.clueTiles('home', grid[0], grid[1]).size }; }""")
+        if gaps["g"] != gaps["t"] - gaps["keep"]:
+            fail(f"a run with no pieces caught should leave {gaps['t'] - gaps['keep']} holes in the memory (every tile but the clues), found {gaps['g']}")
+        print(f"  L and R: story lines, skip a run, back, forward past the finished run; jigsaw has {gaps['g']} holes, clues kept")
     ctx.close()
 
 
@@ -572,7 +679,8 @@ def mgs_playthrough(browser, base, rel):
         fail(f"art is not valid SVG: {b}")
     seen = {"runs": 0, "jigsaws": 0, "words": 0, "clues": 0, "parts": 0, "paints": 0, "deduce": 0, "songs": 0,
             "crashrestart": False, "checkpoints": False, "peek": False, "fix": False, "scan": False, "refuel": False,
-            "wrongclue": False, "roar": False, "poke": False, "resumed": False, "modeswitch": False, "ship": False}
+            "wrongclue": False, "roar": False, "poke": False, "resumed": False, "modeswitch": False, "ship": False,
+            "hint": False, "rerun": False, "bonus": False, "gaps": False}
     reloaded = False
     last_sig, last_change, started = None, time.time(), time.time()
     run_seen, song_steps = None, set()
@@ -595,6 +703,8 @@ def mgs_playthrough(browser, base, rel):
             fail(f"a screen shows a count of attempts: {st['sig'][:80]!r}")
         if "Zoomasaurus" in st["sig"]:
             seen["ship"] = True
+        if st.get("bonus"):
+            seen["bonus"] = True  # the screen after a run where every piece was caught
         if SHOTS and k != "busy":
             name = f"{k}-{pg.evaluate('window.__mgs.step')}"
             if name not in shot_names and (k not in shot_kinds or k in ("primary", "hub")):
@@ -669,6 +779,14 @@ def mgs_playthrough(browser, base, rel):
             if key != run_seen:
                 run_seen = key
                 seen["runs"] += 1
+                # Fern Moon: miss 3 pieces, then run it again to catch them. Lantern Lab: miss 2 and keep going.
+                drop = {2: 3, 3: 2}.get(seen["runs"], 0)
+                pg.evaluate(f"window.__mgsDrop = {drop}")
+            if seen["runs"] == 1 and not seen["hint"] and r.get("crashes", 0) >= 1:
+                seen["hint"] = pg.evaluate("(() => { const h = document.querySelector('#hint.on'); return !!h && /Hint:/.test(h.textContent) && /Space/.test(h.textContent); })()")
+                if not seen["hint"]:
+                    fail("crashing without pressing anything did not show a Hint with the keys to press")
+                    seen["hint"] = True
             if seen["runs"] == 1 and not seen["checkpoints"]:
                 if r.get("crashes", 0) >= 1 and r.get("alive") and r.get("x", 99) < 6:
                     seen["crashrestart"] = True
@@ -686,8 +804,35 @@ def mgs_playthrough(browser, base, rel):
                 pg.evaluate("window.__mgsAutopilot = 'secret'; window.__mgsSpeedup = 4")
                 pg.wait_for_timeout(250)
 
+        elif k == "choice":
+            text = pg.inner_text("#panel").lower()  # the place name shows in capitals
+            if not st["ready"]:
+                pg.wait_for_timeout(150)
+                continue
+            if "fern moon" in text and not seen["rerun"]:
+                if "3 memory pieces got away" not in text:
+                    fail(f"missing 3 pieces in Fern Moon should say so: {text[:120]!r}")
+                pg.evaluate("window.__mgsDrop = 0")
+                pg.keyboard.press("a")
+                seen["rerun"] = "pending"
+                pg.wait_for_timeout(400)
+            elif "lantern lab" in text:
+                if "2 memory pieces got away" not in text:
+                    fail(f"missing 2 pieces in Lantern Lab should say so: {text[:120]!r}")
+                pg.keyboard.press("Enter")
+                pg.wait_for_timeout(400)
+            else:
+                fail(f"pieces got away in a run where every piece should be catchable: {text[:160]!r}")
+                pg.locator("#keepGoing").click()
+                pg.wait_for_timeout(400)
+
         elif k == "jigsaw":
             pg.evaluate("window.__mgsAutopilot = false; window.__mgsSpeedup = 1")
+            if "lantern lab" in pg.inner_text("#panel").lower() and not seen["gaps"]:
+                g = pg.locator(".jig .jt.gone").count()
+                seen["gaps"] = True
+                if g != 2:
+                    fail(f"missing 2 of the pieces should leave 2 holes in the Lantern Lab memory, found {g}")
             first = seen["jigsaws"] == 0
             if first and not seen["peek"]:
                 pg.click('[data-help="peek"]')
@@ -810,6 +955,16 @@ def mgs_playthrough(browser, base, rel):
                 break
 
         elif k == "end":
+            runs = pg.evaluate("window.__mgs.runs")
+            for key, r in runs.items():
+                want = r.get("total", 0) - (2 if key == "lantern" else 0)
+                if r.get("pieces") != want:
+                    fail(f"the {key} run caught {r.get('pieces')} of {r.get('total')} pieces (expected {want})")
+            seen["rerun"] = bool((runs.get("fern") or {}).get("full"))
+            if not seen["rerun"]:
+                fail("running Fern Moon again did not end with every piece caught")
+            if "full-catch bonus" not in pg.inner_text("#panel"):
+                fail("the score card doesn't show the full-catch bonuses")
             if "Secret ending" not in pg.inner_text("#panel"):
                 fail("all four diary pages were found but the secret ending did not show")
             pg.fill("#hsName", "TESTER")
@@ -829,12 +984,14 @@ def mgs_playthrough(browser, base, rel):
     print(f"  {seen['runs']} runs, {seen['jigsaws']} jigsaws, {seen['words']} words, {seen['clues']} clues, {seen['parts']} parts, "
           f"{seen['deduce']} mystery answers, {seen['songs']} songs, {secs}s")
     print("  " + ", ".join(f"{n} {'ok' if seen[n] else 'not seen'}" for n in
-                           ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship")))
+                           ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship",
+                            "hint", "rerun", "bonus", "gaps")))
     expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7}
     for name, n in expect.items():
         if seen[name] != n:
             fail(f"Mini Game Survival: expected {n} {name}, got {seen[name]}")
-    for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship"):
+    for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship",
+                 "hint", "rerun", "bonus", "gaps"):
         if not seen[name]:
             fail(f"Mini Game Survival never exercised: {name}")
     ctx.close()
@@ -854,6 +1011,7 @@ def main():
                 out = json.loads((LIB / "games/starward/game.json").read_text(encoding="utf-8"))["output"]
                 playthrough(browser, base, out)
                 out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
+                mgs_pieces_check(browser, base, out)
                 mgs_easy_check(browser, base, out)
                 mgs_playthrough(browser, base, out)
             browser.close()

@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, and the clue-word chooser. Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, the version picker for the question library, a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -9,7 +9,7 @@ const ICON = Kit.art.icons;
 const SHIP = Kit.art.ship;
 const sfx = Kit.audio.sfx;
 
-const KEYS = { save: "mgs.save.v2", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq" };
+const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq" };
 const panel = $("#panel"), scene = $("#scene"), stageEl = $("#stage"), cv = $("#cv");
 
 // The crash pad: portals in the order T-Rexy visits them. x = where it stands on the pad (in tiles).
@@ -100,7 +100,7 @@ const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "
 const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home" };
 
 const fresh = () => ({
-  v: 2, mode: savedMode(), step: 0, picks: {}, parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: WRECK_X, moved: false, pokes: 0, roared: false,
+  v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: WRECK_X, moved: false, pokes: 0, roared: false,
   stats: { pts: 0, runs: {}, typing: { hits: 0, misses: 0, ms: 0, chars: 0 } }
 });
 let S = fresh();
@@ -109,7 +109,7 @@ let active = false;
 function save() { if (active) store.set(KEYS.save, S); }
 function loadSave() {
   const d = store.get(KEYS.save, null);
-  if (d && d.v === 2 && d.step > 0 && d.step < STEPS.length - 1) return d;
+  if (d && d.v === 3 && d.step > 0 && d.step < STEPS.length - 1) return d;
   return null;
 }
 
@@ -138,6 +138,15 @@ function pickVersion(id, list) {
   S.picks[id] = i; save();
   return list[i];
 }
+// A repeatable random number maker: the same game and run always build the same level, so a second try is the same run.
+function seededRng(text) {
+  let h = 2166136261;
+  for (const ch of `${S.seed}|${text}`) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+// Story steps already finished (mini games), so moving forward through the story skips them instead of replaying them.
+function markPassed(i = S.step) { if (!S.passed.includes(i)) { S.passed.push(i); save(); } }
+const FULL_BONUS = 200; // for catching every memory piece (or star shard) in a run
 const shipCfg = () => ({ ...S.parts, paint: S.paint });
 const allParts = () => SHIP.PART_ORDER.every(p => S.parts[p]);
 const nextPortal = () => PORTAL_ORDER.find(id => !S.done.includes(id)) || "gate";

@@ -1,5 +1,5 @@
 <!-- @file games/mini-game-survival/scene.html
-     @about Mini Game Survival's page layout: the top bar (ship parts, clues, music and sound), the scene window (one canvas for the hub, the runs, and story scenes, plus the jigsaw board, the run buttons, the countdown, and the high score board on the title screen), and the side panel.
+     @about Mini Game Survival's page layout: the top bar (ship parts, clues, music and sound), the scene window (one canvas for the hub, the runs, and story scenes, plus the jigsaw board, the run buttons, the countdown, the hint bubble, and the high score board on the title screen), and the side panel.
      @requires nothing -->
 <div class="app">
   <header class="hud">
@@ -23,6 +23,7 @@
       <div class="board scene-board" id="boardScene" data-scoreboard></div>
       <p class="place" id="place"></p>
       <p class="toast" id="toast" role="status"></p>
+      <p class="hint" id="hint" role="status" aria-live="polite"></p>
     </section>
 
     <section class="console" id="panel" aria-live="polite"></section>

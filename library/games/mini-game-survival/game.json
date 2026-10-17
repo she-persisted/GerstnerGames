@@ -1,9 +1,9 @@
 {
   "id": "mini-game-survival",
-  "title": "Mini Game Survival v2",
-  "version": 2,
+  "title": "Mini Game Survival v3",
+  "version": 3,
   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
-  "output": "dist/mini-game-survival-v2.html",
+  "output": "dist/mini-game-survival-v3.html",
   "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
@@ -68,6 +68,7 @@
     "assets/music/shadow-run.js",
     "assets/music/nova-lullaby.js",
     "assets/music/home-stomp.js",
+    "assets/sounds/villain-laughs.js",
     "content/levels/runner-chunks.js",
     "content/words/clue-words.js"
   ],
@@ -81,7 +82,7 @@
   ],
   "releases": [
     {
-      "version": 2,
+      "version": 1,
       "date": "2026-10-17",
       "url": "https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph",
       "notes": "First version: four portals (obstacle runs, memory jigsaws, glitch-locked clue words, clue typing), the Shadow Gate, the mystery of Shadowspine, secret diary pages, hardcore songs, adaptive levels, high scores."
@@ -89,8 +90,14 @@
     {
       "version": 2,
       "date": "2026-10-17",
-      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+      "url": "https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr",
       "notes": "Easier runs that ramp up portal by portal, a double hop, Easy and Hard modes, no attempt counting, a funnier opening with dinosaur and space puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip."
+    },
+    {
+      "version": 3,
+      "date": "2026-10-17",
+      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+      "notes": "Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory jigsaw with a keep-going or run-again choice and a full-catch bonus, L and R move back and forward through the story, hints that show the keys only when a player is stuck, and a real recorded villain laugh (CC0)."
     }
   ]
 }

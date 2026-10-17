@@ -12,11 +12,11 @@ Read this before changing, fixing, or reusing any game in this project.
 What's in `library/`:
 
 - `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles, obstacle runs with a level solver and double hop, picture jigsaw, letter-guessing with a fuel tank, walkable side-view hub, dance-style music player, cartoon voices)
-- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs
+- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs, recorded villain laughs (CC0)
 - `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists, science clue words, obstacle-run chunks
 - `games/<id>/`: each game's own parts and its `game.json` (build list plus every release link); single-file legacy versions in `legacy/`
 - `build/build.py`: joins a game's files into one page, checks load order, writes `catalog.json`
-- `build/playtest.py`: the automated play-test (headers, build, every page loading, and full Starward and Mini Game Survival playthroughs)
+- `build/playtest.py`: the automated play-test (headers, build, every page loading, a check that every memory piece in Mini Game Survival's runs can be caught, and full Starward and Mini Game Survival playthroughs)
 - `dist/`: built games, committed so they can be downloaded and played
 - `README.md`: full architecture, file header rules, and conventions
 - `catalog.json`: one entry per file with what it does, what it provides and needs, and which games use it
@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Mini Game Survival | **Home page, always the newest version** (now v2, 2026-10-17: easier ramping runs, double hop, Easy and Hard, upbeat music, NASA-style backgrounds, question library, end clip) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v2.html` |
+| Mini Game Survival | **Home page, always the newest version** (now v3, 2026-10-17: every memory piece catchable, missing pieces leave holes in the memory with keep going or run it again for a bonus, L and R through the story, hints only when stuck, a recorded villain laugh) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v3.html` |
+| Mini Game Survival | v2 (2026-10-17), easier ramping runs, double hop, Easy and Hard, upbeat music, NASA-style backgrounds, question library, end clip | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | `library/dist/mini-game-survival-v2.html` |
 | Mini Game Survival | v1 (2026-10-17), first version | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | `library/dist/mini-game-survival-v1.html` |
 | Starward | **Home page, always the newest version** (now v6, 2026-10-17: dig tips, auto-advance after right answers, tap friends for hints) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v6.html` |
 | Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/X1f6WeveqRtYrnDTKFzuWY (archive) | `library/dist/starward-v5.html` |

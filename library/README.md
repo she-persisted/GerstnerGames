@@ -7,7 +7,7 @@ Every game in the Child I Fun project is built from the files in this library. E
 | Folder | What lives there | Reuse rule |
 |---|---|---|
 | `kit/` | Engines: story flow, puzzle screen, typing flights, digging, walkable map, music players (simple and dance-style), sound effects, cartoon voices, adaptive difficulty, high scores, jukebox, obstacle runs, jigsaw, letter-guessing, side-view hub, shared styles | Works in any game. Talks to games only through `window.Kit`. |
-| `assets/` | Art and music: characters, rocket, side-view worlds, map art, icons, songs | Any game can include them. |
+| `assets/` | Art, music, and sounds: characters, rocket, side-view worlds, map art, icons, songs, recorded sounds (CC0 only, with the author credited, stored as small data URLs so a game stays one page) | Any game can include them. |
 | `content/` | Question banks (tagged easy, medium, hard), question generators, word lists | Any game can draw from them. |
 | `games/<id>/` | One game's own parts: settings, story, screens, layout, `game.json`, and any legacy single-file versions | Only that game. |
 | `build/` | `build.py`, which assembles a game and writes `catalog.json`; `playtest.py`, the automated play-test | |

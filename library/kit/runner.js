@@ -1,7 +1,7 @@
 /**
  * @file kit/runner.js
  * @about Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes (and hops again in the air for a double hop), bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks with flat ground between them for breathing room, and a built-in solver plays every chunk before it is used, so every level can be beaten.
- * @provides Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), state } }
+ * @provides Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve, checkPieces }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), skip(), state } }
  * @requires kit/util.js, kit/audio.js
  *
  * Units are tiles and seconds. The ground's top is y = 0, and y goes up. The physics runs in fixed 1/120 s steps,
@@ -13,14 +13,22 @@
  *   kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),
  *          S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.
  *
- * generate({ chunks, level, speed, length, pieces, rng, secret, ships, space }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }
+ * generate({ chunks, level, speed, length, pieces, rng, secret, ships, space }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames, spans }
  *   Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.
  *   ships = how many ship tunnels to try for (0 = none), space = extra tiles of flat ground before each chunk.
+ *   Pass a seeded rng to get the same level again (for a second try at the same run).
+ *   Pieces only go where the hero runs along the ground on the winning path: never in mid-air, never in a ship tunnel,
+ *   never in the secret stretch (so the secret route gets them all too), and never touching a block, spike, pad, or portal.
+ *   spans = [{ id, tag, x0, x1 }] where each chunk sits (games use it for hints about what the player crashed on).
+ * sim.checkPieces(gen) -> list of problems (empty when every piece can be caught on the normal and secret routes).
  *
- * play(canvas, { gen, theme, label, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n),
- *               onCollect(obj), onMode(mode), onDouble(), onFinish(result), autopilot(), speedup(), tip })
- *   The screen shows no attempt counter. onCrash(n) gets a running count for this run only (so a game can offer help),
- *   and nothing is kept after the run. result = { crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }
+ * play(canvas, { gen, theme, label, have, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n, info),
+ *               onCollect(obj), onMode(mode), onDouble(), onFinish(result), autopilot(), speedup(), drop(), tip })
+ *   have = indices of pieces already found on an earlier try: they count from the start and show as faint outlines.
+ *   The screen shows no attempt counter. onCrash(n, info) gets a running count for this run only (so a game can offer
+ *   help) and info = { x, why, mode, chunk: { id, tag } | null, pressed (has the player pressed jump yet) }; nothing is
+ *   kept after the run. result = { crashes, pieces, piecesTotal, gotIdx, secret, usedCheckpoints, skipped, ms }
+ *   drop() is a play-test hook: that many of the first pieces can't be caught.
  *   hero (for drawHero) = { mode, vy, grounded, h, t, spin } where spin goes 0 to 1 during a double hop's flip, else -1.
  */
 (function (Kit) {
@@ -165,6 +173,42 @@
     return made.filter(Boolean);
   }
 
+  // A piece's spot is clear when its box doesn't touch a block, and stays a little away from spikes, pads, and portals.
+  function pieceClear(L, cx, cy) {
+    let bad = false;
+    L.near(cx - 2, cx + 2, o => {
+      if (bad || o.k === "m" || o.k === "x") return;
+      const m = o.k === "b" ? .02 : .25;
+      if (cx - .38 - m < o.bx1 && cx + .38 + m > o.bx0 && cy - .38 - m < o.by1 && cy + .38 + m > o.by0) bad = true;
+    });
+    return !bad;
+  }
+  // Checks a generated level: every piece is caught by the winning path and by the secret route, sits clear of danger,
+  // and rests right above the ground or a block top (so it's where a running hero naturally is).
+  function checkPieces(G) {
+    const L = G.L, ms = L.objs.filter(o => o.k === "m"), out = [];
+    const replay = useSecret => {
+      const s = start(.5), got = new Set();
+      for (let i = 0; i < G.inputs.length; i++) {
+        const sec = useSecret && G.secret && i >= G.secret.from && i < G.secret.from + G.secret.inputs.length;
+        step(s, sec ? G.secret.inputs[i - G.secret.from] : G.inputs[i], L);
+        if (s.touch) for (const o of s.touch) if (o.k === "m") got.add(o.id);
+        if (!s.alive) { out.push(`${useSecret ? "secret" : "winning"} route crashes at x ${s.x.toFixed(1)}`); break; }
+      }
+      return got;
+    };
+    const main = replay(false), sec = G.secret ? replay(true) : main;
+    ms.forEach((m, i) => {
+      if (!main.has(m.id)) out.push(`piece ${i + 1} (x ${m.x.toFixed(1)}) is not on the winning path`);
+      if (!sec.has(m.id)) out.push(`piece ${i + 1} (x ${m.x.toFixed(1)}) is missed by the secret route`);
+      if (!pieceClear(L, m.x, m.y)) out.push(`piece ${i + 1} (x ${m.x.toFixed(1)}) touches a block, spike, pad, or portal`);
+      let floor = false;
+      L.near(m.x - 1, m.x + 1, o => { if (o.k === "b" && m.x > o.bx0 - .4 && m.x < o.bx1 + .4 && Math.abs(m.y - (PHYS.ch / 2 + .05) - o.by1) < .02) floor = true; });
+      if (!floor) out.push(`piece ${i + 1} (x ${m.x.toFixed(1)}, y ${m.y.toFixed(2)}) is floating instead of sitting on the ground`);
+    });
+    return out;
+  }
+
   function generate({ chunks, level, speed, length, pieces = 9, rng = Math.random, secret = true, ships: shipCount = 1, space = 0 }) {
     const L = new Level(speed);
     const pickW = list => { let t = list.reduce((a, c) => a + (c.w || 1), 0) * rng(); for (const c of list) { t -= c.w || 1; if (t <= 0) return c; } return list[list.length - 1]; };
@@ -175,7 +219,7 @@
     const flat = chunks.find(c => c.id === "flat") || { id: "flat", len: 5, o: [] };
     L.ground(-14, 8);
     let st = start(.5), x = 8; // a little run-up before the first obstacle
-    const inputs = [], checks = [{ t: 0, x: .5 }];
+    const inputs = [], checks = [{ t: 0, x: .5 }], spans = [];
     let sec = null, shipsPlaced = 0, secretPlaced = false, last = "";
     const wantShips = ships.length ? shipCount : 0;
 
@@ -201,13 +245,14 @@
           inputs.push(...res.inputs); st = res.state;
           checks.push({ t: st.t, x: st.x });
           if (c.tag === "ship") shipsPlaced++;
+          spans.push({ id: c.id, tag: c.tag || "", x0, x1: x0 + c.len });
           x = x0 + c.len; last = c.id; ok = true;
         } else made.forEach(o => L.remove(o));
       }
       if (!ok) {
         if (want === "ship") shipsPlaced++;          // give up on this ship section rather than loop forever
         else if (want === "secret") secretPlaced = true;
-        else { place(L, flat, x); const endFrame = st.t + Math.ceil((x + flat.len + .4 - st.x) / (speed * DT)); const r = solve(L, st, endFrame); if (r) { inputs.push(...r.inputs); st = r.state; } x += flat.len; }
+        else { place(L, flat, x); spans.push({ id: "flat", tag: "", x0: x, x1: x + flat.len }); const endFrame = st.t + Math.ceil((x + flat.len + .4 - st.x) / (speed * DT)); const r = solve(L, st, endFrame); if (r) { inputs.push(...r.inputs); st = r.state; } x += flat.len; }
       }
     }
     // Finish line: a little more ground and the exit portal.
@@ -215,16 +260,47 @@
     L.endX = x + 3;
     while (st.x < L.endX) { step(st, false, L); inputs.push(false); }
 
-    // Memory pieces go along the winning path, so a careful runner can catch every one.
+    // Memory pieces go on the ground along the winning path: wherever the hero is simply running, away from anything
+    // dangerous, and outside ship tunnels and the secret stretch, so anyone running through catches them.
     const path = [];
     const s = start(.5);
-    for (let i = 0; i < inputs.length; i++) { step(s, inputs[i], L); path.push([s.x, s.y, s.mode]); }
-    const a = Math.floor(path.length * .1), b = Math.floor(path.length * .92);
-    for (let i = 0; i < pieces; i++) {
-      const [px, py, mode] = path[Math.floor(a + (b - a) * (i + .5) / pieces)];
-      L.add("m", px + (mode === "cube" ? PHYS.cw : PHYS.sw) / 2, py + (mode === "cube" ? PHYS.ch : PHYS.sh) / 2 + .05);
+    for (let i = 0; i < inputs.length; i++) { step(s, inputs[i], L); path.push([s.x, s.y, s.mode, s.grounded]); }
+    const avoid = spans.filter(p => p.tag === "ship" || p.tag === "secret");
+    const at = i => [path[i][0] + PHYS.cw / 2, path[i][1] + PHYS.ch / 2 + .05];
+    const cand = [];
+    for (let i = 0; i < path.length; i++) {
+      const [px, , mode, grounded] = path[i];
+      if (mode !== "cube" || !grounded || px < 9 || px > L.endX - 3) continue;
+      if (avoid.some(p => px > p.x0 - 1.5 && px < p.x1 + 1)) continue;
+      const [cx, cy] = at(i);
+      if (pieceClear(L, cx, cy)) cand.push(i);
     }
-    return { L, inputs, checks, endX: L.endX, secret: sec, frames: inputs.length };
+    const chosen = [];
+    if (cand.length) {
+      const a = cand[0], b = cand[cand.length - 1];
+      for (let gap = Math.max(20, Math.floor((b - a) / pieces * .6)); chosen.length < pieces && gap >= 4; gap = Math.floor(gap / 2)) {
+        chosen.length = 0;
+        let last = -1e9;
+        for (let k = 0; k < pieces; k++) {
+          const target = a + (b - a) * (k + .5) / pieces;
+          let best = -1;
+          for (const c of cand) if (c >= last + gap && (best < 0 || Math.abs(c - target) < Math.abs(best - target))) best = c;
+          if (best < 0) break;
+          chosen.push(best); last = best;
+        }
+      }
+    }
+    if (chosen.length < pieces && cand.length) { // a short run: fill in from the spots left, spread out as evenly as they allow
+      const left = cand.filter(c => !chosen.includes(c));
+      for (let k = 0; chosen.length < pieces && k < left.length; k++) {
+        const c = left[Math.floor((k + .5) * left.length / Math.max(1, pieces - chosen.length + k))];
+        if (c != null && !chosen.includes(c)) chosen.push(c);
+      }
+      for (const c of left) { if (chosen.length >= pieces) break; if (!chosen.includes(c)) chosen.push(c); }
+      chosen.sort((x, y) => x - y);
+    }
+    for (const i of chosen) { const [cx, cy] = at(i); L.add("m", cx, cy); }
+    return { L, inputs, checks, endX: L.endX, secret: sec, frames: inputs.length, spans };
   }
 
   /* ---------- Playing a level on a canvas ---------- */
@@ -233,9 +309,11 @@
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const G = o.gen, L = G.L, th = o.theme || {};
     const pieceObjs = L.objs.filter(x => x.k === "m"), secretObj = L.objs.find(x => x.k === "x");
+    const pieceIdx = new Map(pieceObjs.map((x, i) => [x.id, i]));
+    const earlier = new Set((o.have || []).map(i => pieceObjs[i] && pieceObjs[i].id).filter(Boolean)); // found on an earlier try
     let W = 0, H = 0, T = 60, raf = 0, last = 0, acc = 0, stopped = false, paused = false;
     let st = start(.5), crashes = 0, deadAt = 0, cpOn = false, cpUsed = false, cp = G.checks[0];
-    let got = new Set(), secretGot = false, finished = false, t0 = performance.now(), hold = false, holdKeys = new Set(), pointer = false, tap = false;
+    let got = new Set(earlier), secretGot = false, finished = false, pressed = false, t0 = performance.now(), hold = false, holdKeys = new Set(), pointer = false, tap = false;
     let camY = 0, sparks = [], lastMode = "cube", tipUntil = o.tip ? performance.now() + 4200 : 0;
 
     function size() {
@@ -250,10 +328,10 @@
     function kd(e) {
       if (stopped) return;
       if (e.code === "Escape" || e.code === "KeyP") { e.preventDefault(); paused = !paused; return; }
-      if (isJumpKey(e)) { e.preventDefault(); if (paused) { paused = false; return; } if (!e.repeat) tap = true; holdKeys.add(e.code); }
+      if (isJumpKey(e)) { e.preventDefault(); if (paused) { paused = false; return; } if (!e.repeat) tap = true; pressed = true; holdKeys.add(e.code); }
     }
     function ku(e) { if (isJumpKey(e)) holdKeys.delete(e.code); }
-    const pd = e => { if (paused) { paused = false; return; } pointer = true; tap = true; e.preventDefault(); };
+    const pd = e => { if (paused) { paused = false; return; } pointer = true; tap = true; pressed = true; e.preventDefault(); };
     const pu = () => { pointer = false; };
     document.addEventListener("keydown", kd, true); document.addEventListener("keyup", ku, true);
     canvas.addEventListener("pointerdown", pd); addEventListener("pointerup", pu); addEventListener("pointercancel", pu);
@@ -266,13 +344,16 @@
 
     function respawn() {
       st = start(cp.x); st.t = cp.t;
-      if (cp.t === 0) { got = new Set(); secretGot = false; }
+      if (cp.t === 0) { got = new Set(earlier); secretGot = false; }
       deadAt = 0; camY = 0; lastMode = "cube"; tap = false;
     }
     function crash() {
       crashes++; deadAt = performance.now(); sfx.lost();
       for (let i = 0; i < 26; i++) sparks.push({ x: st.x + .4, y: st.y + .4, vx: (Math.random() - .5) * 9, vy: Math.random() * 8 - 2, life: 1, c: i % 2 ? th.spark || "#ff3ec8" : th.edge || "#3ef2ff" });
-      if (o.onCrash) o.onCrash(crashes);
+      if (o.onCrash) {
+        const sp = (G.spans || []).find(p => st.x >= p.x0 - 1 && st.x < p.x1 + .5) || null;
+        o.onCrash(crashes, { x: st.x, why: st.why, mode: st.mode, chunk: sp ? { id: sp.id, tag: sp.tag } : null, pressed });
+      }
     }
     function physics() {
       const ap = o.autopilot ? o.autopilot() : false;
@@ -288,7 +369,7 @@
         if (o.onDouble) o.onDouble();
       }
       if (st.touch) for (const x of st.touch) {
-        if (x.k === "m" && !got.has(x.id)) { got.add(x.id); sfx.hint(); if (o.onCollect) o.onCollect(x); }
+        if (x.k === "m" && !got.has(x.id) && !(o.drop && pieceIdx.get(x.id) < o.drop())) { got.add(x.id); sfx.hint(); if (o.onCollect) o.onCollect(x); }
         if (x.k === "x" && !secretGot) { secretGot = true; sfx.found(); if (o.onCollect) o.onCollect(x); }
       }
       if (st.mode !== lastMode) { lastMode = st.mode; sfx.beep(); if (o.onMode) o.onMode(st.mode); }
@@ -296,9 +377,9 @@
       if (!st.alive) crash();
       else if (st.x >= G.endX) finish();
     }
-    function finish() {
+    function finish(skipped = false) {
       finished = true; sfx.found();
-      const res = { crashes, pieces: got.size, piecesTotal: pieceObjs.length, secret: secretGot, usedCheckpoints: cpUsed, ms: performance.now() - t0 };
+      const res = { crashes, pieces: got.size, piecesTotal: pieceObjs.length, gotIdx: [...got].map(id => pieceIdx.get(id)).sort((a, b) => a - b), secret: secretGot, usedCheckpoints: cpUsed, skipped, ms: performance.now() - t0 };
       setTimeout(() => { if (!stopped && o.onFinish) o.onFinish(res); }, 650);
     }
 
@@ -332,6 +413,7 @@
         glowStroke(p, c, T * .32);
         ctx.save(); ctx.globalAlpha = .16; ctx.fillStyle = c; ctx.fill(p); ctx.restore();
       } else if (x.k === "m") {
+        if (earlier.has(x.id)) { ctx.save(); ctx.globalAlpha = .28; drawPiece(X, Y, T * .3, th.piece || "#5cffb0", 0); ctx.restore(); return; } // found on an earlier try
         if (got.has(x.id)) return;
         const bob = reduced ? 0 : Math.sin(now / 260 + x.x) * T * .08;
         drawPiece(X, Y + bob, T * .34, th.piece || "#5cffb0", reduced ? 0 : now / 900 + x.x);
@@ -417,9 +499,10 @@
       stop() { stopped = true; cancelAnimationFrame(raf); document.removeEventListener("keydown", kd, true); document.removeEventListener("keyup", ku, true); canvas.removeEventListener("pointerdown", pd); removeEventListener("pointerup", pu); removeEventListener("pointercancel", pu); removeEventListener("blur", blur); if (ro) ro.disconnect(); },
       pause(v) { paused = !!v; },
       checkpoints(v) { cpOn = !!v; if (cpOn) cpUsed = true; },
+      skip() { if (!finished && !stopped) finish(true); },
       get state() { return { x: st.x, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed }; }
     };
   }
 
-  Kit.runner = { sim: { DT, PHYS, Level, start, step, clone, solve }, generate, play };
+  Kit.runner = { sim: { DT, PHYS, Level, start, step, clone, solve, checkPieces }, generate, play };
 })(window.Kit = window.Kit || {});

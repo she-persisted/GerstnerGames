@@ -1,10 +1,12 @@
 /**
  * @file kit/voices.js
- * @about Cartoon voices made in code (no recordings): a villain's evil laugh ("MWAH-HA-HA-HA-HAAA!") and a grumbly mutter for when a villain talks. Each syllable is a buzzy tone shaped by vowel filters, with a breathy "h" or a humming "m" at the start, plus a little echo, so it sounds a bit like a voice.
- * @provides Kit.voices { evilLaugh(options) -> seconds, mutter(seconds, options) -> seconds }
+ * @about Cartoon villain voices: an evil laugh and a grumbly mutter for when a villain talks. The laugh is a real recording when the game includes recorded laughs (like assets/sounds/villain-laughs.js), taking turns between them; otherwise it's made in code, like the mutter: each syllable a buzzy tone shaped by vowel filters, with a breathy "h" or a humming "m" at the start, plus a little echo.
+ * @provides Kit.voices { evilLaugh(options) -> seconds, mutter(seconds, options) -> seconds, clipBuffer(audioContext, clip) -> Promise<AudioBuffer | null> }
  * @requires kit/audio.js
  *
- * evilLaugh({ pitch (Hz, default 120), has (how many HAs, default 4), squeak (true to end with a tiny voice crack; default: now and then) })
+ * evilLaugh({ clip (which recorded laugh, default: take turns), volume (0 to 1, default .85), synth (true = the made-in-code laugh),
+ *             pitch (Hz, default 120), has (how many HAs, default 4), squeak (true to end with a tiny voice crack; default: now and then) })
+ *   Recorded laughs come from Kit.sounds.villainLaughs: [{ id, seconds, src (data: URL) }]. A new laugh cuts off the one still playing.
  * mutter(seconds, { pitch })
  * Both return how long they last, so a game can animate along with them. They stay silent when sound is off (Kit.audio.setEnabled),
  * but still return their length. Pass { ctx: someAudioContext, at: seconds } to draw into another context (the play-test uses this).
@@ -56,7 +58,38 @@
     return total;
   }
 
+  // Recorded laughs: each one is decoded once for each audio context, then played as often as needed.
+  const decoded = new WeakMap();
+  function clipBuffer(a, clip) {
+    let m = decoded.get(a);
+    if (!m) { m = new Map(); decoded.set(a, m); }
+    if (!m.has(clip.id)) {
+      const bin = atob(clip.src.slice(clip.src.indexOf(",") + 1)), bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      m.set(clip.id, a.decodeAudioData(bytes.buffer).catch(() => null));
+    }
+    return m.get(clip.id);
+  }
+  let turn = 0, playing = null;
   function evilLaugh(o = {}) {
+    const list = (Kit.sounds && Kit.sounds.villainLaughs) || [];
+    if (!list.length || o.synth) return madeLaugh(o);
+    const clip = list[(o.clip != null ? o.clip : turn++) % list.length];
+    const a = o.ctx || (A.enabled ? A.ctx() : null);
+    if (a) {
+      const asked = o.ctx ? (o.at || 0) : a.currentTime;
+      clipBuffer(a, clip).then(buf => {
+        if (!buf) { madeLaugh(o); return; }   // this browser couldn't read the recording
+        const src = a.createBufferSource(), g = a.createGain();
+        src.buffer = buf; g.gain.value = o.volume == null ? .85 : o.volume;
+        src.connect(g).connect(a.destination);
+        if (!o.ctx) { if (playing) { try { playing.stop(); } catch (e) { /* already done */ } } playing = src; }
+        src.start(Math.max(asked, o.ctx ? 0 : a.currentTime));
+      });
+    }
+    return clip.seconds;
+  }
+  function madeLaugh(o = {}) {
     const P = o.pitch || 120, has = o.has || 4, squeak = o.squeak == null ? Math.random() < .35 : o.squeak;
     const plan = [];
     let t = .02;
@@ -75,5 +108,5 @@
     perform(plan, o);
     return sec;
   }
-  Kit.voices = { evilLaugh, mutter };
+  Kit.voices = { evilLaugh, mutter, clipBuffer };
 })(window.Kit = window.Kit || {});
