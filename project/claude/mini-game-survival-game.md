@@ -86,7 +86,7 @@ Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 
 ## Versions
 | Version | Date | Page | What changed |
 |---|---|---|---|
-| v1 | 2026-10-17 | ARCHIVE_URL (archive) | First version. |
+| v1 | 2026-10-17 | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | First version. |
 | v2 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Easier runs that ramp up, double hop, Easy and Hard modes, no attempt counting, funnier opening with puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip. |
 
 ## Ideas for later

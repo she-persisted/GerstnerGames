@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Mini Game Survival | **Home page, always the newest version** (now v1, 2026-10-17: first version) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v1.html` |
+| Mini Game Survival | **Home page, always the newest version** (now v2, 2026-10-17: easier ramping runs, double hop, Easy and Hard, upbeat music, NASA-style backgrounds, question library, end clip) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v2.html` |
+| Mini Game Survival | v1 (2026-10-17), first version | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | `library/dist/mini-game-survival-v1.html` |
 | Starward | **Home page, always the newest version** (now v6, 2026-10-17: dig tips, auto-advance after right answers, tap friends for hints) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v6.html` |
 | Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/X1f6WeveqRtYrnDTKFzuWY (archive) | `library/dist/starward-v5.html` |
 | Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/dist/starward-v4.html` (the live page still shows a name) |
