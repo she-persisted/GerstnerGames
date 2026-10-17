@@ -2,7 +2,8 @@
 
 **Spoiler warning:** this doc explains the mystery's twist. The kids asked to be surprised, so don't read the "Mystery" section out loud or reveal it in voice mode unless they ask for spoilers.
 
-Home page (always the newest version): see the Versions table below.
+Home page (always the newest version): https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ
+QR card: `library/dist/mini-game-survival-v1-qr.png`
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/` (see claude/game-library.md)
 
 ## Design (October 17, 2026, by voice, with Child I and two friends)
@@ -66,7 +67,7 @@ Runs (400 + 15 per memory piece - 20 per crash, at least 100; the Shadow Gate 60
 ## Versions
 | Version | Date | Page | What changed |
 |---|---|---|---|
-| v1 | 2026-10-17 | (home page link added when published) | First version. |
+| v1 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | First version. |
 
 ## Ideas for later
 - Waiting on play-testing: whether the runs are too hard at the start, whether ship mode feels controllable, whether kids find the secret pages.

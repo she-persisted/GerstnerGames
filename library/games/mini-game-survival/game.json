@@ -4,14 +4,26 @@
   "version": 1,
   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
   "output": "dist/mini-game-survival-v1.html",
-  "home": "",
+  "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
     "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@500;700&display=swap"
   ],
-  "capabilities": { "db": {} },
+  "capabilities": {
+    "db": {}
+  },
   "qr": {
-    "colors": { "void": "#0a0620", "nebula": "#170c3a", "nebulaHi": "#3a1a7a", "starlight": "#f6f0ff", "dust": "#b7a9ea", "glow": "#ff3ec8", "accent": "#3ef2ff", "gold": "#ffe94a", "onGold": "#1a0420" },
+    "colors": {
+      "void": "#0a0620",
+      "nebula": "#170c3a",
+      "nebulaHi": "#3a1a7a",
+      "starlight": "#f6f0ff",
+      "dust": "#b7a9ea",
+      "glow": "#ff3ec8",
+      "accent": "#3ef2ff",
+      "gold": "#ffe94a",
+      "onGold": "#1a0420"
+    },
     "badge": "trexy",
     "cta": "Scan to play!"
   },
@@ -64,5 +76,12 @@
     "games/mini-game-survival/screens.js",
     "games/mini-game-survival/boot.js"
   ],
-  "releases": []
+  "releases": [
+    {
+      "version": 1,
+      "date": "2026-10-17",
+      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+      "notes": "First version: four portals (obstacle runs, memory jigsaws, glitch-locked clue words, clue typing), the Shadow Gate, the mystery of Shadowspine, secret diary pages, hardcore songs, adaptive levels, high scores."
+    }
+  ]
 }
