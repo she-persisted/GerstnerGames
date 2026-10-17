@@ -1,7 +1,7 @@
 /**
  * @file kit/puzzle-ui.js
  * @about Shows one question with an answer box, helper buttons, and feedback. Works with every question kind in kit/questions.js (riddles, fill in the blank, scrambles, number patterns, odd one out, math).
- * @provides Kit.puzzleUI { render(panel, question, options), blankHTML }
+ * @provides Kit.puzzleUI { render(panel, question, options) -> { use(helperKey) }, blankHTML }
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js
  *
  * options:
@@ -10,9 +10,15 @@
  *   helpers     [{ key, type: "scan" | "clue" | "peek" | "clue2", label, iconHtml, color, who, onUse }] in display order
  *               scan = show how many letters; clue = show question.clue; peek = reveal a letter; clue2 = show question.clue2
  *   icons       { check, eye, back } HTML
- *   nextHtml    HTML for the Next button shown after a correct answer
+ *   autoNext    ms to show the cheer after a right answer before moving on by itself (default 1700; a shown spelling or answer adds 900).
+ *               0 shows a Next button instead.
+ *   nextHtml    HTML for that Next button (only used when autoNext is 0)
+ *   cheers      cheers to pick from after a right answer (default: a few general ones)
  *   showAfter   wrong answers before "Show me" appears (default 3)
- *   onHint(type), onWrong(tries), onWin({ shown, tries, hints, spell }), onDone()
+ *   onHint(type), onWrong(tries), onNudge(helperKey), onWin({ shown, tries, hints, spell, cheer }), onDone()
+ *
+ * render returns { use(key) }: presses a helper from outside the panel (for example, tapping a friend
+ * on the stage). It returns true if the helper was used, false if it is used up, hidden, or the puzzle is gone.
  */
 (function (Kit) {
   "use strict";
@@ -24,7 +30,7 @@
     return `${esc(a)}<span class="slot-blank ${filled ? "filled" : ""}">${filled ? esc(filled) : "?"}</span>${esc(b || "")}`;
   };
   const OOPS = ["Not quite!", "Try again!", "Almost! Think again.", "Nope! You've got this."];
-  const CHEERS = ["Yes!", "Woo-hoo!", "Nailed it!", "Brain power!", "Right on!"];
+  const CHEERS = ["Yes!", "Woo-hoo!", "Nailed it!", "Brain power!", "Right on!", "Ding ding ding!", "Your brain just did a backflip!"];
   const NUDGE_ORDER = ["clue", "peek", "clue2", "scan"];
 
   function render(panel, p, o) {
@@ -62,7 +68,8 @@
       <div class="actions ${o.leave ? "split" : ""}" id="puzDone">${o.leave ? `<button type="button" class="btn ghost icon" id="leaveBtn" aria-label="Walk away">${icons.back || "Back"}</button>` : ""}</div>
     </div>`;
 
-    const input = $("#ans", panel), fb = $("#fb", panel);
+    const card = $(".card.puzzle", panel), input = $("#ans", panel), fb = $("#fb", panel);
+    const auto = o.autoNext === undefined ? 1700 : o.autoNext;
     const say = (html, cls = "") => { fb.className = "feedback " + cls; fb.innerHTML = html; };
     function paintBlanks() {
       const b = $("#blanks", panel); b.hidden = false;
@@ -114,7 +121,7 @@
       if (tries === 2) {
         const nb = NUDGE_ORDER.map(t => helpers.find(h => h.type === t && !used.has(h.key)))
           .map(h => h && panel.querySelector(`[data-help="${h.key}"]`)).find(x => x && !x.disabled);
-        if (nb) nb.classList.add("nudge");
+        if (nb) { nb.classList.add("nudge"); if (o.onNudge) o.onNudge(nb.dataset.help); }
       }
       if (tries >= showAfter) { const sb = panel.querySelector('[data-help="show"]'); sb.hidden = false; sb.classList.add("nudge"); }
       input.select();
@@ -125,16 +132,31 @@
       panel.querySelectorAll(".answer button, [data-help]").forEach(x => { x.disabled = true; });
       sfx.right();
       if (p.kind === "blank") $("#qtext", panel).innerHTML = blankHTML(p.q, ans);
-      let msg = shown ? "There you go!" : pick(CHEERS);
-      if (res.spell && squash(res.spell) !== squash(input.value)) msg += ` <b>${esc(res.spell.toUpperCase())}</b>`;
-      say(msg, "good");
-      if (o.onWin) o.onWin({ shown, tries, hints, spell: res.spell });
+      const cheer = shown ? "There you go!" : pick(o.cheers && o.cheers.length ? o.cheers : CHEERS);
+      const fixed = res.spell && squash(res.spell) !== squash(input.value);
+      say(esc(cheer) + (fixed ? ` <b>${esc(res.spell.toUpperCase())}</b>` : ""), "good cheer");
+      if (o.onWin) o.onWin({ shown, tries, hints, spell: res.spell, cheer });
       const done = $("#puzDone", panel);
       done.className = "actions";
+      if (auto > 0) {
+        // No Next button: the cheer shows for a moment, then the game moves on by itself.
+        done.innerHTML = "";
+        setTimeout(() => { if (card.isConnected) o.onDone(); }, auto + (shown || fixed ? 900 : 0));
+        return;
+      }
       done.innerHTML = o.nextHtml || Kit.ui.nextBtn("Next");
       Kit.ui.bindPrimary(panel, o.onDone);
     }
     Kit.ui.focusSoon(input);
+
+    return {
+      use(key) {
+        const b = card.isConnected && !input.disabled && panel.querySelector(`[data-help="${key}"]`);
+        if (!b || b.disabled || b.hidden) return false;
+        b.click();
+        return true;
+      }
+    };
   }
 
   Kit.puzzleUI = { render, blankHTML };

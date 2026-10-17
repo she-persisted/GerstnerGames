@@ -49,6 +49,7 @@
 .meter b{color:var(--starlight);font-weight:600}
 
 /* Digging */
+.digtip{margin:0;font:700 clamp(1.1rem,1rem + .5vw,1.35rem)/1.3 var(--font-display);color:var(--ember-gold)}
 .digrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .shovel{width:46px;height:46px;flex:none}
 .clods{display:flex;gap:12px;flex-wrap:wrap}

@@ -1,6 +1,6 @@
 /**
  * @file games/starward/scene.js
- * @about Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.
+ * @about Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, tapping a friend for their hint, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.
  * @requires kit/starfield.js, kit/music.js, kit/audio.js, assets/characters/puppy.js, assets/characters/portraits.js, assets/rocket/rocket.js, games/starward/state.js
  */
 const stars = Kit.starfield.create($("#stars"), { color: TOK.starlight });
@@ -38,6 +38,19 @@ function express(face, ms = 1700) {
   clearTimeout(faceTimer); robotEl.dataset.face = face;
   if (ms) faceTimer = setTimeout(() => { delete robotEl.dataset.face; }, ms);
 }
+// Tapping a friend (on the stage or in the friends bar) during a puzzle uses that friend's helper:
+// Sunny sniffs, Rigel peeks, Professor Kepler ponders. Any other time the friend just hops (and Sunny woofs).
+const FRIEND_HELP = { dog: "sniff", peng: "peek", rock: "ponder" };
+let puzzleCtl = null;  // set by runPuzzle in screens.js
+function tapFriend(who) {
+  if (!active || !S.crew.includes(who)) return;
+  if (puzzleCtl && puzzleCtl.use(FRIEND_HELP[who])) return;
+  hop(who); if (who === "dog") sfx.woof();
+}
+Object.keys(FRIEND_HELP).forEach(w => {
+  charEl(w).addEventListener("click", () => tapFriend(w));
+  document.querySelector(`.slot[data-slot="${w}"]`).addEventListener("click", () => tapFriend(w));
+});
 function appear(who) { if (!S.seen.includes(who)) S.seen.push(who); const c = charEl(who); if (c) c.classList.add("in"); describeScene(); }
 function join(who, silent) {
   appear(who);

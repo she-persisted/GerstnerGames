@@ -1,6 +1,16 @@
 {
  "files": [
   {
+   "path": "README.md",
+   "layer": "Docs",
+   "bytes": 4889,
+   "usedBy": [],
+   "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
+   "provides": "",
+   "requires": "",
+   "notes": ""
+  },
+  {
    "path": "assets/characters/characters.css",
    "layer": "Assets",
    "bytes": 6252,
@@ -352,12 +362,12 @@
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 17379,
+   "bytes": 20244,
    "usedBy": [],
    "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward start to finish (map, puzzles, digging, flights, the brave words, the ending and high score). Must pass before every commit that changes library/.",
    "provides": "",
    "requires": "build/build.py",
-   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 2 minutes)\n  python3 library/build/playtest.py --quick    skip the full Starward playthrough\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
    "path": "build/qr.py",
@@ -516,11 +526,11 @@
   {
    "path": "games/starward/game.css",
    "layer": "Games",
-   "bytes": 1280,
+   "bytes": 1421,
    "usedBy": [
     "Starward"
    ],
-   "about": "Starward-only layout: switching between the side view and the walkable map, the high score board over the scene on the title screen, hiding the cast during flights, and the level badges on the ending.",
+   "about": "Starward-only layout: switching between the side view and the walkable map, the high score board over the scene on the title screen, hiding the cast during flights, tappable friends, and the level badges on the ending.",
    "provides": "",
    "requires": "kit/base.css",
    "notes": ""
@@ -550,11 +560,11 @@
   {
    "path": "games/starward/lumina.js",
    "layer": "Games",
-   "bytes": 7942,
+   "bytes": 8039,
    "usedBy": [
     "Starward"
    ],
-   "about": "Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging), choosing each rocket part's style, and building and painting the ship at the launch pad.",
+   "about": "Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging, with a one-line tip), choosing each rocket part's style, and building and painting the ship at the launch pad.",
    "provides": "",
    "requires": "kit/topdown-map.js, kit/typing-challenges.js, assets/map/lumina-map.js, assets/characters/robot-topdown.js, games/starward/scene.js",
    "notes": ""
@@ -562,7 +572,7 @@
   {
    "path": "games/starward/scene.html",
    "layer": "Games",
-   "bytes": 4189,
+   "bytes": 4255,
    "usedBy": [
     "Starward"
    ],
@@ -574,11 +584,11 @@
   {
    "path": "games/starward/scene.js",
    "layer": "Games",
-   "bytes": 6868,
+   "bytes": 7618,
    "usedBy": [
     "Starward"
    ],
-   "about": "Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.",
+   "about": "Starward's stage controls: switching worlds, turning side-view Lumina, the robot's faces and hops, friends joining, tapping a friend for their hint, the courage bar, the friends bar, the rocket pictures, the starfield, toasts, and the music and sound buttons.",
    "provides": "",
    "requires": "kit/starfield.js, kit/music.js, kit/audio.js, assets/characters/puppy.js, assets/characters/portraits.js, assets/rocket/rocket.js, games/starward/state.js",
    "notes": ""
@@ -586,11 +596,11 @@
   {
    "path": "games/starward/screens.js",
    "layer": "Games",
-   "bytes": 11906,
+   "bytes": 12574,
    "usedBy": [
     "Starward"
    ],
-   "about": "Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here.",
+   "about": "Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here. A right answer, a safe landing, or the brave words get a cheer and move on by themselves.",
    "provides": "",
    "requires": "kit/puzzle-ui.js, kit/flight.js, kit/typing-challenges.js, kit/jukebox.js, kit/scoreboard.js, games/starward/lumina.js",
    "notes": ""
@@ -610,7 +620,7 @@
   {
    "path": "games/starward/story.js",
    "layer": "Games",
-   "bytes": 5528,
+   "bytes": 5554,
    "usedBy": [
     "Starward"
    ],
@@ -732,11 +742,11 @@
   {
    "path": "kit/puzzle-ui.css",
    "layer": "Kit",
-   "bytes": 2851,
+   "bytes": 3143,
    "usedBy": [
     "Starward"
    ],
-   "about": "Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback.",
+   "about": "Styles for the puzzle screen: question kind tag, fill-in blank, letter tiles, helper buttons, clues, and right or wrong feedback (a big popping cheer for a right answer).",
    "provides": "",
    "requires": "kit/base.css",
    "notes": ""
@@ -744,14 +754,14 @@
   {
    "path": "kit/puzzle-ui.js",
    "layer": "Kit",
-   "bytes": 7981,
+   "bytes": 9318,
    "usedBy": [
     "Starward"
    ],
    "about": "Shows one question with an answer box, helper buttons, and feedback. Works with every question kind in kit/questions.js (riddles, fill in the blank, scrambles, number patterns, odd one out, math).",
-   "provides": "Kit.puzzleUI { render(panel, question, options), blankHTML }",
+   "provides": "Kit.puzzleUI { render(panel, question, options) -> { use(helperKey) }, blankHTML }",
    "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/questions.js",
-   "notes": "options:\n  head        HTML above the question (place name, progress dots)\n  leave       function for a \"walk away\" back button (optional)\n  helpers     [{ key, type: \"scan\" | \"clue\" | \"peek\" | \"clue2\", label, iconHtml, color, who, onUse }] in display order\n              scan = show how many letters; clue = show question.clue; peek = reveal a letter; clue2 = show question.clue2\n  icons       { check, eye, back } HTML\n  nextHtml    HTML for the Next button shown after a correct answer\n  showAfter   wrong answers before \"Show me\" appears (default 3)\n  onHint(type), onWrong(tries), onWin({ shown, tries, hints, spell }), onDone()"
+   "notes": "options:\n  head        HTML above the question (place name, progress dots)\n  leave       function for a \"walk away\" back button (optional)\n  helpers     [{ key, type: \"scan\" | \"clue\" | \"peek\" | \"clue2\", label, iconHtml, color, who, onUse }] in display order\n              scan = show how many letters; clue = show question.clue; peek = reveal a letter; clue2 = show question.clue2\n  icons       { check, eye, back } HTML\n  autoNext    ms to show the cheer after a right answer before moving on by itself (default 1700; a shown spelling or answer adds 900).\n              0 shows a Next button instead.\n  nextHtml    HTML for that Next button (only used when autoNext is 0)\n  cheers      cheers to pick from after a right answer (default: a few general ones)\n  showAfter   wrong answers before \"Show me\" appears (default 3)\n  onHint(type), onWrong(tries), onNudge(helperKey), onWin({ shown, tries, hints, spell, cheer }), onDone()\n\nrender returns { use(key) }: presses a helper from outside the panel (for example, tapping a friend\non the stage). It returns true if the helper was used, false if it is used up, hidden, or the puzzle is gone."
   },
   {
    "path": "kit/questions.js",
@@ -816,19 +826,19 @@
   {
    "path": "kit/typing-challenges.js",
    "layer": "Kit",
-   "bytes": 3959,
+   "bytes": 4157,
    "usedBy": [
     "Starward"
    ],
    "about": "Two untimed typing challenges. dig: type the words written on clumps of dirt to dig something up. line: type one sentence exactly (like a brave promise).",
    "provides": "Kit.typing { dig(panel, options) -> stop, line(panel, options) -> stop }",
    "requires": "kit/util.js, kit/ui.js, kit/audio.js",
-   "notes": "dig options:  { head, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }\nline options: { text, onDone(stats, doneEl) }    doneEl is an empty .actions element for the Next button\nstats = { hits, misses, ms, chars }"
+   "notes": "dig options:  { head, tip, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }\n              tip = one short line telling the player what to do, shown above the dirt (there's no text box, so it isn't obvious)\nline options: { text, onDone(stats, doneEl) }    doneEl is an empty .actions element for the Next button\nstats = { hits, misses, ms, chars }"
   },
   {
    "path": "kit/typing.css",
    "layer": "Kit",
-   "bytes": 4942,
+   "bytes": 5051,
    "usedBy": [
     "Starward"
    ],
@@ -860,16 +870,6 @@
    "about": "Small helpers every game uses: finding elements, random picks, answer matching, and safe browser storage.",
    "provides": "Kit.util { $, wait, shuffle, sample, pick, rint, clamp, esc, norm, squash, lev, cleanName, store }",
    "requires": "nothing",
-   "notes": ""
-  },
-  {
-   "path": "README.md",
-   "layer": "Docs",
-   "bytes": 4889,
-   "usedBy": [],
-   "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
-   "provides": "",
-   "requires": "",
    "notes": ""
   },
   {
@@ -941,10 +941,10 @@
   },
   {
    "id": "starward",
-   "title": "Starward v5",
-   "version": 5,
+   "title": "Starward v6",
+   "version": 6,
    "about": "A tall robot, the Keeper of Lumina, explores his dark home world to rebuild his rocket, then flies to four planets with new friends to bring back the Everlight. Typing flights, STEM puzzles, collectible songs, adaptive difficulty, and an arcade high score board.",
-   "output": "dist/starward-v5.html",
+   "output": "dist/starward-v6.html",
    "home": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw",
    "body": "games/starward/scene.html",
    "releases": [
@@ -967,7 +967,7 @@
      "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level."
     },
     {
-     "version": 5,
+     "version": 6,
      "date": "2026-10-11",
      "url": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw",
      "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". The first version on the permanent home page, whose high scores now carry across updates."

@@ -1,4 +1,4 @@
-This project is for making educational games for my son Child I and his friends. Child I and I design them together, usually by voice, and you build them in text.
+This project is for making educational games for my son Child I and his friends. Child I and I design them together, usually by voice, and you build them in text. Make it fun - inject humor. He likes mysteries, reading books like Harry Potter, solving logic puzzles like Murdle.
 
 Audience
 - Child I's birth month and school grade are in the claude.ai project doc claude/child-i-profile.md, never in this repo. Work out his current age and grade from that instead of assuming.
@@ -28,3 +28,4 @@ Versions
 - Each game has one permanent home page that always runs the newest version, so its link, QR card and high scores carry across updates. Before updating it, save the version it was running as its own archive page, so earlier versions stay playable and untouched. Publishing a new version doesn't need my OK, as long as the play-test passes and the old version is archived first.
 - Every new version comes with a QR card in the game's own colors and icons, checked to scan, sent to me with the link.
 - After publishing, confirm the page matches the built file in the repo. Record the link in game.json and in the game's doc in claude/, with what changed.
+- Let the games default to public.

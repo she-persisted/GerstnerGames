@@ -1,6 +1,6 @@
 /**
  * @file games/starward/screens.js
- * @about Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here.
+ * @about Starward's screens: title (high scores and jukebox), story lines, new songs, flights, the brave words, puzzles, and the ending with the score and name entry. Puzzle and flight results feed the adaptive levels here. A right answer, a safe landing, or the brave words get a cheer and move on by themselves.
  * @requires kit/puzzle-ui.js, kit/flight.js, kit/typing-challenges.js, kit/jukebox.js, kit/scoreboard.js, games/starward/lumina.js
  */
 const board = Kit.scoreboard.create({ storeKey: KEYS.scores });
@@ -80,15 +80,20 @@ function helpersFor() {
   if (S.crew.includes("rock")) list.push({ key: "ponder", type: "clue2", label: "Ponder", iconHtml: P.rock, color: "var(--c-rock)", who: "Professor Kepler", onUse: () => hop("rock") });
   return list;
 }
+const CHEERS = ["Stellar!", "Out of this world!", "Supernova smart!", "Brain thrusters: full power!", "Even the stars are clapping!",
+  "Beep boop: CORRECT!", "Houston, we have a genius!", "Rocket brain!", "Nailed it!", "Your brain just did a backflip!"];
+const HELP_WHO = { sniff: "dog", peek: "peng", ponder: "rock" };
+// After a right answer the cheer shows for a moment, then the game moves on by itself (no Next button).
 function runPuzzle(p, opts, onDone) {
-  Kit.puzzleUI.render(panel, p, {
-    head: opts.head, leave: opts.leave, helpers: helpersFor(),
+  puzzleCtl = Kit.puzzleUI.render(panel, p, {
+    head: opts.head, leave: opts.leave, helpers: helpersFor(), cheers: CHEERS, autoNext: 1700,
     icons: { check: ICON.check, eye: ICON.eye, back: ICON.back },
-    nextHtml: nextBtn("Next", '<span class="kbd">Enter</span>'),
     onHint() { S.stats.hints++; express("think", 1400); save(); },
     onWrong() { hop("robot", "jolt"); express("think", 1500); },
+    onNudge(key) { if (HELP_WHO[key]) hop(HELP_WHO[key]); },
     onWin(r) {
       hop("robot"); express("happy", 2200);
+      if (opts.site) map.say(r.cheer, 1800);
       ["dog", "peng", "rock"].forEach((w, i) => { if (S.crew.includes(w)) setTimeout(() => hop(w), 120 + i * 120); });
       if (r.shown) { S.stats.shown++; S.stats.pts += 25; addCourage(1); }
       else { S.stats.solved++; S.stats.pts += 60 + 40 * (p.d || 2); addCourage(3); }
@@ -148,9 +153,9 @@ function renderFly(st) {
         <h2 class="big">Safe <span class="hot">landing!</span></h2>
         ${Kit.flight.starRow(r.n, r.res)}
         <p class="bigpct">${pct}%</p>
-        <div class="actions">${nextBtn(dest, ICON.go, "big")}</div>
       </div>`;
-      bindPrimary(next);
+      const t = flow.token();
+      setTimeout(() => { if (flow.alive(t)) next(); }, 2600);
     } else { attempt++; lastPct = pct; ready(); }
   }
 }
@@ -162,8 +167,9 @@ function renderVow() {
       flow.setCleanup(null);
       S.stats.legs.vow = { hits: st.hits, misses: st.misses, typeMs: st.ms, typeChars: st.chars, caught: 0, n: 0 };
       addCourage(2); express("happy"); save();
-      doneEl.innerHTML = nextBtn("Take the Everlight", ICON.go, "big");
-      bindPrimary(next);
+      doneEl.innerHTML = `<p class="feedback good cheer">So brave!</p>`;
+      const t = flow.token();
+      setTimeout(() => { if (flow.alive(t)) next(); }, 1600);
     }
   }));
 }

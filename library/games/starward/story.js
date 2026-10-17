@@ -27,7 +27,7 @@ const STEPS = [
   { t: "appear", who: "dog" },
   { t: "say", who: "narrator", x: "Something fluffy tumbles out of a cloud and lands with a bounce." },
   { t: "say", who: "robot", face: "surprised", x: "Oh! We found a puppy!" },
-  { t: "say", who: "dog", x: "Woof! Woof woof! (I'm Sunny! My magic nose can sniff out clues!)" },
+  { t: "say", who: "dog", x: "Woof! Woof woof! (I'm Sunny! My magic nose can sniff out clues. Tap me when you're stuck!)" },
   { t: "join", who: "dog" },
   { t: "puzzle", set: "nimbus", n: 1 },
   { t: "puzzle", set: "nimbus", n: 2 },

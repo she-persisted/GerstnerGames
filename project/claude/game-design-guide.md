@@ -46,8 +46,11 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Upgrades come only from the home area. Out in the wider world he collects something else instead (songs, in Starward). [asked]
 - Exploring should be visual: he walks his character around a map instead of clicking a list of places. [asked]
 - Keep instructions to a minimum and make the game intuitive. Story text is fine, but explanations of what to do next are not. [asked] Starward replaces instructions with visual cues: glowing markers, progress dots, a highlight on the next thing to type, and hint buttons that pulse after two misses. [built]
+- Exception: when kids can't tell what to do, give one short line of instructions on that screen. Kids playing Starward didn't know what to do at the Lumina dig (typing the words on the dirt), so it now says what to do. [asked] Keep it to one line, and a little funny: "Type the words to dig up the part. Your keyboard is the shovel!" [built]
+- Reduce clicks. After a right answer, cheer, then move on by itself; never make him press Next. [asked] Starward v6 shows a big cheer for 1.7 seconds after a puzzle (longer if it shows a spelling), auto-advances after a safe landing (2.6 s) and the brave words, and the robot says the cheer on the Lumina map. Story lines and choices (part style, paint) still wait for him. [built]
 - Typing rounds are timed and animated. Words fall or appear, and he types them before they're gone. Missed words don't have to be retyped. He passes at 85% accuracy and redoes the round if he falls short. [asked]
 - Helpers make sure he never stays stuck. [asked] After three wrong answers, a "Show me" button appears, and he types the answer to move on. [built]
+- Kids can tap the dog to sniff for a hint. [asked] In Starward v6, tapping any friend on the stage or in the friends bar during a puzzle uses that friend's helper (Sunny sniffs, Rigel peeks, Professor Kepler ponders); outside a puzzle the friend just hops and Sunny woofs. Sunny tells him "Tap me when you're stuck!" when she joins, and a friend hops when their hint button starts pulsing. [built]
 - Give positive reinforcement through the hero's face: happy and surprised reactions to what he does. [asked]
 - Building and customizing: he picks the style of each rocket part and the paint color. [built]
 
@@ -70,7 +73,7 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 ## Technical defaults that worked
 - Source lives in the Game Library as separate files: shared engines in kit/, art and music in assets/, questions and words in content/, game-only parts in games/<id>/. Every file starts with a header saying what it does, what it provides, and what it needs. [asked]
 - Each game is built into one self-contained web page, published as an artifact, that runs in Chrome on the Chromebook with no install.
-- Keyboard first: arrow keys or WASD to move, Enter to continue, and typing for answers. The mouse also works.
+- Keyboard first: arrow keys or WASD to move, Enter to continue, and typing for answers. The mouse and touchscreen also work, including tapping friends for hints.
 - Progress and skill levels save in the browser, so he can stop and pick up later.
 - Every change passes `library/build/playtest.py`, which plays Starward start to finish in a headless browser. Visual changes also get a screenshot check. [asked]
 

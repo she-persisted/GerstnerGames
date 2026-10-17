@@ -4,7 +4,8 @@
  * @provides Kit.typing { dig(panel, options) -> stop, line(panel, options) -> stop }
  * @requires kit/util.js, kit/ui.js, kit/audio.js
  *
- * dig options:  { head, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }
+ * dig options:  { head, tip, words, shovelHtml, backHtml, onBack, onWord(i), onDone(stats) }
+ *               tip = one short line telling the player what to do, shown above the dirt (there's no text box, so it isn't obvious)
  * line options: { text, onDone(stats, doneEl) }    doneEl is an empty .actions element for the Next button
  * stats = { hits, misses, ms, chars }
  */
@@ -17,6 +18,7 @@
     let wi = 0, typed = 0, hits = 0, misses = 0, first = 0, done = false;
     panel.innerHTML = `<div class="card">
       ${o.head || ""}
+      ${o.tip ? `<p class="digtip">${esc(o.tip)}</p>` : ""}
       <div class="digrow">${o.shovelHtml || ""}<div class="clods">${words.map((w, i) => `<div class="clod" data-i="${i}"></div>`).join("")}</div></div>
       <div class="actions start"><button class="btn ghost icon" type="button" id="leaveBtn" aria-label="Walk away">${o.backHtml || "Back"}</button></div>
     </div>`;

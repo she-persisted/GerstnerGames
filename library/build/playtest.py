@@ -24,9 +24,12 @@ Checks:
      - Title: name the robot and start.
      - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong
        answers; "Show me" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.
-       Every dig is typed, every part style picked, then back to the launch pad to paint the ship.
+       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.
+     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.
+     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must
+       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).
      - Flights: the first try of the first flight is typed badly on purpose and must offer
-       "Fly again"; every other flight is typed cleanly and must land.
+       "Fly again"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.
      - All planet puzzles answered, the brave words typed, and the ending reached.
      - High score: a name saves, gets a rank, and shows on the board as a score on this computer.
 Prints PASS or FAIL with the reasons, and exits 1 on FAIL.
@@ -193,10 +196,13 @@ STATE_JS = r"""() => {
   if (cur) {
     const spans = [...cur.parentElement.children];
     const i = spans.indexOf(cur);
-    return { kind: 'typing', sig, flight: !!panel.querySelector('#bigword'), rest: spans.slice(i).map(s => s.textContent).join('') };
+    const tip = panel.querySelector('.digtip');
+    return { kind: 'typing', sig, flight: !!panel.querySelector('#bigword'), dig: !!panel.querySelector('.clod'),
+             tip: tip ? tip.innerText.trim() : '', rest: spans.slice(i).map(s => s.textContent).join('') };
   }
+  if (/safe landing/i.test(panel.innerText)) return { kind: 'landed', sig };
   const prim = panel.querySelector('[data-primary]');
-  if (vis(prim) && !prim.disabled) return { kind: 'primary', sig, label: prim.innerText.trim(), low: !!panel.querySelector('.bigpct.low'), landed: /landing/i.test(panel.innerText) };
+  if (vis(prim) && !prim.disabled) return { kind: 'primary', sig, label: prim.innerText.trim(), low: !!panel.querySelector('.bigpct.low') };
   if (panel.querySelector('.opt[data-opt]')) return { kind: 'part', sig };
   if (panel.querySelector('.opt[data-paint]')) return { kind: 'paint', sig };
   if (panel.querySelector('.card.roam')) return { kind: 'roam', sig };
@@ -239,9 +245,10 @@ def playthrough(browser, base, rel):
     ctx, pg = new_page(browser, "playthrough")
     pg.goto(base + rel)
     pg.wait_for_selector("#startForm")
-    seen = {"puzzles": 0, "showme": False, "scan": False, "retry": False, "landings": 0, "parts": 0}
+    seen = {"puzzles": 0, "showme": False, "scan": False, "retry": False, "landings": 0, "parts": 0, "digtips": 0, "dogtap": False, "pengtap": False}
+    dug = set()  # dig screens already checked for their tip
     last_sig, last_change, started = None, time.time(), time.time()
-    counted = None  # the last landing screen counted, so a slow click isn't counted twice
+    counted = None  # the story step of the last landing counted, so one landing isn't counted twice
 
     while True:
         if time.time() - started > 420:
@@ -295,16 +302,43 @@ def playthrough(browser, base, rel):
                 if not pg.locator("#blanks").is_visible():
                     fail("Scan helper did not show the letter blanks")
                 seen["scan"] = True
+            if not seen["dogtap"] and "sniff" in st["helpers"]:
+                pg.locator('.cast .char[data-who="dog"]').click()  # tap Sunny on the stage
+                pg.wait_for_timeout(150)
+                if "Sunny" not in pg.inner_text("#clues"):
+                    fail("tapping Sunny did not sniff out a clue")
+                if pg.locator('[data-help="sniff"]').is_enabled():
+                    fail("tapping Sunny did not use up the Sniff helper")
+                seen["dogtap"] = True
+            elif not seen["pengtap"] and "peek" in st["helpers"]:
+                pg.locator('.slot[data-slot="peng"]').click()  # tap Rigel in the friends bar
+                pg.wait_for_timeout(150)
+                if not re.search(r"[a-z0-9]", (pg.inner_text("#blanks") or "").lower()):
+                    fail("tapping Rigel did not peek a letter")
+                seen["pengtap"] = True
             pg.fill("#ans", answer)
             pg.press("#ans", "Enter")
             try:
-                pg.wait_for_selector("#fb.good", timeout=3000)
+                pg.wait_for_selector("#fb.good.cheer", timeout=3000)
                 seen["puzzles"] += 1
             except Exception:
-                fail(f"correct answer {answer!r} was not accepted ({st['sig']!r})")
+                fail(f"correct answer {answer!r} was not accepted with a cheer ({st['sig']!r})")
+                break
+            if pg.locator("#panel [data-primary]").count():
+                fail(f"a Next button appeared after a right answer ({st['sig']!r})")
+            try:
+                pg.wait_for_function("!document.querySelector('#fb.good.cheer')", timeout=5000)
+            except Exception:
+                fail(f"puzzle did not move on by itself within 5 seconds ({st['sig']!r})")
                 break
 
         elif k == "typing":
+            if st["dig"] and st["sig"] not in dug:
+                dug.add(st["sig"])
+                if not st["tip"]:
+                    fail(f"dig screen has no tip ({st['sig']!r})")
+                else:
+                    seen["digtips"] += 1
             if st["flight"] and seen["landings"] == 0 and not seen["retry"]:
                 for ch in st["rest"]:
                     pg.keyboard.type("##" + ch)  # two wrong keys per letter keeps accuracy under the goal
@@ -317,11 +351,19 @@ def playthrough(browser, base, rel):
                 if not st["low"]:
                     fail('"Fly again" shown without the low score')
                 seen["retry"] = True
-            if st["landed"] and st["sig"] != counted:
-                seen["landings"] += 1
-                counted = st["sig"]
             pg.locator("#panel [data-primary]").click()
             pg.wait_for_timeout(120)
+
+        elif k == "landed":
+            step = (save_data(pg) or {}).get("step")  # landing screens look alike, so count each story step once
+            if step != counted:
+                seen["landings"] += 1
+                counted = step
+                try:
+                    pg.wait_for_function("!/safe landing/i.test(document.querySelector('#panel').innerText)", timeout=5000)
+                except Exception:
+                    fail("landing screen did not move on by itself within 5 seconds")
+                    break
 
         elif k == "part":
             pg.locator("#panel .opt[data-opt]").first.click()
@@ -352,11 +394,12 @@ def playthrough(browser, base, rel):
     secs = round(time.time() - started)
     print(f"  {seen['puzzles']} puzzles, {seen['parts']} parts, {seen['landings']} landings, Show me {'ok' if seen['showme'] else 'not seen'}, "
           f"Scan {'ok' if seen['scan'] else 'not seen'}, Fly again {'ok' if seen['retry'] else 'not seen'}, {secs}s")
-    expect = {"puzzles": 20, "parts": 4, "landings": 5}
+    print(f"  {seen['digtips']} dig tips, tap Sunny {'ok' if seen['dogtap'] else 'not seen'}, tap Rigel {'ok' if seen['pengtap'] else 'not seen'}")
+    expect = {"puzzles": 20, "parts": 4, "landings": 5, "digtips": 4}
     for name, n in expect.items():
         if seen[name] != n:
             fail(f"expected {n} {name}, got {seen[name]}")
-    for name in ("showme", "scan", "retry"):
+    for name in ("showme", "scan", "retry", "dogtap", "pengtap"):
         if not seen[name]:
             fail(f"never exercised: {name}")
     ctx.close()

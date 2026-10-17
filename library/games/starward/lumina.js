@@ -1,6 +1,6 @@
 /**
  * @file games/starward/lumina.js
- * @about Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging), choosing each rocket part's style, and building and painting the ship at the launch pad.
+ * @about Exploring Lumina: the walkable map, the three challenges at each place (a word puzzle, a math puzzle, then digging, with a one-line tip), choosing each rocket part's style, and building and painting the ship at the launch pad.
  * @requires kit/topdown-map.js, kit/typing-challenges.js, assets/map/lumina-map.js, assets/characters/robot-topdown.js, games/starward/scene.js
  */
 const LM = Kit.art.luminaMap;
@@ -113,6 +113,7 @@ function renderDig(site) {
   const words = (S.plan.digs && S.plan.digs[site.id]) || sample(Kit.words.dig, 3);
   const stop = Kit.typing.dig(panel, {
     head: siteHead(site, 2), words, shovelHtml: ICON.shovel, backHtml: ICON.back,
+    tip: "Type the words to dig up the part. Your keyboard is the shovel!",
     onBack: () => leaveSite(site),
     onWord: () => map.burst(site.x, site.y - 20, TOK.dirt, 16),
     onDone: st => {
