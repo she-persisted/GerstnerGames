@@ -435,9 +435,9 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 .modebtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .modeabout{margin:0;color:var(--dust);min-height:1.4em}
 .nb-mode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;color:var(--dust);font-weight:600}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--void) 70%,transparent);
-  border:2px solid var(--good);color:var(--good);font-weight:700}
-.chip svg{width:18px;height:18px}
+.cpchip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(10,6,32,.78);
+  border:2px solid var(--good);color:var(--good);font-weight:700;font-size:.95rem}
+.cpchip svg{width:18px;height:18px;flex:none}
 .cluecard .bonus{color:var(--cyan);font-size:.95rem;margin-top:6px}
 </style>
 <!-- @file games/mini-game-survival/scene.html
@@ -4060,7 +4060,7 @@ function drawStage(ctx, now) {
     const im = shipImg(false, false, shipFaceNow(now)), bob = reduced ? 0 : Math.sin(now / 700) * h * .01;
     const wig = !reduced && now < shipTalkUntil ? Math.sin(now / 60) * .08 : 0;
     ctx.save();
-    if (ST.family) { ctx.translate(w * .56, h * .3 + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * (ST.shipFace ? .22 : .16), "center"); } // parked up in the sky
+    if (ST.family) { ctx.translate(w * .56, h * (ST.shipFace ? .27 : .3) + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * (ST.shipFace ? .34 : .16), "center"); } // parked up in the sky
     else { ctx.translate(w * .62, gy - h * .04 + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * .3); }
     ctx.restore();
   }
@@ -4085,11 +4085,13 @@ function drawRide(ctx, w, h, now) {
   }
   ctx.globalAlpha = 1;
   const dir = x2 >= x ? 1 : -1, tilt = Math.max(-.35, Math.min(.35, Math.atan2(y2 - y, Math.abs(x2 - x) + 1e-6)));
-  const sh = h * .26, u = sh / 84; // ship picture height, and its drawing units in pixels
+  const sh = h * .38, u = sh / 84; // ship picture height, and its drawing units in pixels
   ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(tilt);
   drawImg(ctx, shipImg(true, true, ST.shipFace || "happy"), 0, 0, sh, "center");
-  const riders = [[novaImg({ face: "happy" }), -31, 24], [heroImg({ who: "sis", acc: "bow", face: "happy" }), -21, 26], [heroImg({ who: "mom", acc: "flower", face: "happy" }), -10, 30], [heroImg({ who: "dad", acc: "glasses", face: "happy" }), 0, 32]];
+  // riders sit along the top of the hull, back to front, and Nova rides on Dad's head
+  const riders = [[heroImg({ who: "sis", acc: "bow", face: "happy" }), -32, 20], [heroImg({ who: "mom", acc: "flower", face: "happy" }), -19, 25], [heroImg({ who: "dad", acc: "glasses", face: "happy" }), -5, 28]];
   riders.forEach(([im, rx, rh], i) => { const bounce = reduced ? 0 : Math.sin(now / 160 + i) * u * 1.2; drawImg(ctx, im, rx * u, -17 * u + bounce, rh * u); });
+  drawImg(ctx, novaImg({ face: "happy" }), -7 * u, (-17 - 28 * .74) * u + (reduced ? 0 : Math.sin(now / 160 + 2) * u * 1.2), 12 * u);
   ctx.restore();
 }
 
@@ -4374,7 +4376,7 @@ function runPortal({ theme, name, n, pieces, secret, shadow, onPiecePage, done }
       onDouble: () => { if (!S.dblTip) { S.dblTip = true; save(); toast("Double hop! Dino-MITE!"); } },
       onFinish: res => { document.removeEventListener("keydown", cKey); done(res, level); }
     });
-    if (autoCp) { runCtl.checkpoints(true); ui.innerHTML = `<span class="chip on">${ICON.check} Checkpoints on</span>`; }
+    if (autoCp) { runCtl.checkpoints(true); ui.innerHTML = `<span class="cpchip">${ICON.check} Checkpoints on</span>`; }
     if (firstRun) { S.tipped = true; save(); }
     blurActive();
   });

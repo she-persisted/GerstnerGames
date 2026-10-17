@@ -3,7 +3,7 @@
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 5526,
+   "bytes": 6291,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -530,7 +530,7 @@
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 43210,
+   "bytes": 43763,
    "usedBy": [],
    "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
@@ -718,7 +718,7 @@
   {
    "path": "games/mini-game-survival/game.css",
    "layer": "Games",
-   "bytes": 8532,
+   "bytes": 8534,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -766,7 +766,7 @@
   {
    "path": "games/mini-game-survival/scene.js",
    "layer": "Games",
-   "bytes": 22427,
+   "bytes": 22632,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -778,7 +778,7 @@
   {
    "path": "games/mini-game-survival/screens.js",
    "layer": "Games",
-   "bytes": 27474,
+   "bytes": 27473,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1035,7 +1035,8 @@
    "layer": "Kit",
    "bytes": 11163,
    "usedBy": [
-    "Mini Game Survival"
+    "Mini Game Survival",
+    "Child I's Game Library"
    ],
    "about": "A bouncier music player for upbeat, dance-style chiptune songs written as data: sixteenth-note patterns, verse and chorus sections, claps and open hi-hats, sparkly chord arpeggios, an octave-bouncing bass, and a pulse-wave lead with a little echo. Same controls as kit/music.js, so the jukebox works with it, and it plays kit/music.js songs too. Everything is synthesized in code (no audio files, nothing copyrighted).",
    "provides": "Kit.groove.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }, Kit.groove.render(audioContext, song, seconds)",
@@ -1309,19 +1310,19 @@
   {
    "path": "site/page.js",
    "layer": "Library page",
-   "bytes": 11879,
+   "bytes": 11951,
    "usedBy": [
     "Child I's Game Library"
    ],
    "about": "Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.",
    "provides": "",
-   "requires": "kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js",
+   "requires": "kit/util.js, kit/audio.js, kit/music.js, kit/groove.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js",
    "notes": ""
   },
   {
    "path": "site/site.json",
    "layer": "Library page",
-   "bytes": 1388,
+   "bytes": 1409,
    "usedBy": [
     "Child I's Game Library"
    ],

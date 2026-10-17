@@ -503,8 +503,9 @@ def mgs_easy_check(browser, base, rel):
     for _ in range(80):
         if pg.evaluate("window.__mgs.mode") == "hub":
             break
-        if pg.locator("#panel [data-primary]").count():
-            pg.locator("#panel [data-primary]").click()
+        nxt = pg.locator("#panel [data-primary]")
+        if nxt.count() and nxt.first.is_visible():
+            nxt.first.click()
         pg.wait_for_timeout(120)
     if pg.evaluate("window.__mgs.mode") != "hub":
         fail("Easy mode: the story never reached the crash pad")
@@ -519,6 +520,13 @@ def mgs_easy_check(browser, base, rel):
         if hub:
             mgs_hub_click(pg, hub["portals"]["echo"])
         pg.wait_for_timeout(700)
+    for _ in range(40):  # the portal's story lines come before the run
+        if pg.evaluate("window.__mgs.mode") == "run":
+            break
+        nxt = pg.locator("#panel [data-primary]")
+        if nxt.count() and nxt.first.is_visible():
+            nxt.first.click()
+        pg.wait_for_timeout(200)
     try:
         pg.wait_for_function("window.__mgs.mode === 'run' && window.__mgs.run() && window.__mgs.run().checkpoints", timeout=15000)
     except Exception:
