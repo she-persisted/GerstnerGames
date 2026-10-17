@@ -6,7 +6,8 @@
 
 Usage, from the library folder:
   python3 build/qr.py games/starward/game.json     card for the newest release in game.json
-Writes dist/<id>-v<N>-qr.png. Needs: pip install "qrcode[pil]" opencv-python-headless
+Writes dist/<id>-v<N>-qr.png. Needs Pillow and opencv-python-headless (pip install opencv-python-headless).
+Uses the qrcode package when installed (pip install "qrcode[pil]"); otherwise OpenCV's own QR encoder makes the code.
 Exits 1 if the card does not scan back to the release link.
 """
 import json
@@ -15,8 +16,12 @@ import pathlib
 import random
 import sys
 
-import qrcode
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+try:
+    import qrcode
+except ImportError:  # some workspaces can't reach PyPI; OpenCV's encoder is the fallback
+    qrcode = None
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -39,14 +44,23 @@ def rgb(hex_color):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
+# Windows fonts first (the look of the v5 card), then common Linux fonts, so the card looks right on any machine.
+LINUX_FONTS = "/usr/share/fonts/truetype/"
+FONTS = {
+    True: ("seguibl.ttf", "segoeuib.ttf", "arialbd.ttf", LINUX_FONTS + "google-fonts/Poppins-Bold.ttf",
+           LINUX_FONTS + "liberation/LiberationSans-Bold.ttf", LINUX_FONTS + "dejavu/DejaVuSans-Bold.ttf"),
+    False: ("segoeuisb.ttf", "segoeui.ttf", "arial.ttf", LINUX_FONTS + "google-fonts/Poppins-Medium.ttf",
+            LINUX_FONTS + "liberation/LiberationSans-Regular.ttf", LINUX_FONTS + "dejavu/DejaVuSans.ttf"),
+}
+
+
 def font(size, heavy=True):
-    names = ("seguibl.ttf", "segoeuib.ttf", "arialbd.ttf") if heavy else ("segoeuisb.ttf", "segoeui.ttf", "arial.ttf")
-    for name in names:
+    for name in FONTS[heavy]:
         try:
             return ImageFont.truetype(name, size)
         except OSError:
             pass
-    return ImageFont.load_default()
+    return ImageFont.load_default(size)  # scalable default font (Pillow 10.1 or newer)
 
 
 def spark4(cx, cy, r):
@@ -91,12 +105,26 @@ def background(w, h):
     return img
 
 
+def qr_matrix(url):
+    """The QR code's modules as rows of True (dark) and False, highest error correction, no quiet zone."""
+    if qrcode:
+        qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, border=0)
+        qr.add_data(url)
+        qr.make(fit=True)
+        return qr.get_matrix()
+    import cv2
+    params = cv2.QRCodeEncoder.Params()
+    params.correction_level = cv2.QRCODE_ENCODER_CORRECT_LEVEL_H
+    img = cv2.QRCodeEncoder.create(params).encode(url)  # one pixel per module, plus a light border
+    dark = img < 128
+    rows = [r for r in range(dark.shape[0]) if dark[r].any()]
+    cols = [c for c in range(dark.shape[1]) if dark[:, c].any()]
+    return [[bool(dark[r][c]) for c in range(cols[0], cols[-1] + 1)] for r in range(rows[0], rows[-1] + 1)]
+
+
 def qr_tile(url, size):
     """Rounded QR code: void dots on a starlight tile, ember finder centers, a gold star in the middle."""
-    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, border=0)
-    qr.add_data(url)
-    qr.make(fit=True)
-    m = qr.get_matrix()
+    m = qr_matrix(url)
     n = len(m)
     quiet = 4
     cell = size / (n + 2 * quiet)
@@ -137,6 +165,10 @@ def card(title, version, url):
     tw = d.textlength(title, font=tf)
     star = 64 * SCALE
     gap = 28 * SCALE
+    room = w * 0.76  # keep the title row clear of the corner stars, whatever font this machine has
+    if star * 2 + gap + tw > room:
+        tf = font(int(150 * SCALE * (room - star * 2 - gap) / tw))
+        tw = d.textlength(title, font=tf)
     x = (w - (star * 2 + gap + tw)) / 2
     ty = 90 * SCALE
     asc = tf.getbbox(title)

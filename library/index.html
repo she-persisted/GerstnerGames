@@ -788,12 +788,12 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/qr.py",
    "layer": "Build",
-   "bytes": 9316,
+   "bytes": 11016,
    "usedBy": [],
    "about": "Makes the shareable QR card for a game's newest release: the game's night-sky colors, its gold four-point star and rocket icons, the title and version, and a QR code that opens the game's permanent home page (\"home\" in game.json). Checks that the finished card scans back to the right link.",
    "provides": "",
    "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js (colors and icon shapes are copied from these)",
-   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs: pip install \"qrcode[pil]\" opencv-python-headless\nExits 1 if the card does not scan back to the release link."
+   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for the newest release in game.json\nWrites dist/<id>-v<N>-qr.png. Needs Pillow and opencv-python-headless (pip install opencv-python-headless).\nUses the qrcode package when installed (pip install \"qrcode[pil]\"); otherwise OpenCV's own QR encoder makes the code.\nExits 1 if the card does not scan back to the release link."
   },
   {
    "path": "content/questions/blanks.js",
@@ -954,7 +954,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/starward/game.json",
    "layer": "Games",
-   "bytes": 3515,
+   "bytes": 3969,
    "usedBy": [
     "Starward"
    ],
@@ -1383,10 +1383,16 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
      "notes": "Rebuilt from the library. Adaptive difficulty for typing, math, and word puzzles; questions chosen to match the player's level."
     },
     {
-     "version": 6,
+     "version": 5,
      "date": "2026-10-11",
+     "url": "https://claude.ai/artifact/X1f6WeveqRtYrnDTKFzuWY",
+     "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". The first version on the permanent home page, whose high scores now carry across updates. Archived to its own page on 2026-10-17 when v6 shipped."
+    },
+    {
+     "version": 6,
+     "date": "2026-10-17",
      "url": "https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw",
-     "notes": "Same game as v4 with no personal names: the title screen says \"An original space adventure\". The first version on the permanent home page, whose high scores now carry across updates."
+     "notes": "One-line tip on every Lumina dig; a big cheer after a right answer, then the game moves on by itself (no Next button); safe landings and the brave words move on by themselves; tap Sunny on the stage or in the friends bar to sniff for a clue (Rigel peeks, Professor Kepler ponders)."
     }
    ],
    "source": "games/starward",

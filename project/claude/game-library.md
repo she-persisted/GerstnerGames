@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Starward | **Home page, always the newest version** (now v5, 2026-10-11: v4 without personal names) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v5.html` |
+| Starward | **Home page, always the newest version** (now v6, 2026-10-17: dig tips, auto-advance after right answers, tap friends for hints) | https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw | `library/games/starward/`, built to `library/dist/starward-v6.html` |
+| Starward | v5 (2026-10-11), v4 without personal names | https://claude.ai/artifact/X1f6WeveqRtYrnDTKFzuWY (archive) | `library/dist/starward-v5.html` |
 | Starward | v4 (2026-10-11), adaptive difficulty | https://claude.ai/artifact/U9Z4PvGaEpPGf7jinpaJhV | `library/dist/starward-v4.html` (the live page still shows a name) |
 | Starward | v3 (2026-10-11), walkable map | https://claude.ai/artifact/Ny2qfyuP9oAo7Vr9VgYEcg (current version of that page) | `library/games/starward/legacy/v3.html` |
 | Starward | v2 (2026-10-10), first Starward | same page, in its version history | not kept as a file |
@@ -56,7 +57,7 @@ Each game has one **permanent home page** (`home` in its `game.json`; Starward's
 2. **Update the home page.** Read the home page (`Artifact` read with its `url`), then publish `library/dist/<id>-v<N>.html` to it with `url` set to `home`. Leave out `capabilities` so the stored ones (and the high score board) carry over. Never publish a new version as a separate page.
 3. Read the home page back (`Artifact` read with `path` `index.html`). Remove the page wrapper claude.ai adds (the doctype, html, head, and body tags it puts around the page) and confirm the rest is identical to the dist file. If it differs, find out why before telling Mom it's live. Then `ArtifactData` list its `scores` and confirm the board still has the scores it had before the update.
 4. Add the release (version, date, `home` as its link, notes) to `game.json`, run `build.py --all`, update the table above and the game's own doc.
-5. **Make the QR card (every release).** From `library/`, run `python3 build/qr.py games/<id>/game.json` (needs `pip install "qrcode[pil]" opencv-python-headless`). It draws the card in the game's own colors and icons with the new version number, pointing at the home page, and must end with `scan check: ok`. Commit `dist/<id>-v<N>-qr.png` with the release, then commit and push.
+5. **Make the QR card (every release).** From `library/`, run `python3 build/qr.py games/<id>/game.json` (needs Pillow and `opencv-python-headless`; it uses the `qrcode` package when installed and OpenCV's own encoder when PyPI can't be reached). It draws the card in the game's own colors and icons with the new version number, pointing at the home page, and must end with `scan check: ok`. Commit `dist/<id>-v<N>-qr.png` with the release, then commit and push.
 6. Send Mom the QR card with the link, and the archive link for the version it replaced.
 7. Redeploy the Library page: `Artifact` read its link, list its published files, then publish `library/index.html` to it with `root` set to `library/` and `files` mapping every file under `library/` except `index.html` and `dist/`. Send `.html`, `.svg`, `.py`, and `.md` as `text/plain`. Map to `null` any published path the repo no longer has. Read every file back and check its sha256 against the repo.
 
