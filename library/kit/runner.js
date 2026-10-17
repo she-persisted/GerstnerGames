@@ -1,6 +1,6 @@
 /**
  * @file kit/runner.js
- * @about Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes (and hops again in the air for a double hop), bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks with flat ground between them for breathing room, and a built-in solver plays every chunk before it is used, so every level can be beaten.
+ * @about Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes (and hops again in the air for a double hop), bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks with flat ground between them for breathing room, and a built-in solver plays every chunk before it is used, so every level can be beaten. Given the music's tempo, each chunk's first hop lands on a beat, the ground and pads pulse with the beat, and a hop right on the beat over danger pops a "PERFECT!". Catching a piece bursts into sparkles, landings puff a little dust, and crashes give the screen a small shake.
  * @provides Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve, checkPieces }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), skip(), state } }
  * @requires kit/util.js, kit/audio.js
  *
@@ -13,21 +13,30 @@
  *   kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),
  *          S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.
  *
- * generate({ chunks, level, speed, length, pieces, rng, secret, ships, space }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames, spans }
+ * generate({ chunks, level, speed, length, pieces, rng, secret, ships, space, beat }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames, spans, beat }
  *   Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.
  *   ships = how many ship tunnels to try for (0 = none), space = extra tiles of flat ground before each chunk.
  *   Pass a seeded rng to get the same level again (for a second try at the same run).
  *   Pieces only go where the hero runs along the ground on the winning path: never in mid-air, never in a ship tunnel,
  *   never in the secret stretch (so the secret route gets them all too), and never touching a block, spike, pad, or portal.
  *   spans = [{ id, tag, x0, x1 }] where each chunk sits (games use it for hints about what the player crashed on).
+ *   beat = seconds per beat of the run's music (0 = off). Each chunk is nudged forward so the spot where the hero should hop
+ *   (or hit a pad, or reach a ship portal) for its first obstacle comes exactly on a beat, counting from the run's start.
+ *   The result's beat = { tiles (tiles per beat), actions: [hero x at each chunk's first hop] } (the play-test checks it).
  * sim.checkPieces(gen) -> list of problems (empty when every piece can be caught on the normal and secret routes).
  *
- * play(canvas, { gen, theme, label, have, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n, info),
- *               onCollect(obj), onMode(mode), onDouble(), onFinish(result), autopilot(), speedup(), drop(), tip })
+ * play(canvas, { gen, theme, label, have, beat, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n, info),
+ *               onCollect(obj), onMode(mode), onDouble(), onPerfect(streak), onClock(seconds, running), onFinish(result),
+ *               autopilot(), speedup(), drop(), tip })
+ *   beat = seconds per beat (same as generate's): the ground, pads, and pieces pulse on it, and a hop pressed within about
+ *   0.09 s of a beat that carries the hero over a spike, gap, or step pops "PERFECT!" when he lands (onPerfect(streak);
+ *   a streak counts perfect hops in a row and a crash resets it).
+ *   onClock(seconds, running) tells a game when the run's clock starts or jumps (start, respawn, unpause: running = true,
+ *   seconds = where the run is now) or stops (crash, pause, finish: running = false), so it can keep the music in time.
  *   have = indices of pieces already found on an earlier try: they count from the start and show as faint outlines.
  *   The screen shows no attempt counter. onCrash(n, info) gets a running count for this run only (so a game can offer
  *   help) and info = { x, why, mode, chunk: { id, tag } | null, pressed (has the player pressed jump yet) }; nothing is
- *   kept after the run. result = { crashes, pieces, piecesTotal, gotIdx, secret, usedCheckpoints, skipped, ms }
+ *   kept after the run. result = { crashes, pieces, piecesTotal, gotIdx, secret, usedCheckpoints, skipped, perfects, ms }
  *   drop() is a play-test hook: that many of the first pieces can't be caught.
  *   hero (for drawHero) = { mode, vy, grounded, h, t, spin } where spin goes 0 to 1 during a double hop's flip, else -1.
  */
@@ -209,8 +218,28 @@
     return out;
   }
 
-  function generate({ chunks, level, speed, length, pieces = 9, rng = Math.random, secret = true, ships: shipCount = 1, space = 0 }) {
-    const L = new Level(speed);
+  // Where, in tiles from a chunk's start, the hero should be when he hops for its first obstacle (or touches its first pad or
+  // ship portal). Worked out from the physics: a hop peaks over a spike's middle, clears the top of a step, or leaves a gap's edge.
+  // A hop peaks about 0.208 s after takeoff. Spikes side by side count as one wide spike (peak over the middle of the row);
+  // a step is cleared by peaking right at its edge.
+  function firstAction(c, speed) {
+    const up = speed * .208, o = c.o || [];
+    const lead = { s: up - .18, p: .54, b: .64 + up, S: .4 };
+    let best = Infinity;
+    for (const [k, x, y = 0] of o) {
+      if (!(k in lead) || (k === "b" && y > 0)) continue;
+      let a = x - lead[k];
+      if (k === "s") { let n = 1; while (o.some(q => q[0] === "s" && q[1] === x + n && (q[2] || 0) === y)) n++; a += (n - 1) / 2; }
+      best = Math.min(best, a);
+    }
+    for (const [a] of c.gaps || []) best = Math.min(best, a - .5);
+    return best === Infinity ? null : best;
+  }
+
+  function generate({ chunks, level, speed, length, pieces = 9, rng = Math.random, secret = true, ships: shipCount = 1, space = 0, beat = 0 }) {
+    const L = new Level(speed), B = beat > 0 ? speed * beat : 0, actions = [];
+    // The hero is at x = .5 + B * k on beat k, so a chunk is moved forward until its first hop falls on one of those.
+    const onBeat = (c, x0) => { const a = firstAction(c, speed); if (!B || a == null) return x0; const r = (((x0 + a - .5) % B) + B) % B; return r > 1e-6 && B - r > 1e-6 ? x0 + B - r : x0; };
     const pickW = list => { let t = list.reduce((a, c) => a + (c.w || 1), 0) * rng(); for (const c of list) { t -= c.w || 1; if (t <= 0) return c; } return list[list.length - 1]; };
     const fits = c => (c.min || 1) <= level && level <= (c.max || 9);
     const pool = chunks.filter(c => fits(c) && !c.tag);
@@ -232,7 +261,7 @@
       let ok = false;
       for (let tries = 0; tries < 8 && !ok; tries++) {
         const c = pickW(list.length ? list : [flat]);
-        const x0 = x + space; // breathing room: flat ground before the chunk
+        const x0 = onBeat(c, x + space); // breathing room: flat ground before the chunk, then a little more to land on the beat
         const made = [L.ground(x, x0), ...place(L, c, x0)].filter(Boolean);
         const tail = L.ground(x0 + c.len, x0 + c.len + 8);
         const endFrame = st.t + Math.ceil((x0 + c.len + .4 - st.x) / (speed * DT));
@@ -246,6 +275,7 @@
           checks.push({ t: st.t, x: st.x });
           if (c.tag === "ship") shipsPlaced++;
           spans.push({ id: c.id, tag: c.tag || "", x0, x1: x0 + c.len });
+          const a = firstAction(c, speed); if (B && a != null) actions.push(x0 + a);
           x = x0 + c.len; last = c.id; ok = true;
         } else made.forEach(o => L.remove(o));
       }
@@ -300,7 +330,7 @@
       chosen.sort((x, y) => x - y);
     }
     for (const i of chosen) { const [cx, cy] = at(i); L.add("m", cx, cy); }
-    return { L, inputs, checks, endX: L.endX, secret: sec, frames: inputs.length, spans };
+    return { L, inputs, checks, endX: L.endX, secret: sec, frames: inputs.length, spans, beat: { tiles: B, actions } };
   }
 
   /* ---------- Playing a level on a canvas ---------- */
@@ -314,7 +344,11 @@
     let W = 0, H = 0, T = 60, raf = 0, last = 0, acc = 0, stopped = false, paused = false;
     let st = start(.5), crashes = 0, deadAt = 0, cpOn = false, cpUsed = false, cp = G.checks[0];
     let got = new Set(earlier), secretGot = false, finished = false, pressed = false, t0 = performance.now(), hold = false, holdKeys = new Set(), pointer = false, tap = false;
-    let camY = 0, sparks = [], lastMode = "cube", tipUntil = o.tip ? performance.now() + 4200 : 0;
+    let camY = 0, sparks = [], rings = [], pops = [], lastMode = "cube", tipUntil = o.tip ? performance.now() + 4200 : 0;
+    // Juice: a shake when he crashes, the piece counter bumps when he catches one, and perfect hops on the beat.
+    const beat = o.beat > 0 ? o.beat : 0;
+    let shakeUntil = 0, bumpAt = 0, perfects = 0, streak = 0, hopTry = null;
+    const clock = running => { if (o.onClock) o.onClock(st.t * DT, running); };
 
     function size() {
       const r = canvas.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
@@ -327,11 +361,12 @@
     const isJumpKey = e => e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW";
     function kd(e) {
       if (stopped) return;
-      if (e.code === "Escape" || e.code === "KeyP") { e.preventDefault(); paused = !paused; return; }
-      if (isJumpKey(e)) { e.preventDefault(); if (paused) { paused = false; return; } if (!e.repeat) tap = true; pressed = true; holdKeys.add(e.code); }
+      if (e.code === "Escape" || e.code === "KeyP") { e.preventDefault(); setPaused(!paused); return; }
+      if (isJumpKey(e)) { e.preventDefault(); if (paused) { setPaused(false); return; } if (!e.repeat) tap = true; pressed = true; holdKeys.add(e.code); }
     }
     function ku(e) { if (isJumpKey(e)) holdKeys.delete(e.code); }
-    const pd = e => { if (paused) { paused = false; return; } pointer = true; tap = true; pressed = true; e.preventDefault(); };
+    function setPaused(v) { if (v === paused || finished) { paused = v; return; } paused = v; if (!deadAt) clock(!v); }
+    const pd = e => { if (paused) { setPaused(false); return; } pointer = true; tap = true; pressed = true; e.preventDefault(); };
     const pu = () => { pointer = false; };
     document.addEventListener("keydown", kd, true); document.addEventListener("keyup", ku, true);
     canvas.addEventListener("pointerdown", pd); addEventListener("pointerup", pu); addEventListener("pointercancel", pu);
@@ -345,10 +380,13 @@
     function respawn() {
       st = start(cp.x); st.t = cp.t;
       if (cp.t === 0) { got = new Set(earlier); secretGot = false; }
-      deadAt = 0; camY = 0; lastMode = "cube"; tap = false;
+      deadAt = 0; camY = 0; lastMode = "cube"; tap = false; hopTry = null;
+      clock(true);
     }
     function crash() {
-      crashes++; deadAt = performance.now(); sfx.lost();
+      crashes++; deadAt = performance.now(); sfx.lost(); streak = 0; hopTry = null;
+      shakeUntil = reduced ? 0 : deadAt + 280;
+      clock(false);
       for (let i = 0; i < 26; i++) sparks.push({ x: st.x + .4, y: st.y + .4, vx: (Math.random() - .5) * 9, vy: Math.random() * 8 - 2, life: 1, c: i % 2 ? th.spark || "#ff3ec8" : th.edge || "#3ef2ff" });
       if (o.onCrash) {
         const sp = (G.spans || []).find(p => st.x >= p.x0 - 1 && st.x < p.x1 + .5) || null;
@@ -361,15 +399,32 @@
         const sIn = ap === "secret" && G.secret && st.t >= G.secret.from && st.t < G.secret.from + G.secret.inputs.length ? G.secret.inputs[st.t - G.secret.from] : null;
         hold = sIn !== null ? sIn : !!G.inputs[st.t];
       } else { hold = pointer || holdKeys.size > 0 || tap; tap = false; } // a quick tap counts for one step even if already let go
-      const air0 = st.air;
+      const air0 = st.air, was = { grounded: st.grounded, coy: st.coy, vy: st.vy, mode: st.mode };
       step(st, hold, L);
+      if (st.alive && st.mode === "cube" && was.mode === "cube") {
+        // A hop from the ground: was it on the beat, and is there something to hop over just ahead?
+        if ((was.grounded || was.coy > 0) && !st.grounded && st.vy > 0 && !st.pad && hold) {
+          const off = beat ? Math.abs(((st.t * DT) / beat) - Math.round((st.t * DT) / beat)) * beat : 1;
+          hopTry = off < .09 && dangerAhead(st.x) ? { t: st.t } : null;
+        }
+        if (!was.grounded && st.grounded) { // landing: a puff of dust, and maybe a perfect hop
+          for (let i = 0; i < 5; i++) sparks.push({ x: st.x + .32 + (Math.random() - .5) * .5, y: st.y + .05, vx: (Math.random() - .5) * 3, vy: Math.random() * 1.5, life: .45, c: "rgba(246,240,255,.7)", sz: 5 });
+          if (hopTry && st.t - hopTry.t < 120) perfect();
+          hopTry = null;
+        }
+      }
       if (st.air < air0 && st.alive) { // double hop: a little ring of sparks under his feet
         Kit.audio.tone(660, .12, "triangle", .05, 0, 1320);
         for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; sparks.push({ x: st.x + .32 + Math.cos(a) * .2, y: st.y, vx: Math.cos(a) * 4, vy: Math.sin(a) * 1.5 - 1, life: .7, c: i % 2 ? th.pad || "#ffe94a" : th.edge || "#3ef2ff" }); }
         if (o.onDouble) o.onDouble();
       }
       if (st.touch) for (const x of st.touch) {
-        if (x.k === "m" && !got.has(x.id) && !(o.drop && pieceIdx.get(x.id) < o.drop())) { got.add(x.id); sfx.hint(); if (o.onCollect) o.onCollect(x); }
+        if (x.k === "m" && !got.has(x.id) && !(o.drop && pieceIdx.get(x.id) < o.drop())) {
+          got.add(x.id); sfx.hint(); bumpAt = performance.now();
+          for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, sp = 3 + Math.random() * 3; sparks.push({ x: x.x, y: x.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp + 2, life: .8, c: i % 3 ? th.piece || "#5cffb0" : "#ffffff", sz: 6 }); }
+          rings.push({ x: x.x, y: x.y, life: 1, c: th.piece || "#5cffb0" });
+          if (o.onCollect) o.onCollect(x);
+        }
         if (x.k === "x" && !secretGot) { secretGot = true; sfx.found(); if (o.onCollect) o.onCollect(x); }
       }
       if (st.mode !== lastMode) { lastMode = st.mode; sfx.beep(); if (o.onMode) o.onMode(st.mode); }
@@ -377,9 +432,28 @@
       if (!st.alive) crash();
       else if (st.x >= G.endX) finish();
     }
+    // Something to hop over in the next couple of tiles: a spike, a step or ledge, or a gap in the ground.
+    function dangerAhead(x) {
+      let found = false;
+      const spots = [x + 1.2, x + 1.8, x + 2.4], covered = spots.map(() => false);
+      L.near(x + .3, x + 3, q => {
+        if (q.k === "s" && q.bx0 > x) found = true;
+        else if (q.k === "b" && q.y >= 0 && q.bx0 > x + .4) found = true;
+        else if (q.k === "b" && q.y < 0) spots.forEach((g, i) => { if (g >= q.bx0 && g <= q.bx1) covered[i] = true; });
+      });
+      return found || covered.some(c => !c);
+    }
+    function perfect() {
+      perfects++; streak++;
+      const tx = st.x + .32, ty = st.y + 1.4;
+      pops.push({ x: tx, y: ty, text: streak > 1 ? `PERFECT x${streak}!` : "PERFECT!", life: 1 });
+      for (let i = 0; i < 10; i++) sparks.push({ x: tx + (Math.random() - .5), y: ty - .3, vx: (Math.random() - .5) * 5, vy: Math.random() * 4 + 1, life: .7, c: th.pad || "#ffe94a", sz: 5 });
+      Kit.audio.tone(1568, .12, "triangle", .045); Kit.audio.tone(2093, .16, "triangle", .04, .07);
+      if (o.onPerfect) o.onPerfect(streak);
+    }
     function finish(skipped = false) {
-      finished = true; sfx.found();
-      const res = { crashes, pieces: got.size, piecesTotal: pieceObjs.length, gotIdx: [...got].map(id => pieceIdx.get(id)).sort((a, b) => a - b), secret: secretGot, usedCheckpoints: cpUsed, skipped, ms: performance.now() - t0 };
+      finished = true; sfx.found(); clock(false);
+      const res = { crashes, pieces: got.size, piecesTotal: pieceObjs.length, gotIdx: [...got].map(id => pieceIdx.get(id)).sort((a, b) => a - b), secret: secretGot, usedCheckpoints: cpUsed, skipped, perfects, ms: performance.now() - t0 };
       setTimeout(() => { if (!stopped && o.onFinish) o.onFinish(res); }, 650);
     }
 
@@ -388,13 +462,21 @@
       ctx.save(); ctx.strokeStyle = color; ctx.globalAlpha = .28; ctx.lineWidth = wide; ctx.stroke(path); ctx.restore();
       ctx.strokeStyle = color; ctx.lineWidth = Math.max(1.5, wide / 3.2); ctx.stroke(path);
     }
-    function drawObj(x, v, now) {
+    // 1 right on a beat, fading to 0 by about a third of the way to the next one (0 without music, or with reduced motion).
+    function pulse() {
+      if (!beat || reduced) return 0;
+      const f = (((st.t * DT + acc) / beat) % 1 + 1) % 1;
+      return f < .35 ? (1 - f / .35) ** 2 : 0;
+    }
+    function drawObj(x, v, now, pl) {
       const X = sx(x.x, v), Y = sy(x.y, v);
       if (x.k === "b") {
         const p = new Path2D(); p.rect(X, sy(x.y + x.h, v), x.w * T, x.h * T);
         ctx.fillStyle = th.block || "#1a0b3d"; ctx.fill(p);
         if (x.y < 0) { // ground: bright top edge only
-          ctx.save(); ctx.beginPath(); ctx.rect(X, sy(0, v), x.w * T, T * .12); ctx.fillStyle = th.edge || "#3ef2ff"; ctx.globalAlpha = .9; ctx.fill(); ctx.restore();
+          ctx.save(); ctx.beginPath(); ctx.rect(X, sy(0, v), x.w * T, T * (.1 + .07 * pl)); ctx.fillStyle = th.edge || "#3ef2ff"; ctx.globalAlpha = .7 + .3 * pl;
+          if (pl > .05) { ctx.shadowColor = th.edge || "#3ef2ff"; ctx.shadowBlur = T * .5 * pl; }
+          ctx.fill(); ctx.restore();
           ctx.save(); ctx.globalAlpha = .18; ctx.strokeStyle = th.edge || "#3ef2ff"; ctx.lineWidth = 1;
           for (let gx = Math.ceil(x.x); gx < x.x + x.w; gx++) { ctx.beginPath(); ctx.moveTo(sx(gx, v), sy(0, v)); ctx.lineTo(sx(gx, v) - T * .6, sy(-1.6, v)); ctx.stroke(); }
           ctx.restore();
@@ -404,7 +486,7 @@
         p.moveTo(X + T * .06, base); p.lineTo(X + T * .5, tip); p.lineTo(X + T * .94, base); p.closePath();
         ctx.fillStyle = th.spike || "#ff3ec8"; ctx.fill(p); glowStroke(p, th.spikeEdge || "#ffd1f3", T * .1);
       } else if (x.k === "p") {
-        const p = new Path2D(); p.ellipse(X + T * .5, Y, T * .42, T * .26, 0, Math.PI, 0); p.closePath();
+        const p = new Path2D(); p.ellipse(X + T * .5, Y, T * .42 * (1 + .1 * pl), T * .26 * (1 + .3 * pl), 0, Math.PI, 0); p.closePath();
         ctx.fillStyle = th.pad || "#ffe94a"; ctx.fill(p); glowStroke(p, th.pad || "#ffe94a", T * .3);
         ctx.fillStyle = th.block || "#1a0b3d"; ctx.font = `800 ${T * .28}px system-ui, sans-serif`; ctx.textAlign = "center"; ctx.fillText("^", X + T * .5, Y - T * .02);
       } else if (x.k === "S" || x.k === "C") {
@@ -416,7 +498,7 @@
         if (earlier.has(x.id)) { ctx.save(); ctx.globalAlpha = .28; drawPiece(X, Y, T * .3, th.piece || "#5cffb0", 0); ctx.restore(); return; } // found on an earlier try
         if (got.has(x.id)) return;
         const bob = reduced ? 0 : Math.sin(now / 260 + x.x) * T * .08;
-        drawPiece(X, Y + bob, T * .34, th.piece || "#5cffb0", reduced ? 0 : now / 900 + x.x);
+        drawPiece(X, Y + bob, T * .34 * (1 + .14 * pl), th.piece || "#5cffb0", reduced ? 0 : now / 900 + x.x);
       } else if (x.k === "x") {
         if (secretGot) return;
         const s = T * .7, hue = reduced ? 0 : Math.floor(now / 700) % 3;
@@ -437,23 +519,33 @@
       ctx.restore();
     }
     function draw(now) {
-      const v = view();
+      const v = view(), pl = pulse();
+      ctx.save();
+      if (now < shakeUntil) { const k = (shakeUntil - now) / 280, m = T * .12 * k; ctx.translate((Math.random() - .5) * 2 * m, (Math.random() - .5) * 2 * m); }
       if (o.drawBackground) o.drawBackground(ctx, v); else { ctx.fillStyle = "#0a0620"; ctx.fillRect(0, 0, W, H); }
       // exit portal
       const ex = sx(G.endX, v), eh = sy(1.8, v);
       ctx.save(); ctx.translate(ex, eh);
-      for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(0, 0, T * (1.4 - i * .28), T * (2 - i * .38), reduced ? 0 : now / (900 + i * 300), 0, Math.PI * 2); ctx.strokeStyle = [th.edge, th.spark, th.pad, th.piece][i] || "#fff"; ctx.lineWidth = 3; ctx.stroke(); }
+      for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(0, 0, T * (1.4 - i * .28), T * (2 - i * .38), reduced ? 0 : now / (900 + i * 300), 0, Math.PI * 2); ctx.strokeStyle = [th.edge, th.spark, th.pad, th.piece][i] || "#fff"; ctx.lineWidth = 3 + 2 * pl; ctx.stroke(); }
       ctx.restore();
-      L.near(v.camX - 2, v.camX + W / T + 2, x => drawObj(x, v, now));
+      L.near(v.camX - 2, v.camX + W / T + 2, x => drawObj(x, v, now, pl));
       if (cpOn) for (const c of G.checks) { if (c.t === 0) continue; const X = sx(c.x + .36, v), Y = sy(.25, v); ctx.save(); ctx.fillStyle = c === cp ? (th.piece || "#5cffb0") : "rgba(255,255,255,.35)"; ctx.translate(X, Y); ctx.rotate(Math.PI / 4); ctx.fillRect(-T * .15, -T * .15, T * .3, T * .3); ctx.restore(); }
       if (!deadAt && o.drawHero) {
         const w = st.mode === "cube" ? PHYS.cw : PHYS.sw, h = st.mode === "cube" ? PHYS.ch : PHYS.sh;
         const sp = (st.t - st.dbl) / 42;
         o.drawHero(ctx, sx(st.x + w / 2, v), sy(st.y, v), T, { mode: st.mode, vy: st.vy, grounded: st.grounded, h: h * T, t: now, spin: !st.grounded && sp >= 0 && sp < 1 ? sp : -1 });
       }
-      // sparks
-      for (const p of sparks) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.c; ctx.fillRect(sx(p.x, v) - 4, sy(p.y, v) - 4, 8, 8); }
+      // sparks, catch rings, and "PERFECT!" pops
+      for (const p of sparks) { const z = p.sz || 8; ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.fillStyle = p.c; ctx.fillRect(sx(p.x, v) - z / 2, sy(p.y, v) - z / 2, z, z); }
+      for (const r of rings) { ctx.globalAlpha = Math.max(0, r.life) * .8; ctx.strokeStyle = r.c; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(sx(r.x, v), sy(r.y, v), T * (.35 + (1 - r.life) * .9), 0, Math.PI * 2); ctx.stroke(); }
       ctx.globalAlpha = 1;
+      for (const q of pops) {
+        const X = sx(q.x, v), Y = sy(q.y + (1 - q.life) * .8, v), s = Math.max(12, T * .26) * (q.life > .85 ? 1 + (q.life - .85) * 3 : 1);
+        ctx.globalAlpha = Math.min(1, q.life * 1.6); ctx.font = `400 ${s}px "Press Start 2P", ui-monospace, monospace`; ctx.textAlign = "center";
+        ctx.lineWidth = 5; ctx.strokeStyle = "#1a0420"; ctx.strokeText(q.text, X, Y); ctx.fillStyle = th.pad || "#ffe94a"; ctx.fillText(q.text, X, Y);
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
       // top bar: progress, the run's name, pieces
       const prog = Math.max(0, Math.min(1, st.x / G.endX));
       ctx.fillStyle = "rgba(10,6,32,.6)"; ctx.fillRect(W * .2, 12, W * .6, 10);
@@ -461,7 +553,8 @@
       ctx.font = `400 ${Math.max(11, T * .2)}px "Press Start 2P", ui-monospace, monospace`; ctx.textAlign = "left"; ctx.fillStyle = "#f6f0ff";
       if (o.label) ctx.fillText(o.label.toUpperCase(), 16, 24);
       ctx.textAlign = "right"; ctx.fillStyle = th.piece || "#5cffb0";
-      ctx.fillText(`${got.size}/${pieceObjs.length}`, W - 16, 24);
+      const bump = now - bumpAt < 220 && !reduced ? 1 + .35 * (1 - (now - bumpAt) / 220) : 1;
+      ctx.save(); ctx.translate(W - 16, 20); ctx.scale(bump, bump); ctx.fillText(`${got.size}/${pieceObjs.length}`, 0, 4); ctx.restore();
       drawPiece(W - 16 - ctx.measureText(`${got.size}/${pieceObjs.length}`).width - 18, 18, 7, th.piece || "#5cffb0", 0);
       if (tipUntil && now < tipUntil && o.tip) {
         ctx.font = `700 ${Math.max(15, T * .3)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center";
@@ -480,6 +573,10 @@
       const dt = Math.min(.1, (now - (last || now)) / 1000); last = now;
       for (const p of sparks) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy -= 20 * dt; p.life -= dt * 1.6; }
       sparks = sparks.filter(p => p.life > 0);
+      for (const r of rings) r.life -= dt * 2.4;
+      rings = rings.filter(r => r.life > 0);
+      for (const q of pops) q.life -= dt * .9;
+      pops = pops.filter(q => q.life > 0);
       if (!paused && !finished) {
         if (deadAt) { if (now - deadAt > 700) respawn(); }
         else {
@@ -494,13 +591,14 @@
       draw(now);
     }
     raf = requestAnimationFrame(frame);
+    clock(true); // the run starts now
 
     return {
       stop() { stopped = true; cancelAnimationFrame(raf); document.removeEventListener("keydown", kd, true); document.removeEventListener("keyup", ku, true); canvas.removeEventListener("pointerdown", pd); removeEventListener("pointerup", pu); removeEventListener("pointercancel", pu); removeEventListener("blur", blur); if (ro) ro.disconnect(); },
-      pause(v) { paused = !!v; },
+      pause(v) { setPaused(!!v); },
       checkpoints(v) { cpOn = !!v; if (cpOn) cpUsed = true; },
       skip() { if (!finished && !stopped) finish(true); },
-      get state() { return { x: st.x, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed }; }
+      get state() { return { x: st.x, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed, perfects, streak }; }
     };
   }
 

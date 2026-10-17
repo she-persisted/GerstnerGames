@@ -12,7 +12,7 @@ Read this before changing, fixing, or reusing any game in this project.
 What's in `library/`:
 
 - `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles, obstacle runs with a level solver and double hop, picture jigsaw, letter-guessing with a fuel tank, walkable side-view hub, dance-style music player, cartoon voices)
-- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs, recorded villain laughs (CC0)
+- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs, recorded villain laughs (CC0), T-Rexy's unlockable looks (hats, back items, colors)
 - `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists, science clue words, obstacle-run chunks
 - `games/<id>/`: each game's own parts and its `game.json` (build list plus every release link); single-file legacy versions in `legacy/`
 - `build/build.py`: joins a game's files into one page, checks load order, writes `catalog.json`

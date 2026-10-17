@@ -17,7 +17,7 @@ const navKeys = k => { NAV.keys = k; };      // "both", "letters" (L and R only)
 const onForward = fn => { NAV.forward = fn; };
 
 const PORTRAIT = {
-  trexy: () => `<svg class="portrait" viewBox="-12 -96 68 56" aria-hidden="true">${Kit.art.trexy.g({ face: "smile" })}</svg>`,
+  trexy: () => { const o = { face: "smile", ...lookOpts() }; return `<svg class="portrait" viewBox="${Kit.art.trexy.isTall(o) ? "-16 -124 76 76" : "-12 -96 68 56"}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`; },
   nova: () => `<svg class="portrait" viewBox="12 -53 42 37" aria-hidden="true">${Kit.art.nova.g({ lantern: false })}</svg>`,
   shadow: () => `<svg class="portrait" viewBox="-62 -64 116 68" aria-hidden="true">${Kit.art.nova.shadow("#000", 14)}</svg>`,
   family: () => `<svg class="portrait" viewBox="-12 -100 68 58" aria-hidden="true">${Kit.art.trexy.g({ who: "mom", acc: "flower", face: "happy" })}</svg>`,
@@ -112,9 +112,24 @@ function notebookHTML() {
     ${nextLine ? `<p class="nb-next">${esc(nextLine)}</p>` : ""}
     ${S.moved ? "" : `<p class="walkhint"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> to walk. <span class="kbd">Enter</span> to jump in.</p>`}
     <p class="nb-mode">${esc(modeOf().label)} mode <button type="button" class="btn ghost small" id="modeSwitch">Switch to ${S.mode === "hard" ? "Easy" : "Hard"}</button></p>
+    ${closetHTML()}
     ${PORTAL_ORDER.map(id => S.clues.includes(id) ? `<p class="clue-note"><b>Clue ${CLUES[id].n}:</b> ${esc(CLUES[id].short)}</p>` : `<p class="clue-note empty">Clue ${CLUES[id].n}: ???</p>`).join("")}
     ${S.pages.length ? `<p class="eyebrow">Mysterious notes (${S.pages.length} of 4)</p>${[...S.pages].sort().map(i => `<p class="diary">${esc(PAGES[i])}<span class="paw" aria-label="signed with a tiny footprint">&#x2234;</span></p>`).join("")}` : ""}
   </div>`;
+}
+// T-Rexy's closet: every look unlocked so far (click to put it on or take it off), and a "?" for each one still to find.
+function closetHTML() {
+  const icon = (slot, id) => {
+    const o = slot === "skin" ? { face: "happy", skin: id } : slot === "head" ? { face: "happy", acc: id } : { face: "happy", back: id, pose: "run1" };
+    const vb = slot === "back" ? "-58 -96 116 100" : Kit.art.trexy.isTall(o) ? "-16 -124 76 80" : "-12 -98 68 60";
+    return `<svg viewBox="${vb}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`;
+  };
+  const items = LOOK_ORDER.map(([slot, id]) => LOOK.have.includes(id)
+    ? `<button type="button" class="lookbtn${LOOK[slot] === id ? " on" : ""}" data-slot="${slot}" data-look="${id}" aria-pressed="${LOOK[slot] === id}" title="${esc(lookName(slot, id))}">${icon(slot, id)}<span class="sr">${esc(lookName(slot, id))}</span></button>`
+    : `<span class="lookbtn locked" aria-hidden="true">?</span>`).join("");
+  return `<div class="closet"><p class="eyebrow">T-Rexy's closet <span class="closet-n">${LOOK.have.length} of ${LOOK_ORDER.length}</span></p>
+    <div class="closet-row" role="group" aria-label="T-Rexy's looks">${items}</div>
+    ${LOOK.have.length < LOOK_ORDER.length ? `<p class="closet-tip">Catch every piece in a run to unlock a new look!</p>` : `<p class="closet-tip">Every look found. Fashion-saurus!</p>`}</div>`;
 }
 function renderHub() {
   $("#place").textContent = "The Crash Pad";
@@ -124,8 +139,24 @@ function renderHub() {
       setMode(S.mode === "hard" ? "easy" : "hard"); save(); paint(); blurActive();
       toast(S.mode === "hard" ? "Hard mode! Catch every memory piece. Runs score double." : "Easy mode! Slower runs, smaller puzzles.");
     });
+    panel.querySelectorAll(".lookbtn[data-look]").forEach(b => b.addEventListener("click", () => {
+      toggleLook(b.dataset.slot, b.dataset.look); warmLook(); sfx.key(); hop();
+      const on = LOOK[b.dataset.slot] === b.dataset.look;
+      toast(on ? `${lookName(b.dataset.slot, b.dataset.look)}: on!` : `${lookName(b.dataset.slot, b.dataset.look)}: off.`);
+      const look = b.dataset.look; paint();
+      const again = panel.querySelector(`.lookbtn[data-look="${look}"]`); if (again && document.activeElement === document.body) focusSoon(again);
+    }));
   };
   paint();
+  // Enter or Space on a closet button changes the look, instead of also jumping into a portal on the crash pad.
+  const closetKey = e => {
+    const a = document.activeElement;
+    if (!(a && a.classList && a.classList.contains("lookbtn"))) return;
+    if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); if (!e.repeat) a.click(); }
+    else if (e.key === " ") e.stopPropagation(); // the button still clicks itself when Space comes back up
+  };
+  window.addEventListener("keydown", closetKey, true);
+  flow.setCleanup(() => window.removeEventListener("keydown", closetKey, true));
   const leave = () => { markPassed(); next(); };
   startHub(leave, () => paint());
   navKeys("letters"); // the arrow keys walk here
@@ -135,9 +166,10 @@ function renderHub() {
 }
 
 /* Obstacle runs */
-async function countdown(alive) {
-  const el = $("#countdown");
-  for (const n of ["3", "2", "1"]) { if (!alive()) return false; el.innerHTML = `<span>${n}</span>`; sfx.beep(); await Kit.util.wait(600); }
+// Counts down in time with the run's music (about two beats a number), so GO lands right on the first beat.
+async function countdown(alive, beat = .3) {
+  const el = $("#countdown"), wait = beat * Math.max(1, Math.round(.65 / beat)) * 1000;
+  for (const n of ["3", "2", "1"]) { if (!alive()) return false; el.innerHTML = `<span>${n}</span>`; sfx.beep(); await Kit.util.wait(wait); }
   if (!alive()) return false;
   el.innerHTML = `<span class="go">GO!</span>`; sfx.liftoff();
   setTimeout(() => { if (el.querySelector(".go")) el.innerHTML = ""; }, 600);
@@ -154,10 +186,13 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
   const level = prev ? prev.level : runLevel(n), RL = RUN_LEVELS[level];
   const ships = prev ? prev.ships : (n === 4 ? RL.ships + 1 : RL.ships);
   const secs = prev ? prev.secs : M.secs[n], total = prev ? prev.total : pieces, have = prev ? prev.have || [] : [];
-  const gen = Kit.runner.generate({ chunks: Kit.levels.runner, level, speed: RL.speed, space: RL.space, ships, length: RL.speed * secs, pieces: total, secret, rng: seededRng(`run.${key}`) });
+  // Obstacles line up with the beat of the run's song, and the music restarts in time with the run.
+  const song = THEME_SONG[theme], beat = 60 / ((Kit.songs[song] || {}).bpm || 140);
+  const gen = Kit.runner.generate({ chunks: Kit.levels.runner, level, speed: RL.speed, space: RL.space, ships, length: RL.speed * secs, pieces: total, secret, beat, rng: seededRng(`run.${key}`) });
   $("#place").textContent = name;
   const tok = flow.token(), firstRun = !S.tipped;
   startStage(); applyStage({ theme, face: "smile" }); stageEl.classList.add("wide"); blurActive();
+  music.hush(); // quiet for the countdown; the song starts on GO
   panel.innerHTML = ""; // nothing left over from the last screen (like its buttons) during the run
   const ui = $("#runUi");
   navKeys("letters"); // the arrow keys are too close to the hop key here, so only L and R skip around
@@ -166,7 +201,9 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
     if (over) return; over = true;
     hideHint();
     const all = res.piecesTotal > 0 && res.pieces >= res.piecesTotal;
-    const pts = res.skipped ? 0 : Math.round((base + per * res.pieces) * M.runMult) + (all ? FULL_BONUS : 0);
+    const pts = res.skipped ? 0 : Math.round((base + per * res.pieces + PERFECT_PTS * (res.perfects || 0)) * M.runMult) + (all ? FULL_BONUS : 0);
+    // The first full catch of this run in this game unlocks (and puts on) T-Rexy's next look.
+    if (all && !(prev && prev.full)) { res.look = unlockLook(); if (res.look) warmLook(); }
     S.stats.runs[key] = { level, secs, ships, total: res.piecesTotal, have: res.gotIdx, pieces: res.pieces, secret: !!(res.secret || (prev && prev.secret)), pts: Math.max(pts, prev ? prev.pts || 0 : 0), full: all || !!(prev && prev.full) };
     if (!res.skipped) skills.record("run", runOutcome(res));
     if (all || !needAll) markPassed();
@@ -184,10 +221,12 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
   onForward(forward);
   if (shadow) setTimeout(() => { if (flow.alive(tok)) shadowLaugh(); }, 300);
   if (have.length && have.length < total) toast(`Same run! Your ${have.length} pieces are still yours. Grab the other ${total - have.length}!`);
-  countdown(() => flow.alive(tok) && !over).then(ok => {
+  countdown(() => flow.alive(tok) && !over, beat).then(ok => {
     if (!ok) return;
     startRun({
-      gen, theme, shadow, label: name, have, tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
+      gen, theme, shadow, label: name, have, song, beat,
+      onPerfect: () => { if (!S.perfTip) { S.perfTip = true; save(); toast("PERFECT! You hopped right on the beat!"); } },
+      tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
       onCrash: (c, info = {}) => {
         if (c === 1 && firstRun) toast("Oops! Back to the last checkpoint.");
         // Hints only when needed: right away if no key has been pressed yet, or after two crashes at the same spot.
@@ -250,7 +289,9 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   const missing = res.piecesTotal - res.pieces;
   startStage(); applyStage({ theme: P.theme, face: all ? "happy" : "smile" }); express(all || !missing ? "happy" : "think", 2400); hop();
   const head = res.skipped ? `Run <span class="hot">skipped</span>` : `Portal <span class="hot">cleared!</span>`;
-  const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
+  const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.perfects ? `<span class="stat"><b>${res.perfects}</b> perfect hop${res.perfects > 1 ? "s" : ""}</span>` : ""}${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
+  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 116 130" aria-hidden="true">${Kit.art.trexy.g({ face: "happy", ...lookOpts() })}</svg>
+    <div><p class="unlock-new">New look!</p><p class="unlock-name">${esc(res.look.name)}</p><p class="unlock-tip">T-Rexy put it on. Change looks in his closet on the crash pad.</p></div></div>` : "";
   const t = flow.token();
   if (all || missing <= 0) {
     panel.innerHTML = `<div class="card">
@@ -259,9 +300,11 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
       <p class="line" style="font-size:1.05rem">${esc(pick(RUN_CHEERS))}</p>
       ${stats}
       ${all ? `<p class="bonusline">You caught every single one! <b>+${FULL_BONUS}</b> bonus points</p>` : ""}
+      ${look}
     </div>`;
     if (all) sfx.levelup();
-    setTimeout(() => { if (flow.alive(t)) next(); }, all ? 2800 : 2400);
+    if (res.look) { setTimeout(() => { if (flow.alive(t)) sfx.join(); }, 500); express("happy", 3400); toast(`New look: ${res.look.name}!`); }
+    setTimeout(() => { if (flow.alive(t)) next(); }, res.look ? 4200 : all ? 2800 : 2400);
     return;
   }
   const again = () => go(S.step), one = missing === 1 ? what.replace(/s$/, "") : what;

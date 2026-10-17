@@ -1,7 +1,7 @@
 /**
  * @file kit/groove.js
  * @about A bouncier music player for upbeat, dance-style chiptune songs written as data: sixteenth-note patterns, verse and chorus sections, claps and open hi-hats, sparkly chord arpeggios, an octave-bouncing bass, and a pulse-wave lead with a little echo. Same controls as kit/music.js, so the jukebox works with it, and it plays kit/music.js songs too. Everything is synthesized in code (no audio files, nothing copyrighted).
- * @provides Kit.groove.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }, Kit.groove.render(audioContext, song, seconds)
+ * @provides Kit.groove.create(songs) -> { set(id), restart(id, { at, delay }), hush(), position(), unlock(), setEnabled(on), enabled, want }, Kit.groove.render(audioContext, song, seconds)
  * @requires kit/audio.js
  *
  * Song format (see assets/music/glitch-hub.js):
@@ -17,6 +17,9 @@
  *   drums      { kick, clap, hat, open } volumes
  * Songs written for kit/music.js (32 eighth-note steps, no form) still play: they are turned into this format.
  * render(ctx, song, seconds) schedules a song into any audio context from time 0 (the play-test uses it to check loudness).
+ * restart(id, { at, delay }) plays a song from `at` seconds in (a negative `at` waits that long first), starting `delay` seconds
+ * from now and cutting off notes already lined up, so a game can keep the music in time with something (a rhythm run).
+ * hush() fades the music out right away until the next set or restart. position() = seconds into the song now, or null.
  */
 (function (Kit) {
   "use strict";
@@ -135,7 +138,7 @@
   }
 
   function create(songs) {
-    let cur = null, P = null, want = "theme", step = 0, nextT = 0, timer = 0, unlocked = false, on = true, V = null, bus = null, ctxRef = null;
+    let cur = null, P = null, want = "theme", step = 0, nextT = 0, timer = 0, unlocked = false, on = true, V = null, bus = null, ctxRef = null, t0 = 0;
     function out(a) {
       if (!bus || ctxRef !== a) {
         ctxRef = a; bus = a.createGain(); bus.gain.value = .5;
@@ -143,6 +146,11 @@
         bus.connect(comp).connect(a.destination); V = makeVoice(a, bus);
       }
       return bus;
+    }
+    // Fades out everything already lined up (on the old bus) and starts a fresh one, so a restart cuts cleanly.
+    function cut(a) {
+      if (bus && ctxRef === a) { const old = bus, t = a.currentTime; old.gain.cancelScheduledValues(t); old.gain.setValueAtTime(old.gain.value, t); old.gain.linearRampToValueAtTime(0, t + .03); setTimeout(() => { try { old.disconnect(); } catch (e) { /* gone */ } }, 400); }
+      bus = null; out(a);
     }
     function tick() {
       const a = Kit.audio.ctx(); if (!cur || !a) return;
@@ -154,12 +162,25 @@
     function start(id) {
       const a = Kit.audio.ctx(), s = songs[id]; if (!a || !s) return;
       if (cur === s && timer) return;
-      cur = s; P = prep(s); step = 0; nextT = a.currentTime + .1;
+      cur = s; P = prep(s); step = 0; nextT = a.currentTime + .1; t0 = nextT;
       if (!timer) timer = setInterval(tick, 25);
     }
     function stop() { cur = null; if (timer) clearInterval(timer); timer = 0; }
+    function restart(id, at = 0, delay = 0) {
+      const a = Kit.audio.ctx(), s = songs[id]; if (!a || !s) return;
+      cut(a);
+      cur = s; P = prep(s);
+      const sd = 60 / P.song.bpm / 4, now = a.currentTime + .02 + delay;
+      if (at < 0) { step = 0; nextT = now - at; }
+      else { const k = Math.ceil(at / sd - 1e-6); step = k % P.order.length; nextT = now + (k * sd - at); }
+      t0 = nextT - step * sd;
+      if (!timer) timer = setInterval(tick, 25);
+    }
     return {
       set(id) { want = id; if (on && unlocked) start(id); },
+      restart(id, { at = 0, delay = 0 } = {}) { want = id; if (on && unlocked) restart(id, at, delay); },
+      hush() { const a = Kit.audio.ctx(); if (a && bus) cut(a); stop(); },
+      position() { const a = Kit.audio.ctx(); return cur && a ? a.currentTime - t0 : null; },
       unlock() { if (unlocked) return; unlocked = true; if (on) start(want); },
       setEnabled(v) { on = !!v; if (on) { if (unlocked) start(want); } else stop(); },
       get enabled() { return on; },

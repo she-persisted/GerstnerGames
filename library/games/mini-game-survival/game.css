@@ -140,4 +140,22 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 .gapnote{margin:0;color:var(--dust)}
 .bonusline{margin:0;font:800 1.1rem/1.3 var(--font-display);color:var(--ember-gold)}
 .bonusline b{color:var(--starlight)}
+/* T-Rexy's closet (crash pad notebook) and the new-look card after a run */
+.closet{display:flex;flex-direction:column;gap:6px}
+.closet .eyebrow{justify-content:space-between}
+.closet-n{font:600 .8rem var(--font-body);letter-spacing:0;text-transform:none;color:var(--dust)}
+.closet-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.lookbtn{all:unset;box-sizing:border-box;aspect-ratio:6/5;display:grid;place-items:center;border-radius:10px;border:2px solid var(--nebula-hi);background:var(--void);cursor:pointer;overflow:hidden}
+.lookbtn svg{width:100%;height:100%}
+.lookbtn:hover{border-color:var(--cyan)}
+.lookbtn.on{border-color:var(--ember-gold);box-shadow:0 0 12px -3px var(--ember-gold)}
+.lookbtn:focus-visible{outline:3px solid var(--ember-gold);outline-offset:2px}
+.lookbtn.locked{cursor:default;border-style:dashed;color:var(--dust);font:400 .8rem var(--font-arcade);opacity:.6}
+.closet-tip{margin:0;font-size:.85rem;color:var(--dust)}
+.unlock{display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:14px;background:var(--void);border:2px solid var(--ember-gold);box-shadow:0 0 22px -8px var(--ember-gold)}
+.unlock svg{width:96px;height:108px;flex:none}
+.unlock p{margin:0}
+.unlock-new{font:400 .75rem var(--font-arcade);color:var(--ember-gold)}
+.unlock-name{font:800 1.4rem/1.2 var(--font-display);color:var(--starlight)}
+.unlock-tip{font-size:.9rem;color:var(--dust)}
 @media (prefers-reduced-motion:reduce){ .hint{transition:none} }

@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop). Also the music, the toggles, the top bar, and toasts.
+ * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
  * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
@@ -36,16 +36,27 @@ function img(key, url) {
   if (!im) { im = new Image(); im.src = url; IMG.set(key, im); }
   return im;
 }
-const heroImg = (o = {}) => img(`t|${o.pose || "stand"}|${o.face || "smile"}|${o.acc || "none"}|${o.who || "trexy"}|${o.flip ? 1 : 0}`, Kit.art.trexy.url(o, 240));
+const heroImg = (o = {}) => img(`t|${o.pose || "stand"}|${o.face || "smile"}|${o.acc || "none"}|${o.who || "trexy"}|${o.flip ? 1 : 0}|${o.back || ""}|${o.skin || ""}`, Kit.art.trexy.url(o, 240));
 const novaImg = (o = {}) => img(`n|${o.face || "smile"}|${o.flip ? 1 : 0}`, Kit.art.nova.url(o, 200));
-const pilotHead = `<g transform="translate(13,-14) scale(.27)">${Kit.art.trexy.g({ face: "happy" })}</g>`;
-const shipImg = (flame, pilot = true, face = "") => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? 1 : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotHead : "", face }, 320));
+// T-Rexy wearing his looks (see LOOK in state.js). h = his height; a tall hat's picture has extra room on top, so it's drawn taller.
+function drawTrexy(ctx, o, x, y, h) {
+  const opts = { ...o, ...lookOpts(o.acc) };
+  drawImg(ctx, heroImg(opts), x, y, Kit.art.trexy.isTall(opts) ? h * 1.3 : h);
+}
+const pilotHead = () => `<g transform="translate(13,-14) scale(.27)">${Kit.art.trexy.g({ face: "happy", skin: LOOK.skin, acc: LOOK.head === "helmet" || LOOK.head === "shades" || LOOK.head === "crown" ? LOOK.head : "none" })}</g>`;
+const shipImg = (flame, pilot = true, face = "") => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? `1${LOOK.skin}${LOOK.head}` : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotHead() : "", face }, 320));
 function drawImg(ctx, im, x, y, h, anchor = "bottom") {
   if (!im.complete || !im.naturalWidth) return;
   const w = h * im.naturalWidth / im.naturalHeight;
   ctx.drawImage(im, x - w / 2, anchor === "bottom" ? y - h : y - h / 2, w, h);
 }
+// Loads the pictures of T-Rexy in his current looks ahead of time, so they're ready when he first moves.
+function warmLook() {
+  ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => heroImg({ face: f, ...lookOpts() }));
+  [false, true].forEach(fl => ["run1", "run2", "hop", "stand"].forEach(p => heroImg({ pose: p, face: "smile", flip: fl, ...lookOpts() })));
+}
 function warmImages() {
+  warmLook();
   ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => { heroImg({ face: f }); heroImg({ face: f, acc: "cap" }); });
   ["run1", "run2", "hop"].forEach(p => heroImg({ pose: p, face: "smile" }));
   [false, true].forEach(fl => ["run1", "run2", "stand"].forEach(p => heroImg({ pose: p, face: "smile", flip: fl })));
@@ -199,7 +210,7 @@ function drawStage(ctx, now) {
     ctx.restore();
   }
   const tremble = heroFace(now) === "worried" && !reduced ? Math.sin(now / 45) * 1.2 : 0;
-  drawImg(ctx, heroImg({ face: heroFace(now), acc: ST.acc, pose: "stand" }), hx + tremble, hy, heroH);
+  drawTrexy(ctx, { face: heroFace(now), acc: ST.acc, pose: "stand" }, hx + tremble, hy, heroH);
   if (ST.nova) {
     const onHead = ST.theme === "valley";
     const nx = onHead ? hx - heroH * .05 : w * .6, ny = onHead ? hy - heroH * .74 : gy, nh = onHead ? heroH * .3 : heroH * .38;
@@ -283,7 +294,7 @@ function drawHub(ctx, v, hero, bubble) {
   // T-Rexy
   const pose = hero.walking ? (Math.floor(now / 140) % 2 ? "run1" : "run2") : "stand";
   const hx = (hero.x - v.camX) * v.T;
-  drawImg(ctx, heroImg({ pose, face: heroFace(now) === "worried" ? "worried" : "smile", flip: hero.facing < 0 }), hx, v.ground + hopY(now, v.h), v.T * 1.35);
+  drawTrexy(ctx, { pose, face: heroFace(now) === "worried" ? "worried" : "smile", flip: hero.facing < 0 }, hx, v.ground + hopY(now, v.h), v.T * 1.35);
   if (bubble) drawBubble(ctx, hx, v.ground - v.T * 1.5, bubble.text);
   drawShadowSay(ctx, v.w, v.h, now);
 }
@@ -325,7 +336,7 @@ function heroDraw(ctx, x, y, T, hero) {
   ctx.save(); ctx.translate(x, y);
   if (hero.spin >= 0 && !reduced) { const c = T * .55; ctx.translate(0, -c); ctx.rotate(hero.spin * Math.PI * 2); ctx.translate(0, c); } // double hop: a flip
   else if (!hero.grounded) ctx.rotate(Math.max(-.3, Math.min(.3, -hero.vy * .018)));
-  drawImg(ctx, heroImg({ pose, face: "smile" }), 0, 0, T * 1.2);
+  drawTrexy(ctx, { pose, face: "smile" }, 0, 0, T * 1.2);
   ctx.restore();
 }
 function startRun(opts) {
@@ -333,13 +344,15 @@ function startRun(opts) {
   stageEl.classList.add("wide");
   const th = THEMES[opts.theme] || THEMES.hub;
   const ctl = Kit.runner.play(cv, {
-    gen: opts.gen, theme: th, tip: opts.tip, label: opts.label, have: opts.have,
+    gen: opts.gen, theme: th, tip: opts.tip, label: opts.label, have: opts.have, beat: opts.beat,
     drawBackground: (ctx, v) => nebula.draw(ctx, { ...v, dpr: Math.min(2, window.devicePixelRatio || 1) }, { theme: opts.theme, shadow: opts.shadow ? { x: .78, k: .9, lantern: false, ...shadowAnim(v.t) } : null }),
     drawHero: heroDraw,
     autopilot: () => window.__mgsAutopilot || false,
     speedup: () => window.__mgsSpeedup || 1,
     drop: () => window.__mgsDrop || 0, // play-test hook: miss this many pieces on purpose
-    onCrash: opts.onCrash, onCollect: opts.onCollect, onMode: opts.onMode, onDouble: opts.onDouble, onFinish: opts.onFinish
+    // The music keeps time with the run: it starts on GO, stops on a crash or pause, and picks up where the run picks up.
+    onClock: (sec, running) => { if (!opts.song) return; if (running) music.restart(opts.song, { at: sec }); else music.hush(); },
+    onCrash: opts.onCrash, onCollect: opts.onCollect, onMode: opts.onMode, onDouble: opts.onDouble, onPerfect: opts.onPerfect, onFinish: opts.onFinish
   });
   runCtl = ctl;
   return ctl;

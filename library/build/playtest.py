@@ -36,14 +36,21 @@ Checks:
   5. Mini Game Survival, with fresh browsers:
      - The question library is checked (every mystery version's answer is one of its options, every clue has lines for all
        three typing levels, every word topic has plenty of words at each level).
-     - Easy mode: the first run must be level 1 (the slowest) with checkpoints already on, and pressing again in the air must double hop.
+     - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret
+       routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle
+       of every chunk one hop can clear. The recorded villain laughs must decode.
+     - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,
+       pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).
      - The full playthrough is in Hard mode. No screen may show a count of attempts.
      - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine
-       (Easter eggs), click each portal.
-     - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the
-       Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and
-       takes the secret route, so all four hidden diary pages must be found.
-     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles.
+       (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.
+     - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes
+       twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,
+       and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes
+       every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.
+       Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.
+       Every run must end with every piece caught, which unlocks 5 of T-Rexy's looks.
+     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.
      - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
      - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
      - After the first portal the page is reloaded, and "Keep going" must resume on the crash pad with the clue saved.
@@ -462,6 +469,9 @@ ART_CHECK_JS = r"""() => {
   for (const pose of ["stand", "run1", "run2", "hop", "sit"])
     for (const face of ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"])
       for (const acc of ["none", "flower", "glasses", "bow", "cap"]) ok(`trexy ${pose} ${face} ${acc}`, A.trexy.svg({ pose, face, acc }));
+  const LK = A.trexy.LOOKS;
+  for (const acc of ["none", ...Object.keys(LK.head)]) for (const back of ["", ...Object.keys(LK.back)]) for (const skin of ["", ...Object.keys(LK.skin)])
+    for (const pose of ["stand", "run1", "hop"]) ok(`trexy look ${acc} ${back} ${skin} ${pose}`, A.trexy.svg({ pose, acc, back, skin, flip: pose === "run1" }));
   for (const face of ["smile", "happy", "worried", "surprised"]) ok(`nova ${face}`, A.nova.svg({ face }));
   ok("shadowspine", `<svg xmlns="http://www.w3.org/2000/svg">${A.nova.shadow("#000", 12)}</svg>`);
   for (const face of ["awake", "blink", "happy"]) ok(`ship face ${face}`, decodeURIComponent(A.ship.url({ cockpit: "dino", wings: "bat", thrusters: "two", core: "pink", paint: "lime" }, { flame: true, face, pilot: "<g/>" }).split(",").slice(1).join(",")));
@@ -500,21 +510,37 @@ RUN_CHECK_JS = r"""() => {
   const R = Kit.runner, LV = window.__mgs.levels, bad = [], t0 = performance.now();
   let made = 0, short = 0;
   const rngOf = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-  const SECS = [14, 16, 18, 20, 22, 24, 30];
+  const SECS = [14, 16, 18, 20, 22, 24, 30], BPM = [140, 144, 148, 152, 156];
+  // A hop pressed right on the beat must clear each chunk's first obstacle (for chunks one hop can clear).
+  const ONE_HOP = new Set(["spike", "spike-spike", "spike-2", "spike-run", "spike-pit", "step", "step-spike", "step-spike-step", "hop-gap", "gap-2", "gap-3", "low-ceiling"]);
+  let beatHops = 0, offBeat = 0;
   for (let level = 1; level <= 6; level++) {
     const L = LV[level];
     const runs = [9, 12, 16].flatMap(pieces => [1, 2, 3, 4].map(seed => ({ pieces, seed, secret: true, ships: L.ships })))
       .concat([1, 2, 3].map(seed => ({ pieces: 8, seed: seed + 50, secret: false, ships: L.ships + 1 })));
     for (const r of runs) {
-      const secs = SECS[(r.seed * 7 + level) % SECS.length];
-      const G = R.generate({ chunks: Kit.levels.runner, level, speed: L.speed, space: L.space, ships: r.ships, length: L.speed * secs, pieces: r.pieces, secret: r.secret, rng: rngOf(level * 1000 + r.seed * 31 + r.pieces) });
+      const secs = SECS[(r.seed * 7 + level) % SECS.length], beat = 60 / BPM[(r.seed + level) % BPM.length];
+      const G = R.generate({ chunks: Kit.levels.runner, level, speed: L.speed, space: L.space, ships: r.ships, length: L.speed * secs, pieces: r.pieces, secret: r.secret, beat, rng: rngOf(level * 1000 + r.seed * 31 + r.pieces) });
+      for (const a of G.beat.actions) { const k = (a - .5) / G.beat.tiles; if (Math.abs(k - Math.round(k)) > 1e-6) offBeat++; }
+      const DT = R.sim.DT, states = [], s0 = R.sim.start(.5);
+      for (let i = 0; i < G.inputs.length; i++) { states.push(R.sim.clone(s0)); R.sim.step(s0, G.inputs[i], G.L); }
+      for (const sp of G.spans) {
+        if (!ONE_HOP.has(sp.id)) continue;
+        const ax = G.beat.actions.find(a => a > sp.x0 - .01 && a < sp.x1), i0 = ax == null ? -1 : states.findIndex(q => q.x >= ax - G.beat.tiles * 1.2);
+        if (i0 < 0 || !states[i0].grounded) continue;
+        const q = R.sim.clone(states[i0]), fBeat = Math.round((ax - .5) / L.speed / DT);
+        while (q.alive && q.t < fBeat + Math.round(.5 / DT)) R.sim.step(q, q.t === fBeat, G.L);
+        beatHops++;
+        if (!q.alive) bad.push(`level ${level}: a hop on the beat doesn't clear the first ${sp.id} (x ${sp.x0.toFixed(1)})`);
+      }
       made++;
       const got = G.L.objs.filter(o => o.k === "m").length;
       if (got < r.pieces) { short++; bad.push(`level ${level}, ${secs}s run: only ${got} of ${r.pieces} pieces placed`); }
       for (const p of R.sim.checkPieces(G)) bad.push(`level ${level}, ${r.pieces} pieces, seed ${r.seed}: ${p}`);
     }
   }
-  return { made, short, bad: bad.slice(0, 12), count: bad.length, ms: Math.round(performance.now() - t0) };
+  if (offBeat) bad.push(`${offBeat} chunks don't start on the beat`);
+  return { made, short, beatHops, bad: bad.slice(0, 12), count: bad.length, ms: Math.round(performance.now() - t0) };
 }"""
 
 
@@ -527,7 +553,7 @@ def mgs_pieces_check(browser, base, rel):
         fail(f"memory pieces: {b}")
     if r["count"] > len(r["bad"]):
         fail(f"memory pieces: {r['count'] - len(r['bad'])} more problems")
-    print(f"  memory pieces: {r['made']} runs built at levels 1 to 6, {'every piece catchable' if not r['count'] else str(r['count']) + ' problems'} ({r['ms'] // 1000}s)")
+    print(f"  memory pieces and beats: {r['made']} runs built at levels 1 to 6, {'every piece catchable, ' + str(r['beatHops']) + ' hops on the beat all clear' if not r['count'] else str(r['count']) + ' problems'} ({r['ms'] // 1000}s)")
     # The recorded villain laughs must decode in Chrome, and last about as long as the game thinks (it animates Shadowspine's jaw to them).
     laughs = pg.evaluate("""async () => Promise.all((Kit.sounds && Kit.sounds.villainLaughs || []).map(async c => {
       const b = await Kit.voices.clipBuffer(new OfflineAudioContext(1, 24000, 24000), c);
@@ -680,7 +706,7 @@ def mgs_playthrough(browser, base, rel):
     seen = {"runs": 0, "jigsaws": 0, "words": 0, "clues": 0, "parts": 0, "paints": 0, "deduce": 0, "songs": 0,
             "crashrestart": False, "checkpoints": False, "peek": False, "fix": False, "scan": False, "refuel": False,
             "wrongclue": False, "roar": False, "poke": False, "resumed": False, "modeswitch": False, "ship": False,
-            "hint": False, "rerun": False, "bonus": False, "gaps": False}
+            "hint": False, "rerun": False, "bonus": False, "noskip": False, "hardall": False, "closet": False, "musicsync": False}
     reloaded = False
     last_sig, last_change, started = None, time.time(), time.time()
     run_seen, song_steps = None, set()
@@ -725,7 +751,7 @@ def mgs_playthrough(browser, base, rel):
                 if "Clue 1:" not in pg.inner_text("#panel") or "???" in pg.inner_text("#panel").split("Clue 2")[0]:
                     fail("the first clue was not kept in the notebook after reloading")
             else:
-                pg.keyboard.press("h")  # the full playthrough is in Hard mode, which starts from the portal entrance
+                pg.keyboard.press("h")  # the full playthrough is in Hard mode, which needs every memory piece
                 pg.click("#playBtn")
                 pg.wait_for_timeout(350)
 
@@ -744,6 +770,16 @@ def mgs_playthrough(browser, base, rel):
                 pg.reload()
                 pg.wait_for_selector("#playBtn")
                 continue
+            if not seen["closet"] and pg.locator("#panel .lookbtn[data-look]").count():
+                before = pg.evaluate("window.__mgs.looks()")
+                pg.locator("#panel .lookbtn[data-look]").first.click(); pg.wait_for_timeout(120)
+                after = pg.evaluate("window.__mgs.looks()")
+                seen["closet"] = before.get("head") == "helmet" and after.get("head") == ""
+                if not seen["closet"]:
+                    fail(f"the closet didn't take the Space Helmet off ({before}, {after})")
+                    seen["closet"] = True
+                pg.locator("#panel .lookbtn[data-look]").first.click(); pg.wait_for_timeout(120)  # and back on
+                pg.locator("#cv").focus()
             if not seen["roar"]:
                 pg.keyboard.type("roar")
                 pg.wait_for_timeout(200)
@@ -787,16 +823,25 @@ def mgs_playthrough(browser, base, rel):
                 if not seen["hint"]:
                     fail("crashing without pressing anything did not show a Hint with the keys to press")
                     seen["hint"] = True
+            if seen["runs"] == 2 and not seen["noskip"]:  # Hard mode: R can't skip a portal run
+                pg.keyboard.press("r"); pg.wait_for_timeout(350)
+                seen["noskip"] = pg.evaluate("window.__mgs.mode") == "run" and "hard mode" in (pg.text_content("#hint") or "").lower()
+                if not seen["noskip"]:
+                    fail("in Hard mode, R skipped a portal run (or said nothing)")
+                    seen["noskip"] = True
             if seen["runs"] == 1 and not seen["checkpoints"]:
                 if r.get("crashes", 0) >= 1 and r.get("alive") and r.get("x", 99) < 6:
                     seen["crashrestart"] = True
-                if r.get("crashes", 0) >= 3:
-                    try:
-                        pg.wait_for_selector("#cpBtn", timeout=3000)
-                        pg.click("#cpBtn")
-                        seen["checkpoints"] = bool(pg.evaluate("window.__mgs.run().checkpoints"))
-                    except Exception:
-                        fail("the Checkpoints button did not appear after three crashes")
+                if not seen["musicsync"]:
+                    m = pg.evaluate("(() => { const r = window.__mgs.run(); return r ? { t: r.t, alive: r.alive, pos: window.__mgs.music() } : null; })()")
+                    if m and m["alive"] and m["t"] > 90:
+                        if m["pos"] is None or abs(m["pos"] - m["t"] / 120) > .2:
+                            fail(f"the music isn't in time with the run (run at {m['t'] / 120:.2f}s, music at {m['pos']})")
+                        seen["musicsync"] = True
+                if r.get("crashes", 0) >= 2:
+                    seen["checkpoints"] = bool(r.get("checkpoints")) and not pg.locator("#cpBtn").count()
+                    if not seen["checkpoints"]:
+                        fail("Hard mode runs should have checkpoints on from the start, with no Checkpoints button")
                         seen["checkpoints"] = True
                     pg.evaluate("window.__mgsAutopilot = 'secret'; window.__mgsSpeedup = 4")
                 pg.wait_for_timeout(200)
@@ -816,23 +861,26 @@ def mgs_playthrough(browser, base, rel):
                 pg.keyboard.press("a")
                 seen["rerun"] = "pending"
                 pg.wait_for_timeout(400)
-            elif "lantern lab" in text:
-                if "2 memory pieces got away" not in text:
-                    fail(f"missing 2 pieces in Lantern Lab should say so: {text[:120]!r}")
+            elif "lantern lab" in text and not seen["hardall"]:
+                # Hard mode: no keeping going with pieces missing, only running it again
+                if "2 memory pieces got away" not in text or "hard mode" not in text:
+                    fail(f"missing 2 pieces in Lantern Lab (Hard mode) should say so: {text[:160]!r}")
+                if pg.locator("#keepGoing").count():
+                    fail("Hard mode offered Keep going with memory pieces missing")
+                seen["hardall"] = True
+                pg.evaluate("window.__mgsDrop = 0")
                 pg.keyboard.press("Enter")
                 pg.wait_for_timeout(400)
             else:
                 fail(f"pieces got away in a run where every piece should be catchable: {text[:160]!r}")
-                pg.locator("#keepGoing").click()
+                pg.evaluate("window.__mgsDrop = 0")
+                pg.keyboard.press("Enter")
                 pg.wait_for_timeout(400)
 
         elif k == "jigsaw":
             pg.evaluate("window.__mgsAutopilot = false; window.__mgsSpeedup = 1")
-            if "lantern lab" in pg.inner_text("#panel").lower() and not seen["gaps"]:
-                g = pg.locator(".jig .jt.gone").count()
-                seen["gaps"] = True
-                if g != 2:
-                    fail(f"missing 2 of the pieces should leave 2 holes in the Lantern Lab memory, found {g}")
+            if pg.locator(".jig .jt.gone").count():
+                fail("a Hard mode memory has holes, but Hard mode needs every piece before the jigsaw")
             first = seen["jigsaws"] == 0
             if first and not seen["peek"]:
                 pg.click('[data-help="peek"]')
@@ -957,9 +1005,11 @@ def mgs_playthrough(browser, base, rel):
         elif k == "end":
             runs = pg.evaluate("window.__mgs.runs")
             for key, r in runs.items():
-                want = r.get("total", 0) - (2 if key == "lantern" else 0)
-                if r.get("pieces") != want:
-                    fail(f"the {key} run caught {r.get('pieces')} of {r.get('total')} pieces (expected {want})")
+                if r.get("pieces") != r.get("total"):
+                    fail(f"the {key} run caught {r.get('pieces')} of {r.get('total')} pieces (Hard mode needs all of them)")
+            looks = pg.evaluate("window.__mgs.looks()")
+            if len(looks.get("have", [])) != 5:
+                fail(f"catching every piece in all 5 runs should unlock 5 looks, got {looks.get('have')}")
             seen["rerun"] = bool((runs.get("fern") or {}).get("full"))
             if not seen["rerun"]:
                 fail("running Fern Moon again did not end with every piece caught")
@@ -985,13 +1035,13 @@ def mgs_playthrough(browser, base, rel):
           f"{seen['deduce']} mystery answers, {seen['songs']} songs, {secs}s")
     print("  " + ", ".join(f"{n} {'ok' if seen[n] else 'not seen'}" for n in
                            ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship",
-                            "hint", "rerun", "bonus", "gaps")))
+                            "hint", "rerun", "bonus", "noskip", "hardall", "closet", "musicsync")))
     expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7}
     for name, n in expect.items():
         if seen[name] != n:
             fail(f"Mini Game Survival: expected {n} {name}, got {seen[name]}")
     for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship",
-                 "hint", "rerun", "bonus", "gaps"):
+                 "hint", "rerun", "bonus", "noskip", "hardall", "closet", "musicsync"):
         if not seen[name]:
             fail(f"Mini Game Survival never exercised: {name}")
     ctx.close()

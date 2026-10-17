@@ -3,7 +3,7 @@
 **Spoiler warning:** this doc explains the mystery's twist. The kids asked to be surprised, so don't read the "Mystery" section out loud or reveal it in voice mode unless they ask for spoilers.
 
 Home page (always the newest version): https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ
-QR card: `library/dist/mini-game-survival-v3-qr.png`
+QR card: `library/dist/mini-game-survival-v4-qr.png`
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/` (see claude/game-library.md)
 
 ## Design (October 17, 2026, by voice, with Child I and two friends)
@@ -38,20 +38,32 @@ Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/
 - Replace the "awful robot" laugh with a real recording of a silly villain laugh from the internet. (Mom downloaded the CC0 "Evil Laughs" pack from OpenGameArt and attached it.)
 - Hints that show the buttons to press ("Hint: ..."), only when a player has been stuck a while.
 
+## v4 changes Mom asked for (October 17, 2026)
+- "Always run with checkpoints. It's not an option." Checkpoints are on in every mode, and the Checkpoints button is gone.
+- "In hard mode they have to collect all puzzle pieces to progress."
+- More feel in the runs: sparkle bursts, a small shake on crashes, and a "Perfect!" pop for well-timed hops.
+- Unlockable looks for T-Rexy: catching every piece in a run earns hats and colors.
+- Obstacles on the beat: jumps line up with the music, like Geometry Dash.
+
 ## How it plays
 - Title screen: pick Easy or Hard (click, or press E or H), then Play or Keep going, plus the high score board and a jukebox of the songs found so far. The crash pad's notebook can switch modes mid-game.
-  - Easy: slower runs, checkpoints on from the start, smaller puzzles to begin with.
-  - Hard: faster runs, a crash sends T-Rexy back to the portal entrance, and runs score double.
-- The Crash Pad: T-Rexy walks left and right (arrow keys or A and D, or click), and jumps into the next glowing portal with Enter. The side panel is his Clue Notebook. Shadowspine looms over the pad.
+  - Easy: slower runs and smaller puzzles to begin with.
+  - Hard: faster runs, bigger puzzles, runs score double, and every memory piece has to be caught to move on.
+  - Both: checkpoints are always on.
+- The Crash Pad: T-Rexy walks left and right (arrow keys or A and D, or click), and jumps into the next glowing portal with Enter. The side panel is his Clue Notebook, with **T-Rexy's closet**: every look he has unlocked (click one to put it on or take it off) and a "?" for each still to find. Shadowspine looms over the pad.
 - Each of the four portals has the same four mini games, then a spaceship part and a song:
-  1. **Portal run** (side-scroller): T-Rexy runs by himself. Space, Up, or click to hop (tiny!), and press again in the air for a double hop (he does a flip). Yellow bounce pads launch him high, pink portals turn him into a little ship (hold to fly up, let go to sink), green portals turn him back. Touch a spike or a wall and he goes back to the start (Hard) or the last checkpoint (Easy). Nothing counts attempts. In Hard, a Checkpoints button appears after three crashes. Glowing memory pieces sit along the way, every one on the path that beats the run. Esc pauses.
-     - Caught every piece: a +200 bonus, and on to the jigsaw.
-     - Some got away: pick **Keep going** (Enter) or **Run it again** (A). Running it again is the same run, with the pieces already caught shown faint and still counted, so only the missing ones are left to grab.
+  1. **Portal run** (side-scroller): T-Rexy runs by himself. Space, Up, or click to hop (tiny!), and press again in the air for a double hop (he does a flip). Yellow bounce pads launch him high, pink portals turn him into a little ship (hold to fly up, let go to sink), green portals turn him back. Touch a spike or a wall and he goes back to the last checkpoint. Nothing counts attempts. Glowing memory pieces sit along the way, every one on the path that beats the run. Esc pauses.
+     - **On the beat**: the countdown ticks in time with the portal's song, and the song starts on GO. Each obstacle's first hop lands on a beat, and the ground, pads, and pieces pulse with it. A hop pressed right on the beat over a spike, gap, or step pops "PERFECT!" (10 points, and a streak counter for perfect hops in a row). The music stops on a crash and picks up in time at the checkpoint.
+     - **Feel**: catching a piece bursts into sparkles with a ring and bumps the counter, landings puff a little dust, and a crash shakes the screen a little (no shake or pulses with reduced motion).
+     - Caught every piece: a +200 bonus, the next of T-Rexy's looks if this is the first full catch of this run in this game, and on to the jigsaw.
+     - Some got away, in Easy: pick **Keep going** (Enter) or **Run it again** (A). Running it again is the same run, with the pieces already caught shown faint and still counted, so only the missing ones are left to grab.
+     - Some got away, in Hard: only **Run it again** (Enter or A). The story can't move on, and R can't skip the run, until every piece is caught.
   2. **Memory jigsaw**: the memory pieces make a picture. Swap tiles (click two, or arrow keys and Enter). Helpers: Peek, and Fix one (also by tapping T-Rexy). Pieces that got away in the run leave glitchy "?" holes, the same share of the tiles as the pieces missed (9 of 12 caught means 3 holes in a 12-tile picture). Tiles that show a clue never become holes.
   3. **Glitch-locked clue word**: a hangman-style letter game made friendly. A hint, a fuel tank, and letter keys. Wrong letters burn fuel; Scan reveals a letter (also by tapping T-Rexy). Out of fuel, the word is shown and he types it to refuel. About 35 words per topic, so replays bring new ones.
   4. **Clue notebook**: a clue card (what he remembers, a science fact, and a fun bonus fact), and he types the clue line into his notebook. Each clue has three versions per typing level, and each fact has several versions (`games/mini-game-survival/questions.js`).
 - Portals: Echo Rings (sound and music), Fern Moon (food and dinosaurs), Lantern Lab (light and shadows), Whirlpool Galaxy (space). Parts in that order: Thrusters, Wings, Glitch Core, Cockpit. Then he picks a paint job.
-- The Shadow Gate: the final, longer run, with Shadowspine in the background.
+- The Shadow Gate: the final, longer run, with Shadowspine in the background. Its star shards are a bonus in both modes (catching them all unlocks a look too).
+- **T-Rexy's looks** (12, unlocked in this order): Space Helmet, Galaxy Purple, Rocket Backpack, Wizard Hat, Golden Scales, DJ Headphones, Super Cape, Ocean Blue, Glitch Crown, Party Hat, Bubblegum Pink, Star Shades. One hat, one back item, and one color at a time. Up to 5 unlock in a game (one per run), and they stay unlocked on that computer. They show everywhere he appears; his cap in the opening scene shows instead of a hat.
 - Solve the mystery: four multiple-choice questions (keys 1 to 3), each with four versions that test the same idea. A wrong answer points to the clue that helps.
 - **L and R** move back and forward through the story on every screen (the left and right arrow keys work too, except where those keys are already taken). L goes back to the story line before. R goes forward: it skips a run, finishes a jigsaw or a typed clue, picks the first choice, shows a mystery answer, or jumps into the next portal from the crash pad. Skipped parts earn no points, and going forward again skips mini games already finished. Typing screens use the arrow keys instead, because their letters are for typing; runs and jigsaws use only L and R. On the crash pad, R waits a moment, so typing ROAR still works.
 - **Hints**: a "Hint:" bubble with the keys to press appears only when someone seems stuck: after doing nothing on a screen for a while (9 seconds on the crash pad, 10 to 20 seconds elsewhere), after 3 wrong letters in a clue word (try the vowels), right away in a run after a crash with no key pressed yet, and after 2 crashes at the same obstacle (a tip for that obstacle: spikes, gaps, ledges, steps, bounce pads, the low ceiling, the ship, the secret path). Pressing anything hides it.
@@ -85,12 +97,13 @@ Levels are saved on that computer, separately for each mode (keys `mgs.skill.eas
 - Same rules as Starward: two clean results in a row raise a level, two struggles lower it. Crashes and mistakes are looked at only for that one result; they're never shown or saved.
 
 ## Scoring
-Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 + 25 per star shard), doubled in Hard mode, plus 200 for catching every piece in a run; running a portal again never lowers its points. 300 per jigsaw (none if every piece left was already home); 300 per clue word; 150 per mystery answer; plus 20 x typing words per minute (capped at 150 wpm), 5 x typing accuracy, and 250 per secret page. Anything skipped with R earns nothing. Shared board for people who can edit the page; everyone else's scores save on their own computer.
+Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 + 25 per star shard) + 10 per perfect hop, doubled in Hard mode, plus 200 for catching every piece in a run; running a portal again never lowers its points. 300 per jigsaw (none if every piece left was already home); 300 per clue word; 150 per mystery answer; plus 20 x typing words per minute (capped at 150 wpm), 5 x typing accuracy, and 250 per secret page. Anything skipped with R earns nothing. Shared board for people who can edit the page; everyone else's scores save on their own computer.
 
 ## Under the hood
 - Every run is built from chunks (`content/levels/runner-chunks.js`), and a solver plays each chunk before it's used, so every level is beatable at every speed. The hidden box route is proven reachable too.
 - Memory pieces are placed on the solved route: only where T-Rexy is on the ground (or a block top) in cube mode, never inside a ship tunnel or the secret section, and never touching a block, spike, pad, or portal. `Kit.runner.sim.checkPieces` replays the winning route and the secret route and reports any piece either misses. The play-test builds 90 runs across levels 1 to 6 and checks every piece, and its full playthrough checks every run caught every piece (with test runs that miss pieces on purpose to check the holes and the run-again choice).
 - Each game has a random seed, so a run's layout is the same on a second try, and the jigsaw holes stay on the same tiles after a reload.
+- On the beat: the run generator gets the song's beat length and nudges each chunk forward so the spot where T-Rexy should hop for its first obstacle (worked out from the hop physics: peak over the middle of a spike or a row of spikes, peak at a step's edge, leave at a gap's edge, touch a pad) lands exactly on a beat. The play-test builds 90 runs and checks that a hop pressed exactly on the beat clears every chunk a single hop can clear. `kit/groove.js` can restart a song at any point and hush it, and the runner tells the game whenever its clock starts, stops, or jumps.
 - Flashing is gentle: a thin stripe glitches at most about once a second for a tenth of a second; with "reduce motion" on there are no glitches.
 - Backgrounds (`assets/worlds/glitch-nebula.js`) are neon takes on NASA Hubble and Webb pictures, drawn by code: the Cosmic Cliffs (crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation and the fern moon (Fern Moon), a Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its companion (Whirlpool Galaxy), the Horsehead Nebula (Shadow Gate), and the Milky Way with Andromeda and a crescent moon (Fern Valley at night). Every sky also has noise-made gas and dust, deep-field galaxies, stars with Webb's eight-point spikes, and drifting face-on, tilted, and edge-on galaxies.
 - Music (`kit/groove.js`): upbeat sixteenth-note chiptune with verses and choruses, claps, open hats, arpeggios, and an echo on the lead. Shadowspine's mutter is made in code in `kit/voices.js`, which plays his laugh from two recordings in `assets/sounds/villain-laughs.js`: "Laugh 4" and "Laugh 7" from the "Evil Laughs" pack by Eldritch Grim on OpenGameArt (CC0, public domain), trimmed, evened out, and stored as small MP3s. If a browser can't play them, the old made-in-code laugh takes over.
@@ -100,11 +113,13 @@ Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 
 | Version | Date | Page | What changed |
 |---|---|---|---|
 | v1 | 2026-10-17 | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | First version. |
-| v3 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
+| v4 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Checkpoints always on; Hard mode needs every memory piece; obstacles on the beat with music in time; PERFECT hops; sparkles, dust, and crash shake; 12 unlockable looks and T-Rexy's closet. |
+| v3 | 2026-10-17 | V3_ARCHIVE (archive) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
 | v2 | 2026-10-17 | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | Easier runs that ramp up, double hop, Easy and Hard modes, no attempt counting, funnier opening with puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip. |
 
 ## Ideas for later
-- Waiting on play-testing v3: whether Easy's first run feels right, whether the double hop is easy to find, whether ship mode feels controllable, whether kids find the secret pages, whether they choose to run portals again for the bonus, and whether hints come at the right time.
+- Waiting on play-testing v4: whether Easy's first run feels right, whether the double hop is easy to find, whether ship mode feels controllable, whether kids find the secret pages, whether Hard's every-piece rule feels fair or frustrating, whether they notice the beat and chase PERFECT hops, which looks they pick, and whether hints come at the right time.
+- Not chosen yet from the fun ideas: pieces that play the lullaby's notes, racing a friend's ghost, a Murdle-style logic grid for the mystery, and a build-your-own run editor.
 - The laugh pack has seven more laughs; any of them can replace or join the two in use.
 - Per-player skill levels if friends share one Chromebook (today levels are per computer).
 - More portals, a practice mode for each run, or a level editor so the kids can build their own runs.

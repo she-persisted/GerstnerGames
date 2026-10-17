@@ -88,8 +88,8 @@ window.addEventListener("keydown", e => {
 
 Kit.ui.enterAdvances(panel);
 // Read-only peek for the automated play-test: where the crash pad camera is, which step is showing, the right mystery answer,
-// which steps are finished, the run results, and the run settings.
-window.__mgs = { get step() { return S.step; }, get mode() { return mode; }, get answer() { return mysteryAnswer; }, get passed() { return S.passed.slice(); }, get runs() { return JSON.parse(JSON.stringify(S.stats.runs)); }, steps: STEPS.map(s => s.t), qbank: QBANK, levels: RUN_LEVELS, modes: MODES, run: () => runCtl ? runCtl.state : null, hub: () => hubCtl ? { ...hubCtl.view(), heroX: hubCtl.hero.x, portals: Object.fromEntries(Object.entries(PORTALS).map(([k, p]) => [k, p.x])) } : null };
+// which steps are finished, the run results, the run settings, where the music is, and T-Rexy's looks.
+window.__mgs = { get step() { return S.step; }, get mode() { return mode; }, get answer() { return mysteryAnswer; }, get passed() { return S.passed.slice(); }, get runs() { return JSON.parse(JSON.stringify(S.stats.runs)); }, steps: STEPS.map(s => s.t), qbank: QBANK, levels: RUN_LEVELS, modes: MODES, music: () => music.position(), looks: () => JSON.parse(JSON.stringify(LOOK)), run: () => runCtl ? runCtl.state : null, hub: () => hubCtl ? { ...hubCtl.view(), heroX: hubCtl.hero.x, portals: Object.fromEntries(Object.entries(PORTALS).map(([k, p]) => [k, p.x])) } : null };
 warmImages();
 
 try { window.claude?.hot?.snapshot?.(() => ({ S: JSON.parse(JSON.stringify(S)), active })); } catch (e) { /* not in a viewer */ }

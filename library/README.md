@@ -68,7 +68,7 @@ Mini Game Survival's skills, kept separately for Easy and Hard mode: runs (one l
 
 ## Obstacle runs
 
-`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it.
+`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it. Give the generator the music's beat (`beat`, seconds per beat) and each chunk's first hop lands on a beat; `play()` then pulses the ground on the beat, pops "PERFECT!" for hops right on it, and reports its clock (`onClock`) so a game can keep the music in time (`kit/groove.js` has `restart` and `hush` for that).
 
 ## Music
 

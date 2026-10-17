@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, the version picker for the question library, a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (kept on this computer across games), the version picker for the question library, a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -9,7 +9,7 @@ const ICON = Kit.art.icons;
 const SHIP = Kit.art.ship;
 const sfx = Kit.audio.sfx;
 
-const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq" };
+const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq", looks: "mgs.looks" };
 const panel = $("#panel"), scene = $("#scene"), stageEl = $("#stage"), cv = $("#cv");
 
 // The crash pad: portals in the order T-Rexy visits them. x = where it stands on the pad (in tiles).
@@ -148,6 +148,35 @@ function seededRng(text) {
 // Story steps already finished (mini games), so moving forward through the story skips them instead of replaying them.
 function markPassed(i = S.step) { if (!S.passed.includes(i)) { S.passed.push(i); save(); } }
 const FULL_BONUS = 200; // for catching every memory piece (or star shard) in a run
+const PERFECT_PTS = 10; // for each hop right on the beat over something dangerous (doubled in Hard mode, like all run points)
+
+// T-Rexy's looks: catching every piece in a run (the first time in a game) unlocks the next one in this order and puts it on.
+// They stay unlocked on this computer for every game after. The closet on the crash pad changes what he wears.
+// slot = head (hats), back (rocket backpack, cape), or skin (his color). Drawings and names are in assets/characters/trexy.js.
+const LOOK_ORDER = [["head", "helmet"], ["skin", "galaxy"], ["back", "rocket"], ["head", "wizard"], ["skin", "gold"], ["head", "headphones"],
+  ["back", "cape"], ["skin", "ocean"], ["head", "crown"], ["head", "party"], ["skin", "bubblegum"], ["head", "shades"]];
+const lookName = (slot, id) => Kit.art.trexy.LOOKS[slot][id] || id;
+function loadLooks() {
+  const d = store.get(KEYS.looks, null), ok = id => LOOK_ORDER.some(([, x]) => x === id);
+  const L = { have: [], head: "", back: "", skin: "" };
+  if (d && Array.isArray(d.have)) L.have = d.have.filter(ok);
+  for (const slot of ["head", "back", "skin"]) if (d && L.have.includes(d[slot])) L[slot] = d[slot];
+  return L;
+}
+let LOOK = loadLooks();
+const saveLooks = () => store.set(KEYS.looks, LOOK);
+// Unlocks and puts on the next look. Returns { slot, id, name }, or null once every look is unlocked.
+function unlockLook() {
+  const next = LOOK_ORDER.find(([, id]) => !LOOK.have.includes(id));
+  if (!next) return null;
+  const [slot, id] = next;
+  LOOK.have.push(id); LOOK[slot] = id; saveLooks();
+  return { slot, id, name: lookName(slot, id) };
+}
+// Puts a look on, or takes it off if he's already wearing it.
+function toggleLook(slot, id) { LOOK[slot] = LOOK[slot] === id ? "" : id; saveLooks(); }
+// What T-Rexy is wearing, as drawing options. A story accessory (like his cap at the start) wins over a hat.
+const lookOpts = (acc = "none") => ({ acc: acc && acc !== "none" ? acc : (LOOK.head || "none"), back: LOOK.back || "", skin: LOOK.skin || "" });
 const shipCfg = () => ({ ...S.parts, paint: S.paint });
 const allParts = () => SHIP.PART_ORDER.every(p => S.parts[p]);
 const nextPortal = () => PORTAL_ORDER.find(id => !S.done.includes(id)) || "gate";
