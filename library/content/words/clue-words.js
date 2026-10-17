@@ -5,7 +5,7 @@
  * @requires nothing
  *
  * Easy words are 4 or 5 letters, medium 5 to 7, hard 6 to 11. Hints never use the word itself. No word appears in two topics,
- * so one game never asks the same word twice.
+ * so one game never asks the same word twice. About 35 words a topic, so replays keep finding new ones.
  */
 (function (Kit) {
   "use strict";
@@ -28,7 +28,28 @@
       ["RHYTHM", 3, "The pattern of beats in music."],
       ["HEARING", 3, "One of your five senses. You do it with your ears!"],
       ["INSTRUMENT", 3, "Anything you play to make music, like a piano or a flute."],
-      ["ORCHESTRA", 3, "A big group of musicians playing together."]
+      ["ORCHESTRA", 3, "A big group of musicians playing together."],
+      ["HORN", 1, "Honk, honk! Cars and trumpets both have one."],
+      ["TUNE", 1, "A melody you can whistle."],
+      ["NOTE", 1, "One single sound in a song, written as a dot on lines."],
+      ["HARP", 1, "A big instrument with lots of strings you pluck."],
+      ["ROAR", 1, "The huge, loud sound a T-Rex makes!"],
+      ["CLAP", 1, "Smack your hands together to make this sound."],
+      ["QUIET", 1, "Shh! Not loud at all."],
+      ["PIANO", 2, "An instrument with black and white keys."],
+      ["GUITAR", 2, "Six strings you strum or pick."],
+      ["VIOLIN", 2, "A small string instrument you play with a bow."],
+      ["TRUMPET", 2, "A shiny brass instrument that goes toot-toot!"],
+      ["CHORUS", 2, "The part of a song that comes back again and again."],
+      ["TEMPO", 2, "How fast or slow the music goes."],
+      ["LULLABY", 2, "A soft, gentle song for falling asleep."],
+      ["DECIBEL", 3, "A unit for measuring how loud a sound is."],
+      ["XYLOPHONE", 3, "Wooden bars you hit with little mallets to play a tune."],
+      ["HARMONY", 3, "Two different notes sung together that sound nice."],
+      ["MICROPHONE", 3, "Talk into it to make your voice louder."],
+      ["PERCUSSION", 3, "Instruments you hit or shake, like drums and maracas."],
+      ["FREQUENCY", 3, "How many times a sound wave wiggles each second. Lots of wiggles means a high sound."],
+      ["EARDRUM", 3, "A thin skin inside your ear that shakes when sound hits it."]
     ],
     food: [
       ["FERN", 1, "A leafy plant that grew in dinosaur times."],
@@ -48,7 +69,26 @@
       ["CARNIVORE", 3, "An animal that eats only meat."],
       ["DINOSAUR", 3, "A reptile that lived millions of years ago."],
       ["EXTINCT", 3, "When a kind of animal is gone forever."],
-      ["PREDATOR", 3, "An animal that hunts other animals for food."]
+      ["PREDATOR", 3, "An animal that hunts other animals for food."],
+      ["NEST", 1, "Where dinosaur moms laid their eggs."],
+      ["LEAF", 1, "A flat, green part of a plant."],
+      ["NUTS", 1, "Crunchy snacks with hard shells that grow on trees."],
+      ["SEED", 1, "A tiny thing you plant that grows into a plant."],
+      ["JAWS", 1, "The bones of the mouth that hold the teeth."],
+      ["SNACK", 1, "A little bit of food between meals."],
+      ["HATCH", 2, "When a baby breaks out of its egg."],
+      ["SKULL", 2, "The bone that protects your brain."],
+      ["RAPTOR", 2, "A fast dinosaur with a big curved claw on each foot."],
+      ["FEATHER", 2, "Birds have them, and so did some dinosaurs!"],
+      ["SNOUT", 2, "A long nose and mouth, like a crocodile's."],
+      ["STOMACH", 2, "Where food goes after you swallow it."],
+      ["VEGGIES", 2, "Carrots, peas, and broccoli are all these."],
+      ["JURASSIC", 3, "A time long ago when lots of dinosaurs roamed the Earth."],
+      ["SKELETON", 3, "All the bones of a body put together."],
+      ["TRICERATOPS", 3, "A plant-eater with three horns on its face."],
+      ["STEGOSAURUS", 3, "A dinosaur with big plates on its back and spikes on its tail."],
+      ["PTEROSAUR", 3, "A flying reptile from dinosaur times. It wasn't a dinosaur, but it was a cousin!"],
+      ["DIGESTION", 3, "How your body breaks down the food you eat."]
     ],
     light: [
       ["LAMP", 1, "It lights up your room at night."],
@@ -68,7 +108,26 @@
       ["SUNLIGHT", 3, "Light that comes from our closest star."],
       ["RAINBOW", 3, "Seven colors of light in the sky after the rain."],
       ["FLASHLIGHT", 3, "A light you hold in your hand, with batteries inside."],
-      ["TRANSPARENT", 3, "You can see right through it, like a window."]
+      ["TRANSPARENT", 3, "You can see right through it, like a window."],
+      ["MOTH", 1, "A fuzzy bug that flutters around lamps at night."],
+      ["FLASH", 1, "A super quick burst of light."],
+      ["SPARK", 1, "A tiny bit of fire that pops and jumps."],
+      ["BULB", 1, "The glass part of a lamp that lights up."],
+      ["NEON", 1, "A gas that makes bright, glowing signs."],
+      ["EYES", 1, "You see light with these."],
+      ["SHADE", 2, "A cool, shadowy spot under a tree."],
+      ["LASER", 2, "A super thin, super bright beam of light."],
+      ["FIREFLY", 2, "A bug whose tail lights up at night!"],
+      ["SUNRISE", 2, "When the sun comes up in the morning."],
+      ["SPARKLE", 2, "To shine with lots of tiny flashes, like glitter."],
+      ["COLORS", 2, "Red, orange, yellow, green, blue, and purple are all these."],
+      ["SILHOUETTE", 3, "A dark outline of something in front of a light."],
+      ["LIGHTNING", 3, "A giant spark in a thunderstorm."],
+      ["SPOTLIGHT", 3, "A bright beam that shines on someone on a stage."],
+      ["TWILIGHT", 3, "The dim, glowy time just after the sun sets."],
+      ["ECLIPSE", 3, "When the moon blocks the sun and the day goes dark."],
+      ["OPAQUE", 3, "Light can't get through it at all. The opposite of see-through."],
+      ["ELECTRICITY", 3, "It flows through wires and makes lamps light up."]
     ],
     space: [
       ["STAR", 1, "Our sun is one of these."],
@@ -86,7 +145,27 @@
       ["TELESCOPE", 3, "A tool that makes faraway stars look closer."],
       ["ASTEROID", 3, "A rocky chunk that goes around the sun."],
       ["UNIVERSE", 3, "Everything there is: all the galaxies, stars, and planets."],
-      ["SATELLITE", 3, "Something that orbits a planet, like the moon or a space station."]
+      ["SATELLITE", 3, "Something that orbits a planet, like the moon or a space station."],
+      ["VENUS", 1, "The hottest planet in our solar system."],
+      ["EARTH", 1, "The planet we live on."],
+      ["ALIEN", 1, "A creature from another planet. Maybe!"],
+      ["SPACE", 1, "Up past the sky, where the stars and planets are."],
+      ["LUNAR", 1, "Anything to do with the moon."],
+      ["ORION", 1, "A star pattern shaped like a hunter with a belt of three stars."],
+      ["CRATER", 2, "A bowl-shaped hole made when a space rock crashes down."],
+      ["SATURN", 2, "The planet with the biggest, brightest rings."],
+      ["METEOR", 2, "A space rock burning up in the sky. People call it a shooting star."],
+      ["JUPITER", 2, "The biggest planet of all."],
+      ["COSMOS", 2, "Another word for the whole universe."],
+      ["LAUNCH", 2, "When a rocket blasts off the pad."],
+      ["HUBBLE", 2, "A famous space telescope that floats high above Earth."],
+      ["NEPTUNE", 2, "The windy blue planet farthest from the sun."],
+      ["SPACESUIT", 3, "What astronauts wear so they can breathe outside the ship."],
+      ["SUPERNOVA", 3, "A giant star exploding in a super bright flash!"],
+      ["ANDROMEDA", 3, "The closest big galaxy to our Milky Way."],
+      ["SPACESHIP", 3, "A vehicle that carries astronauts through space."],
+      ["LIGHTYEAR", 3, "How far light travels in one whole year. It's super far!"],
+      ["MOONWALK", 3, "A stroll on the moon, like the astronauts took."]
     ]
   };
 })(window.Kit = window.Kit || {});

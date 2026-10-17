@@ -1,12 +1,12 @@
 /**
  * @file games/mini-game-survival/game.css
- * @about Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.
+ * @about Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the Easy and Hard picker, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.
  * @requires kit/base.css
  */
 :root{
   --void:#0a0620; --nebula:#170c3a; --nebula-hi:#2e1b66; --starlight:#f6f0ff; --dust:#b7a9ea;
   --ember:#ff3ec8; --ember-gold:#ffe94a; --on-ember:#1a0420; --good:#5cffb0; --oops:#ff6b8b; --warn:#ffb86b;
-  --cyan:#3ef2ff; --c-hero:#5ee35b; --c-shadow:#ff2e7a; --c-nova:#36c9d8; --c-family:#ffb46e;
+  --cyan:#3ef2ff; --c-hero:#5ee35b; --c-shadow:#ff2e7a; --c-nova:#36c9d8; --c-family:#ffb46e; --c-ship:#8dff5a;
 }
 body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 .btn{box-shadow:0 0 18px -6px var(--ember)}
@@ -112,3 +112,18 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 @media (prefers-reduced-motion:reduce){
   .glitchy::before,.glitchy::after,.runui .btn.nudge,.choice.no{animation:none !important}
 }
+
+/* Easy or Hard */
+.modepick{display:flex;gap:8px;flex-wrap:wrap}
+.modebtn{flex:1 1 0;min-width:110px;min-height:48px;border-radius:14px;border:2px solid var(--nebula-hi);background:var(--nebula);color:var(--starlight);
+  font:400 .95rem var(--font-arcade);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.modebtn .kbd{font:600 .75rem var(--font-ui, system-ui)}
+.modebtn.on{border-color:var(--ember-gold);box-shadow:0 0 18px -4px var(--ember-gold);color:var(--ember-gold)}
+.modebtn[data-mode="hard"].on{border-color:var(--ember);box-shadow:0 0 18px -4px var(--ember);color:var(--ember)}
+.modebtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.modeabout{margin:0;color:var(--dust);min-height:1.4em}
+.nb-mode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;color:var(--dust);font-weight:600}
+.cpchip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(10,6,32,.78);
+  border:2px solid var(--good);color:var(--good);font-weight:700;font-size:.95rem}
+.cpchip svg{width:18px;height:18px;flex:none}
+.cluecard .bonus{color:var(--cyan);font-size:.95rem;margin-top:6px}

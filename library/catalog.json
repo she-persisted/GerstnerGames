@@ -39,15 +39,15 @@
   {
    "path": "assets/characters/nova.js",
    "layer": "Assets",
-   "bytes": 5088,
+   "bytes": 7934,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline, filled solid black and made huge, is also the giant shadow everyone calls Shadowspine.",
-   "provides": "Kit.art.nova { SHAPES, g(options), shadow(fill), svg(options, size), url(options, size), path2d() }",
+   "about": "Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all.",
+   "provides": "Kit.art.nova { SHAPES, HINGE, COLORS, g(options), shadow(fill, jawDegrees), svg(options, size), url(options, size), path2d() }",
    "requires": "nothing",
-   "notes": "options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 62 units tall (x from -54 to 50, y from -62 to 2).\nSHAPES are the outline pieces (tail, sail, body, legs, head, arm) as SVG path strings. shadow() fills them all one color,\nwhich is how Shadowspine is drawn, and path2d() gives the same pieces for canvas drawing."
+   "notes": "options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 62 units tall (x from -60 to 52, y from -62 to 1).\nSHAPES: body (one outline: tail, body, sail, neck, head and upper teeth, both legs), jaw (lower jaw with teeth), arm.\nHINGE is where the jaw turns. shadow() draws the three shapes in one color (the jaw a little open for a grin), and path2d()\ngives the same shapes for canvas drawing, so a game can make the shadow laugh by turning the jaw around HINGE."
   },
   {
    "path": "assets/characters/penguin.svg",
@@ -167,14 +167,14 @@
   {
    "path": "assets/memories/memories.js",
    "layer": "Assets",
-   "bytes": 12590,
+   "bytes": 32980,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Four memory pictures for jigsaw puzzles, drawn in SVG: home in Fern Valley at night, the family dinner, the bedroom window at 11:11, and the swirly galaxy swoop. Each one hides a clue for the mystery if you look closely.",
-   "provides": "Kit.art.memories { home, dinner, window, swoop } (each a function returning a standalone 400 x 300 <svg>), galaxy(cx, cy, r, turn, colors), note(x, y, scale, color)",
+   "about": "Four detailed memory pictures for jigsaw puzzles, drawn in SVG: home in Fern Valley at night, the family dinner, the bedroom at 11:11, and the swirly galaxy swoop. Each one hides a clue for the mystery if you look closely. Also draws the spiral galaxies used everywhere in the game.",
+   "provides": "Kit.art.memories { home, dinner, window, swoop } (each a function returning a standalone 400 x 300 <svg>), galaxy(cx, cy, r, turn, colors, arms), note(x, y, scale, color)",
    "requires": "assets/characters/trexy.js, assets/characters/nova.js",
-   "notes": "Clues hidden in the pictures: a tiny glowing music box on the hill (home), a little teal tail sneaking out the door with the fish (dinner),\ntiny three-toed footprints on the windowsill and a huge shadow made by a teeny moth near the lamp (window), and someone small holding\na star lantern (swoop)."
+   "notes": "Clues hidden in the pictures: a tiny glowing music box on the hill (home), salad AND meat on the table plus a little teal tail sneaking\nout the door past the basket of fish (dinner), tiny three-toed footprints on the windowsill and a huge moth-shaped shadow made by a teeny\nmoth near the lamp (window), and someone small on a floating rock holding a star lantern (swoop).\nLots of little extras to spot, too: a rocket weathervane, a T-REXY mailbox, a volcano, The Big Book of Volcanoes, a BLAST OFF poster,\nfireflies, and T-Rexy's cap flying off in the swoop."
   },
   {
    "path": "assets/music/corona.js",
@@ -192,12 +192,12 @@
   {
    "path": "assets/music/echo-rings.js",
    "layer": "Assets",
-   "bytes": 811,
+   "bytes": 1551,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Echo Rings\": the first portal: bouncy and bright, and it hides the first piece of the weird music. 168 bpm, A major. Song format is described in kit/music.js.",
+   "about": "\"Echo Rings\": the first portal: bright and bouncy with a big echo on the lead, and its chorus hides the first piece of the weird music. 140 bpm, A major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.echo",
    "requires": "nothing",
    "notes": ""
@@ -205,12 +205,12 @@
   {
    "path": "assets/music/fern-moon.js",
    "layer": "Assets",
-   "bytes": 818,
+   "bytes": 1546,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Fern Moon Feast\": the second portal: a happy, leafy stomp with the second piece of the weird music. 170 bpm, G major. Song format is described in kit/music.js.",
+   "about": "\"Fern Moon Feast\": the second portal: a hoppy, oom-pah dinner dance with the second piece of the weird music. 144 bpm, G major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.fern",
    "requires": "nothing",
    "notes": ""
@@ -231,12 +231,12 @@
   {
    "path": "assets/music/glitch-hub.js",
    "layer": "Assets",
-   "bytes": 843,
+   "bytes": 1575,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Glitch Hub Stomp\": the stompy theme for the title screen and the crash pad. 166 bpm, D minor, hardcore kick on every beat. Song format is described in kit/music.js.",
+   "about": "\"Glitch Hub Bounce\": the bouncy theme for the title screen and the crash pad: a happy, head-bobbing groove with claps and sparkly arpeggios. 128 bpm, F major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.glitchHub",
    "requires": "nothing",
    "notes": ""
@@ -244,12 +244,12 @@
   {
    "path": "assets/music/home-stomp.js",
    "layer": "Assets",
-   "bytes": 793,
+   "bytes": 1596,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Home Stomp\": the ending: the lullaby turned into a big hardcore party. 170 bpm, C major. Song format is described in kit/music.js.",
+   "about": "\"Home Stomp\": the ending: the lullaby turned into a huge, happy dance party. 160 bpm, C major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.homeStomp",
    "requires": "nothing",
    "notes": ""
@@ -257,12 +257,12 @@
   {
    "path": "assets/music/lantern-lab.js",
    "layer": "Assets",
-   "bytes": 816,
+   "bytes": 1551,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Lantern Lab\": the third portal: glowing and quick, with the third piece of the weird music. 172 bpm, F major. Song format is described in kit/music.js.",
+   "about": "\"Lantern Lab\": the third portal: glowing and sparkly, full of twinkling arpeggios, with the third piece of the weird music. 148 bpm, D major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.lantern",
    "requires": "nothing",
    "notes": ""
@@ -309,12 +309,12 @@
   {
    "path": "assets/music/nova-lullaby.js",
    "layer": "Assets",
-   "bytes": 731,
+   "bytes": 1354,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Nova's Lullaby\": the weird music itself: a high, squeaky music-box lullaby. 100 bpm, C major, no drums. Song format is described in kit/music.js.",
+   "about": "\"Nova's Lullaby\": the weird music itself: a high, squeaky music-box lullaby, with a soft tick-tock beat and twinkles. 112 bpm, C major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.lullaby",
    "requires": "nothing",
    "notes": ""
@@ -335,12 +335,12 @@
   {
    "path": "assets/music/shadow-run.js",
    "layer": "Assets",
-   "bytes": 799,
+   "bytes": 1611,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Shadow Run\": the chase through the Shadow Gate: dark, pounding, and a little spooky. 176 bpm, D minor. Song format is described in kit/music.js.",
+   "about": "\"Shadow Run\": the chase through the Shadow Gate: sneaky and silly-spooky in a minor key, but still a bouncy dance. 156 bpm, D minor. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.shadowRun",
    "requires": "nothing",
    "notes": ""
@@ -361,12 +361,12 @@
   {
    "path": "assets/music/whirlpool.js",
    "layer": "Assets",
-   "bytes": 816,
+   "bytes": 1587,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "\"Whirlpool Warp\": the fourth portal: swirly and fast, and its melody is the whole weird tune at last. 174 bpm, E major. Song format is described in kit/music.js.",
+   "about": "\"Whirlpool Warp\": the fourth portal: swirly sixteenth-note runs, and its chorus is the whole weird tune at last. 152 bpm, E major. Song format is described in kit/groove.js.",
    "provides": "Kit.songs.whirl",
    "requires": "nothing",
    "notes": ""
@@ -399,15 +399,15 @@
   {
    "path": "assets/ship/glitch-ship.js",
    "layer": "Assets",
-   "bytes": 7534,
+   "bytes": 8683,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, and a pilot can peek out of the cockpit.",
+   "about": "A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, a pilot can peek out of the cockpit, and the ship can wake up with a face on its nose.",
    "provides": "Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }",
    "requires": "nothing",
-   "notes": "config  = { cockpit, wings, thrusters, core, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit }\nDrawing space: facing right, centered on 0,0, viewBox -64 -42 128 84."
+   "notes": "config  = { cockpit, wings, thrusters, core, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit,\n            face: awake | blink | happy (eyes and a smile on the nose, for a ship that has come alive) }\nDrawing space: facing right, centered on 0,0, viewBox -64 -42 128 84."
   },
   {
    "path": "assets/worlds/corona.svg",
@@ -436,14 +436,14 @@
   {
    "path": "assets/worlds/glitch-nebula.js",
    "layer": "Assets",
-   "bytes": 11644,
+   "bytes": 32267,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Canvas backgrounds for the Glitch Nebula: bright neon clouds, swirling galaxies, stars, a landmark for each world (a ringed planet, a fern moon, a giant lantern star, a whirlpool galaxy), and gentle glitches that nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
+   "about": "Canvas backgrounds for the Glitch Nebula, each world a neon take on a famous NASA space picture: the Cosmic Cliffs of the Carina Nebula (the crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation (Fern Moon), a blazing Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its little companion (Whirlpool Galaxy), and the Horsehead Nebula (the Shadow Gate), plus the Milky Way and the Andromeda Galaxy over Fern Valley at night. Every sky also gets glowing gas made from noise, dark dust lanes, stars with Webb-style eight-point spikes, tiny far-away galaxies like a deep field, and a mix of drifting galaxies (spirals, tilted spirals, and edge-on ones like the Sombrero). Gentle glitches nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
    "provides": "Kit.art.nebula { THEMES, create() -> { draw(ctx, view, options) } }",
    "requires": "assets/characters/nova.js, assets/memories/memories.js",
-   "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off }\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins."
+   "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false, jaw (degrees open), shake (0 to 1) } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off }\nEach theme: sky (top and bottom colors), blobs (three glow colors), scene (how its gas is shaped), land (its big landmark),\nplus the colors runs use (edge, block, spike, pad, piece, spark, portals). Skies and landmarks are painted once and reused,\nso drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves.\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins.\nInspired by NASA, ESA, CSA, and STScI pictures from the Hubble and Webb space telescopes; everything here is drawn by code."
   },
   {
    "path": "assets/worlds/gradients.svg",
@@ -530,12 +530,12 @@
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 38745,
+   "bytes": 43210,
    "usedBy": [],
    "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
    "requires": "build/build.py",
-   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival playthrough, with a fresh browser:\n     - Title, then the story lines (Enter), then the crash pad: type ROAR and poke Shadowspine (Easter eggs), click each portal.\n     - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the\n       Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and\n       takes the secret route, so all four hidden diary pages must be found.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the high score saves and the secret ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival, with fresh browsers:\n     - The question library is checked (every mystery version's answer is one of its options, every clue has lines for all\n       three typing levels, every word topic has plenty of words at each level).\n     - Easy mode: the first run must be level 1 (the slowest) with checkpoints already on, and pressing again in the air must double hop.\n     - The full playthrough is in Hard mode. No screen may show a count of attempts.\n     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine\n       (Easter eggs), click each portal.\n     - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the\n       Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and\n       takes the secret route, so all four hidden diary pages must be found.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret\n       ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
    "path": "build/qr.py",
@@ -550,14 +550,14 @@
   {
    "path": "content/levels/runner-chunks.js",
    "layer": "Content",
-   "bytes": 3693,
+   "bytes": 4980,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Building blocks for obstacle runs: short stretches of spikes, steps, bounce pads, gaps, ship tunnels, and one secret stretch with a hidden box up high. A run is put together from these, easier ones at low levels and trickier ones at high levels.",
+   "about": "Building blocks for obstacle runs: short stretches of spikes, steps, bounce pads, gaps, ship tunnels, and one secret stretch with a hidden box up high. A run is put together from these, gentle ones at low levels and trickier ones at high levels.",
    "provides": "Kit.levels.runner (list of chunks)",
    "requires": "nothing",
-   "notes": "Format is described in kit/runner.js. min and max are the run levels (1 to 5) a chunk can appear at, w is how often it is picked.\nEvery chunk starts with at least 2 tiles of flat ground. The hero's hop is tiny (about 1.25 tiles), so two spikes in a row\nor anything 2 tiles high needs a bounce pad. The level generator plays each chunk with its solver before using it.\ntag \"ship\" = a ship tunnel (between a ship portal S and a hero portal C). tag \"secret\" = holds the hidden box x, reached by\nhopping onto a thin ledge with a pad on it; running straight under the ledge is the normal way through."
+   "notes": "Format is described in kit/runner.js. min and max are the run levels (1 to 6) a chunk can appear at, w is how often it is picked.\nEvery chunk starts with at least 2 tiles of flat ground. The hero's hop is tiny (about 1.25 tiles) and his double hop reaches\nabout 2.3 tiles, so anything 3 tiles high needs a bounce pad. Level 1 only uses things a single hop or a bounce pad clears,\nwith lots of flat ground between them; the double hop just makes the timing forgiving. The level generator plays each chunk\nwith its solver before using it, so a chunk that can't be beaten at some speed is simply skipped there.\ntag \"ship\" = a ship tunnel (between a ship portal S and a hero portal C). tag \"secret\" = holds the hidden box x, reached by\nhopping onto a thin ledge with a pad on it; running straight under the ledge is the normal way through."
   },
   {
    "path": "content/questions/blanks.js",
@@ -658,14 +658,14 @@
   {
    "path": "content/words/clue-words.js",
    "layer": "Content",
-   "bytes": 5257,
+   "bytes": 10814,
    "usedBy": [
     "Mini Game Survival"
    ],
    "about": "Science words with kid-friendly hints for word-guessing games, in four topics: sound and music, food and dinosaurs, light and shadows, and space. Each word is tagged easy (1), medium (2), or hard (3).",
    "provides": "Kit.words.clues { sound, food, light, space } each a list of [WORD, difficulty, hint]",
    "requires": "nothing",
-   "notes": "Easy words are 4 or 5 letters, medium 5 to 7, hard 6 to 11. Hints never use the word itself. No word appears in two topics,\nso one game never asks the same word twice."
+   "notes": "Easy words are 4 or 5 letters, medium 5 to 7, hard 6 to 11. Hints never use the word itself. No word appears in two topics,\nso one game never asks the same word twice. About 35 words a topic, so replays keep finding new ones."
   },
   {
    "path": "content/words/typing-words.js",
@@ -706,7 +706,7 @@
   {
    "path": "games/mini-game-survival/boot.js",
    "layer": "Games",
-   "bytes": 2290,
+   "bytes": 2370,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -718,11 +718,11 @@
   {
    "path": "games/mini-game-survival/game.css",
    "layer": "Games",
-   "bytes": 7313,
+   "bytes": 8532,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.",
+   "about": "Mini Game Survival's neon look: hot pink, laser cyan, and glitch yellow colors on a deep purple night, a glitchy title, the Easy and Hard picker, the wide scene during runs, the jigsaw board over the scene, the clue notebook and secret diary pages, the run buttons, the mystery choices, and the part and paint pickers.",
    "provides": "",
    "requires": "kit/base.css",
    "notes": ""
@@ -730,7 +730,7 @@
   {
    "path": "games/mini-game-survival/game.json",
    "layer": "Games",
-   "bytes": 3117,
+   "bytes": 3204,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -738,6 +738,18 @@
    "provides": "",
    "requires": "",
    "notes": ""
+  },
+  {
+   "path": "games/mini-game-survival/questions.js",
+   "layer": "Games",
+   "bytes": 10556,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Mini Game Survival's question library, so every replay is a little different: several versions of each mystery question, several ways to write each clue line T-Rexy types into his notebook (short, medium, and long), several ways to say each clue card's key science fact, and a pile of fun bonus facts for each portal. The game picks versions this computer hasn't seen lately (see pickVersion in state.js). The clue words themselves live in content/words/clue-words.js.",
+   "provides": "",
+   "requires": "nothing",
+   "notes": "QBANK.mystery: the four mystery steps, in order. Each has clue (which notebook clue helps), nope (the hint after a wrong answer),\n  and v: versions { q, opts, a } where a is the index of the right option. Every version of a step must test the same idea,\n  because the reveal depends on all four.\nQBANK.lines[portal]: three lists (typing level 1, 2, 3) of clue lines to type. Each says the same clue in different words.\nQBANK.facts[portal]: ways to say the clue card's key science fact (this fact helps solve the mystery, so every version keeps it).\nQBANK.bonus[portal]: fun extra facts, one shown on each clue card.\nTo add a version, add a row. Keep the reading level for grades 2 to 6 and keep every clue true to the story."
   },
   {
    "path": "games/mini-game-survival/scene.html",
@@ -754,50 +766,50 @@
   {
    "path": "games/mini-game-survival/scene.js",
    "layer": "Games",
-   "bytes": 18777,
+   "bytes": 22427,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces and hops, Shadowspine on the clouds, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs. Also the music, the toggles, the top bar, and toasts.",
+   "about": "Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop). Also the music, the toggles, the top bar, and toasts.",
    "provides": "",
-   "requires": "kit/runner.js, kit/side-hub.js, kit/music.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
+   "requires": "kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
    "notes": ""
   },
   {
    "path": "games/mini-game-survival/screens.js",
    "layer": "Games",
-   "bytes": 23493,
+   "bytes": 27474,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Mini Game Survival's screens: title (high scores and jukebox), story lines, the crash pad with the clue notebook, obstacle runs, memory jigsaws, glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here. Right answers cheer and move on by themselves.",
+   "about": "Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs, memory jigsaws, glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves.",
    "provides": "",
-   "requires": "kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js",
+   "requires": "games/mini-game-survival/questions.js, kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js",
    "notes": ""
   },
   {
    "path": "games/mini-game-survival/state.js",
    "layer": "Games",
-   "bytes": 8947,
+   "bytes": 10174,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Mini Game Survival's settings and save data: storage keys, the portals and what each one gives, the clue cards, the mystery questions, the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), run speeds, and the clue-word chooser.",
+   "about": "Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, and the clue-word chooser. Saves keep progress only, never how many tries anything took.",
    "provides": "",
-   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js",
+   "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js",
    "notes": ""
   },
   {
    "path": "games/mini-game-survival/story.js",
    "layer": "Games",
-   "bytes": 9785,
+   "bytes": 12692,
    "usedBy": [
     "Mini Game Survival"
    ],
    "about": "Mini Game Survival's story, in order: every line, every scene change, and every mini game. To change the story, edit this list. Step types: stage, say, hub, run, jigsaw, word, clue, part, song, paint, final, deduce, shrink, end.",
    "provides": "",
    "requires": "games/mini-game-survival/state.js",
-   "notes": "stage:  { theme, face, acc, nova, novaFace, shadow (size, 0 = gone), lantern, ship, family }  changes what the scene shows; only the keys given change\nsay:    { who: narrator | trexy | shadow | nova | family, x: text, face?: smile | happy | worried | surprised | think | dizzy | sleepy, hop?: true }\nrun, jigsaw, word, clue, part: { p: portal id from PORTALS in state.js }      hub: walk the crash pad to the next portal\nfinal:  the Shadow Gate run      deduce: { n: question number in DEDUCE }      shrink: the giant shadow shrinks away"
+   "notes": "stage:  { theme, face, acc, nova, novaFace, shadow (size, 0 = gone), lantern, ship, family, shipFace (awake | happy: the ship has come alive),\n          ride (everybody rides the ship in loops across the sky) }  changes what the scene shows; only the keys given change\nsay:    { who: narrator | trexy | shadow | nova | family | ship, x: text, face?: smile | happy | worried | surprised | think | dizzy | sleepy, hop?: true (two hops) | 2 (a double hop) }\n        Shadowspine laughs his evil laugh on lines with MWA or HA!, and mutters on the rest.\nrun, jigsaw, word, clue, part: { p: portal id from PORTALS in state.js }      hub: walk the crash pad to the next portal\nfinal:  the Shadow Gate run      deduce: { n: question number in DEDUCE }      shrink: the giant shadow shrinks away"
   },
   {
    "path": "games/starward/boot.js",
@@ -1019,6 +1031,18 @@
    "notes": "options = { head (HTML), tip (one short line), word, hint, fuel (number of cells), cheers, autoNext (ms, default 1700),\n            scanAfter (wrong letters before the Scan helper pulses, default 2), helperHtml (icon for the Scan button),\n            onGuess(letter, ok), onScan(), onOut(), onWin({ misses, scans, out, fuelLeft, cheer }), onDone() }\nuse(\"scan\") presses the Scan helper from outside the panel (for example, tapping the hero); it reveals one letter, once."
   },
   {
+   "path": "kit/groove.js",
+   "layer": "Kit",
+   "bytes": 11163,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "A bouncier music player for upbeat, dance-style chiptune songs written as data: sixteenth-note patterns, verse and chorus sections, claps and open hi-hats, sparkly chord arpeggios, an octave-bouncing bass, and a pulse-wave lead with a little echo. Same controls as kit/music.js, so the jukebox works with it, and it plays kit/music.js songs too. Everything is synthesized in code (no audio files, nothing copyrighted).",
+   "provides": "Kit.groove.create(songs) -> { set(id), unlock(), setEnabled(on), enabled, want }, Kit.groove.render(audioContext, song, seconds)",
+   "requires": "kit/audio.js",
+   "notes": "Song format (see assets/music/glitch-hub.js):\n  title, bpm (quarter notes a minute; each step is a sixteenth note), root (MIDI note of the key, 60 = middle C)\n  form       section names in play order, looped, for example [\"A\", \"B\", \"A\", \"C\"]\n  sections   { name: { chords, lead, bass, kick, clap, hat, open, arp } }\n    chords   one chord per bar, each a list of semitones above root (the first one is the bass note)\n    lead     a string of steps, 16 per bar: a number = semitones above root (plus the lead's oct), . = rest, - = keep holding\n    bass     a pattern repeated every bar: 1 = chord root, 8 = root an octave up, 5 = the fifth, . = rest, - = hold\n    kick, clap, hat, open   patterns: x = hit, . = rest (16 per bar, or longer to cover several bars, for fills)\n    arp      true to ripple the chord's notes every sixteenth\n  lead, arp, bass, pad   instrument settings: { wave: square | triangle | sawtooth | sine | pulse25 | pulse12, vol, oct, echo, gate }\n  drums      { kick, clap, hat, open } volumes\nSongs written for kit/music.js (32 eighth-note steps, no form) still play: they are turned into this format.\nrender(ctx, song, seconds) schedules a song into any audio context from time 0 (the play-test uses it to check loudness)."
+  },
+  {
    "path": "kit/jigsaw.css",
    "layer": "Kit",
    "bytes": 1761,
@@ -1122,14 +1146,14 @@
   {
    "path": "kit/runner.js",
    "layer": "Kit",
-   "bytes": 24026,
+   "bytes": 26524,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes, bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks, and a built-in solver plays every chunk before it is used, so every level can be beaten.",
+   "about": "Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes (and hops again in the air for a double hop), bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks with flat ground between them for breathing room, and a built-in solver plays every chunk before it is used, so every level can be beaten.",
    "provides": "Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), state } }",
    "requires": "kit/util.js, kit/audio.js",
-   "notes": "Units are tiles and seconds. The ground's top is y = 0, and y goes up. The physics runs in fixed 1/120 s steps,\nso a list of button presses (one per step) always replays exactly the same way.\n\nChunk format (see content/levels/runner-chunks.js): { id, min, max, len, w, tag, gaps: [[x0, x1]], o: [[kind, x, y, w, h]] }\n  kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),\n         S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.\n\ngenerate({ chunks, level, speed, length, pieces, rng, secret }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }\n  Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.\n\nplay(canvas, { gen, theme, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onAttempt(n), onCrash(n),\n              onCollect(obj), onMode(mode), onFinish(result), autopilot(), speedup(), tip })\n  result = { attempts, crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }"
+   "notes": "Units are tiles and seconds. The ground's top is y = 0, and y goes up. The physics runs in fixed 1/120 s steps,\nso a list of button presses (one per step) always replays exactly the same way.\nHopping: hold the button on the ground to hop (keep holding to hop again on landing). Press again in the air for one double hop.\nRunning off a ledge still allows a normal hop for a few steps (coyote time). A quick tap always counts, even between frames.\n\nChunk format (see content/levels/runner-chunks.js): { id, min, max, len, w, tag, gaps: [[x0, x1]], o: [[kind, x, y, w, h]] }\n  kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),\n         S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.\n\ngenerate({ chunks, level, speed, length, pieces, rng, secret, ships, space }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }\n  Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.\n  ships = how many ship tunnels to try for (0 = none), space = extra tiles of flat ground before each chunk.\n\nplay(canvas, { gen, theme, label, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n),\n              onCollect(obj), onMode(mode), onDouble(), onFinish(result), autopilot(), speedup(), tip })\n  The screen shows no attempt counter. onCrash(n) gets a running count for this run only (so a game can offer help),\n  and nothing is kept after the run. result = { crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }\n  hero (for drawHero) = { mode, vy, grounded, h, t, spin } where spin goes 0 to 1 during a double hop's flip, else -1."
   },
   {
    "path": "kit/scoreboard.css",
@@ -1247,6 +1271,18 @@
    "notes": ""
   },
   {
+   "path": "kit/voices.js",
+   "layer": "Kit",
+   "bytes": 4876,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Cartoon voices made in code (no recordings): a villain's evil laugh (\"MWAH-HA-HA-HA-HAAA!\") and a grumbly mutter for when a villain talks. Each syllable is a buzzy tone shaped by vowel filters, with a breathy \"h\" or a humming \"m\" at the start, plus a little echo, so it sounds a bit like a voice.",
+   "provides": "Kit.voices { evilLaugh(options) -> seconds, mutter(seconds, options) -> seconds }",
+   "requires": "kit/audio.js",
+   "notes": "evilLaugh({ pitch (Hz, default 120), has (how many HAs, default 4), squeak (true to end with a tiny voice crack; default: now and then) })\nmutter(seconds, { pitch })\nBoth return how long they last, so a game can animate along with them. They stay silent when sound is off (Kit.audio.setEnabled),\nbut still return their length. Pass { ctx: someAudioContext, at: seconds } to draw into another context (the play-test uses this)."
+  },
+  {
    "path": "site/page.css",
    "layer": "Library page",
    "bytes": 10906,
@@ -1315,10 +1351,10 @@
   },
   {
    "id": "mini-game-survival",
-   "title": "Mini Game Survival v1",
-   "version": 1,
+   "title": "Mini Game Survival v2",
+   "version": 2,
    "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
-   "output": "dist/mini-game-survival-v1.html",
+   "output": "dist/mini-game-survival-v2.html",
    "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
    "qr": {
     "colors": {
@@ -1338,14 +1374,14 @@
    "body": "games/mini-game-survival/scene.html",
    "releases": [
     {
-     "version": 1,
+     "version": 2,
      "date": "2026-10-17",
      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
      "notes": "First version: four portals (obstacle runs, memory jigsaws, glitch-locked clue words, clue typing), the Shadow Gate, the mystery of Shadowspine, secret diary pages, hardcore songs, adaptive levels, high scores."
     }
    ],
    "source": "games/mini-game-survival",
-   "fileCount": 43
+   "fileCount": 46
   },
   {
    "id": "starward",

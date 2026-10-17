@@ -16,6 +16,7 @@
     "kit/util.js",
     "kit/audio.js",
     "kit/music.js",
+    "kit/groove.js",
     "assets/icons/icons.js",
     "assets/characters/puppy.js",
     "assets/rocket/rocket.js",

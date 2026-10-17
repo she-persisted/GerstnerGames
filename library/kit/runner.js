@@ -1,28 +1,34 @@
 /**
  * @file kit/runner.js
- * @about Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes, bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks, and a built-in solver plays every chunk before it is used, so every level can be beaten.
+ * @about Side-scrolling obstacle run, like a rhythm platformer: the hero runs by himself, hops over spikes (and hops again in the air for a double hop), bounces off pads, and flies a little ship through tunnels. Touching a spike or a wall sends him back to the start (or the last checkpoint, once checkpoints are on). Levels are built from chunks with flat ground between them for breathing room, and a built-in solver plays every chunk before it is used, so every level can be beaten.
  * @provides Kit.runner { sim: { DT, PHYS, Level, start, step, clone, solve }, generate(options), play(canvas, options) -> { stop, pause(on), checkpoints(on), state } }
  * @requires kit/util.js, kit/audio.js
  *
  * Units are tiles and seconds. The ground's top is y = 0, and y goes up. The physics runs in fixed 1/120 s steps,
  * so a list of button presses (one per step) always replays exactly the same way.
+ * Hopping: hold the button on the ground to hop (keep holding to hop again on landing). Press again in the air for one double hop.
+ * Running off a ledge still allows a normal hop for a few steps (coyote time). A quick tap always counts, even between frames.
  *
  * Chunk format (see content/levels/runner-chunks.js): { id, min, max, len, w, tag, gaps: [[x0, x1]], o: [[kind, x, y, w, h]] }
  *   kinds: b block (x, y, w, h), s spike pointing up (x, y), v spike hanging down (x, y = its top), p bounce pad (x, y),
  *          S ship portal (x), C hero portal (x), x secret box (x, y). Ground is added under the chunk except in gaps.
  *
- * generate({ chunks, level, speed, length, pieces, rng, secret }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }
+ * generate({ chunks, level, speed, length, pieces, rng, secret, ships, space }) -> { L, inputs, checks, endX, secret: { from, inputs } | null, frames }
  *   Picks chunks for the level, proves each one can be beaten, then places memory pieces along the winning path.
+ *   ships = how many ship tunnels to try for (0 = none), space = extra tiles of flat ground before each chunk.
  *
- * play(canvas, { gen, theme, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onAttempt(n), onCrash(n),
- *               onCollect(obj), onMode(mode), onFinish(result), autopilot(), speedup(), tip })
- *   result = { attempts, crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }
+ * play(canvas, { gen, theme, label, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n),
+ *               onCollect(obj), onMode(mode), onDouble(), onFinish(result), autopilot(), speedup(), tip })
+ *   The screen shows no attempt counter. onCrash(n) gets a running count for this run only (so a game can offer help),
+ *   and nothing is kept after the run. result = { crashes, pieces, piecesTotal, secret, usedCheckpoints, ms }
+ *   hero (for drawHero) = { mode, vy, grounded, h, t, spin } where spin goes 0 to 1 during a double hop's flip, else -1.
  */
 (function (Kit) {
   "use strict";
   const DT = 1 / 120;
-  // Tiny hop (about 1.25 tiles high), big bounce (about 3.6 tiles), gentle ship.
-  const PHYS = { g: 58, jump: 12.05, pad: 20.4, shipUp: 34, shipDown: 30, shipMax: 8, cw: .64, ch: .8, sw: .92, sh: .62, floor: -3, snap: .06 };
+  // Tiny hop (about 1.25 tiles high), a double hop adds about 1.1 more, big bounce (about 3.6 tiles), gentle ship.
+  // coyote = steps after running off a ledge when a normal hop still works.
+  const PHYS = { g: 58, jump: 12.05, jump2: 11.2, air: 1, coyote: 8, pad: 20.4, shipUp: 28, shipDown: 24, shipMax: 6.5, cw: .64, ch: .8, sw: .92, sh: .62, floor: -3, snap: .06 };
 
   /* ---------- Level: objects stored in one-tile columns so collision checks stay fast ---------- */
   class Level {
@@ -30,8 +36,8 @@
     add(k, x, y, w = 1, h = 1) {
       const o = { id: this.nextId++, k, x, y, w, h, seen: 0 };
       if (k === "b") { o.bx0 = x; o.bx1 = x + w; o.by0 = y; o.by1 = y + h; }
-      else if (k === "s") { o.bx0 = x + .34; o.bx1 = x + .66; o.by0 = y; o.by1 = y + .5; }
-      else if (k === "v") { o.bx0 = x + .34; o.bx1 = x + .66; o.by0 = y - .5; o.by1 = y; }
+      else if (k === "s") { o.bx0 = x + .36; o.bx1 = x + .64; o.by0 = y; o.by1 = y + .45; } // kinder than it looks
+      else if (k === "v") { o.bx0 = x + .36; o.bx1 = x + .64; o.by0 = y - .45; o.by1 = y; }
       else if (k === "p") { o.bx0 = x + .1; o.bx1 = x + .9; o.by0 = y; o.by1 = y + .35; }
       else if (k === "S" || k === "C") { o.bx0 = x + .25; o.bx1 = x + .75; o.by0 = -2; o.by1 = 12; }
       else { o.bx0 = x - .38; o.bx1 = x + .38; o.by0 = y - .38; o.by1 = y + .38; } // m piece, x secret box
@@ -57,20 +63,25 @@
     ground(x0, x1) { return x1 > x0 ? this.add("b", x0, -4, x1 - x0, 4) : null; }
   }
 
-  const start = (x = .5) => ({ x, y: 0, vy: 0, mode: "cube", grounded: true, alive: true, pad: 0, t: 0, why: "", touch: null });
-  const clone = s => ({ x: s.x, y: s.y, vy: s.vy, mode: s.mode, grounded: s.grounded, alive: s.alive, pad: s.pad, t: s.t, why: s.why, touch: null });
+  // air = double hops left, ph = was the button down last step, coy = coyote steps left, dbl = step of the last double hop.
+  const start = (x = .5) => ({ x, y: 0, vy: 0, mode: "cube", grounded: true, alive: true, pad: 0, t: 0, why: "", touch: null, air: PHYS.air, ph: false, coy: 0, dbl: -1e9 });
+  const clone = s => ({ x: s.x, y: s.y, vy: s.vy, mode: s.mode, grounded: s.grounded, alive: s.alive, pad: s.pad, t: s.t, why: s.why, touch: null, air: s.air, ph: s.ph, coy: s.coy, dbl: s.dbl });
 
   // One 1/120 s physics step. hold = jump button down. Sets s.touch to the pieces or secret boxes touched this step.
   function step(s, hold, L) {
     if (!s.alive) return s;
     const P = PHYS;
     if (s.mode === "cube") {
-      if (hold && s.grounded) { s.vy = P.jump; s.grounded = false; }
+      const press = hold && !s.ph;
+      if (hold && s.grounded) { s.vy = P.jump; s.grounded = false; s.coy = 0; }
+      else if (press && s.coy > 0) { s.vy = P.jump; s.coy = 0; }
+      else if (press && s.air > 0) { s.vy = Math.max(s.vy, P.jump2); s.air--; s.dbl = s.t; }
       s.vy -= P.g * DT;
     } else {
       s.vy += (hold ? P.shipUp : -P.shipDown) * DT;
       if (s.vy > P.shipMax) s.vy = P.shipMax; else if (s.vy < -P.shipMax) s.vy = -P.shipMax;
     }
+    s.ph = hold;
     const y0 = s.y;
     s.x += L.speed * DT; s.y += s.vy * DT; s.t++;
     s.grounded = false; s.touch = null;
@@ -89,21 +100,22 @@
         case "s": case "v": s.alive = false; s.why = "spike"; break;
         case "p":
           onPad = o.id;
-          if (s.mode === "cube" && s.pad !== o.id) { s.vy = P.pad; s.grounded = false; s.pad = o.id; }
+          if (s.mode === "cube" && s.pad !== o.id) { s.vy = P.pad; s.grounded = false; s.pad = o.id; s.coy = 0; }
           break;
         case "S": if (s.mode !== "ship") { s.mode = "ship"; s.vy = Math.min(s.vy, 3); } break;
-        case "C": if (s.mode !== "cube") { s.mode = "cube"; } break;
+        case "C": if (s.mode !== "cube") { s.mode = "cube"; s.air = P.air; } break;
         default: (s.touch || (s.touch = [])).push(o);
       }
     });
     if (!onPad) s.pad = 0;
+    if (s.grounded) { s.air = P.air; s.coy = P.coyote; } else if (s.coy > 0) s.coy--;
     if (s.alive && s.y < P.floor) { s.alive = false; s.why = "fall"; }
     return s;
   }
 
   /* ---------- Solver: finds button presses that get from one state to a goal frame alive, standing on the ground ---------- */
   // want(o) optional: the path must touch an object for which want(o) is true (used to prove a secret box can be reached).
-  function solve(L, from, endFrame, { want = null, maxNodes = 9000, every = 4 } = {}) {
+  function solve(L, from, endFrame, { want = null, maxNodes = 30000, every = 4 } = {}) {
     const seen = new Set();
     const root = { st: clone(from), parent: null, holds: null, got: !want };
     const stack = [root];
@@ -132,7 +144,9 @@
           }
           continue;
         }
-        const key = `${s.t}|${Math.round(s.y * 40)}|${Math.round(s.vy * 8)}|${s.mode}|${s.grounded ? 1 : 0}|${got ? 1 : 0}|${s.pad}`;
+        // The ship ignores double hops and coyote time, so those are left out of its key (fewer states to search).
+        const hop = s.mode === "cube" ? `|${s.air}|${s.ph ? 1 : 0}|${s.coy}` : "";
+        const key = `${s.t}|${Math.round(s.y * 40)}|${Math.round(s.vy * 8)}|${s.mode}|${s.grounded ? 1 : 0}|${got ? 1 : 0}|${s.pad}${hop}`;
         if (seen.has(key)) continue;
         seen.add(key);
         stack.push(child);
@@ -151,7 +165,7 @@
     return made.filter(Boolean);
   }
 
-  function generate({ chunks, level, speed, length, pieces = 9, rng = Math.random, secret = true, extraShip = false }) {
+  function generate({ chunks, level, speed, length, pieces = 9, rng = Math.random, secret = true, ships: shipCount = 1, space = 0 }) {
     const L = new Level(speed);
     const pickW = list => { let t = list.reduce((a, c) => a + (c.w || 1), 0) * rng(); for (const c of list) { t -= c.w || 1; if (t <= 0) return c; } return list[list.length - 1]; };
     const fits = c => (c.min || 1) <= level && level <= (c.max || 9);
@@ -163,7 +177,7 @@
     let st = start(.5), x = 8; // a little run-up before the first obstacle
     const inputs = [], checks = [{ t: 0, x: .5 }];
     let sec = null, shipsPlaced = 0, secretPlaced = false, last = "";
-    const wantShips = ships.length ? (extraShip ? 2 : 1) : 0;
+    const wantShips = ships.length ? shipCount : 0;
 
     while (x < length) {
       const frac = x / length;
@@ -174,19 +188,20 @@
       let ok = false;
       for (let tries = 0; tries < 8 && !ok; tries++) {
         const c = pickW(list.length ? list : [flat]);
-        const made = place(L, c, x);
-        const tail = L.ground(x + c.len, x + c.len + 8);
-        const endFrame = st.t + Math.ceil((x + c.len + .4 - st.x) / (speed * DT));
+        const x0 = x + space; // breathing room: flat ground before the chunk
+        const made = [L.ground(x, x0), ...place(L, c, x0)].filter(Boolean);
+        const tail = L.ground(x0 + c.len, x0 + c.len + 8);
+        const endFrame = st.t + Math.ceil((x0 + c.len + .4 - st.x) / (speed * DT));
         const res = solve(L, st, endFrame);
         let alt = null;
-        if (res && c.tag === "secret") alt = solve(L, st, endFrame, { want: o => o.k === "x", maxNodes: 30000, every: 3 });
+        if (res && c.tag === "secret") alt = solve(L, st, endFrame, { want: o => o.k === "x", maxNodes: 120000, every: 3 });
         L.remove(tail);
         if (res && (c.tag !== "secret" || alt)) {
           if (alt) { sec = { from: st.t, inputs: alt.inputs }; secretPlaced = true; }
           inputs.push(...res.inputs); st = res.state;
           checks.push({ t: st.t, x: st.x });
           if (c.tag === "ship") shipsPlaced++;
-          x += c.len; last = c.id; ok = true;
+          x = x0 + c.len; last = c.id; ok = true;
         } else made.forEach(o => L.remove(o));
       }
       if (!ok) {
@@ -219,8 +234,8 @@
     const G = o.gen, L = G.L, th = o.theme || {};
     const pieceObjs = L.objs.filter(x => x.k === "m"), secretObj = L.objs.find(x => x.k === "x");
     let W = 0, H = 0, T = 60, raf = 0, last = 0, acc = 0, stopped = false, paused = false;
-    let st = start(.5), attempts = 1, crashes = 0, deadAt = 0, cpOn = false, cpUsed = false, cp = G.checks[0];
-    let got = new Set(), secretGot = false, finished = false, t0 = performance.now(), hold = false, holdKeys = new Set(), pointer = false;
+    let st = start(.5), crashes = 0, deadAt = 0, cpOn = false, cpUsed = false, cp = G.checks[0];
+    let got = new Set(), secretGot = false, finished = false, t0 = performance.now(), hold = false, holdKeys = new Set(), pointer = false, tap = false;
     let camY = 0, sparks = [], lastMode = "cube", tipUntil = o.tip ? performance.now() + 4200 : 0;
 
     function size() {
@@ -235,10 +250,10 @@
     function kd(e) {
       if (stopped) return;
       if (e.code === "Escape" || e.code === "KeyP") { e.preventDefault(); paused = !paused; return; }
-      if (isJumpKey(e)) { e.preventDefault(); if (paused) { paused = false; return; } holdKeys.add(e.code); }
+      if (isJumpKey(e)) { e.preventDefault(); if (paused) { paused = false; return; } if (!e.repeat) tap = true; holdKeys.add(e.code); }
     }
     function ku(e) { if (isJumpKey(e)) holdKeys.delete(e.code); }
-    const pd = e => { if (paused) { paused = false; return; } pointer = true; e.preventDefault(); };
+    const pd = e => { if (paused) { paused = false; return; } pointer = true; tap = true; e.preventDefault(); };
     const pu = () => { pointer = false; };
     document.addEventListener("keydown", kd, true); document.addEventListener("keyup", ku, true);
     canvas.addEventListener("pointerdown", pd); addEventListener("pointerup", pu); addEventListener("pointercancel", pu);
@@ -252,8 +267,7 @@
     function respawn() {
       st = start(cp.x); st.t = cp.t;
       if (cp.t === 0) { got = new Set(); secretGot = false; }
-      attempts++; deadAt = 0; camY = 0; lastMode = "cube";
-      if (o.onAttempt) o.onAttempt(attempts);
+      deadAt = 0; camY = 0; lastMode = "cube"; tap = false;
     }
     function crash() {
       crashes++; deadAt = performance.now(); sfx.lost();
@@ -265,8 +279,14 @@
       if (ap) {
         const sIn = ap === "secret" && G.secret && st.t >= G.secret.from && st.t < G.secret.from + G.secret.inputs.length ? G.secret.inputs[st.t - G.secret.from] : null;
         hold = sIn !== null ? sIn : !!G.inputs[st.t];
-      } else hold = pointer || holdKeys.size > 0;
+      } else { hold = pointer || holdKeys.size > 0 || tap; tap = false; } // a quick tap counts for one step even if already let go
+      const air0 = st.air;
       step(st, hold, L);
+      if (st.air < air0 && st.alive) { // double hop: a little ring of sparks under his feet
+        Kit.audio.tone(660, .12, "triangle", .05, 0, 1320);
+        for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; sparks.push({ x: st.x + .32 + Math.cos(a) * .2, y: st.y, vx: Math.cos(a) * 4, vy: Math.sin(a) * 1.5 - 1, life: .7, c: i % 2 ? th.pad || "#ffe94a" : th.edge || "#3ef2ff" }); }
+        if (o.onDouble) o.onDouble();
+      }
       if (st.touch) for (const x of st.touch) {
         if (x.k === "m" && !got.has(x.id)) { got.add(x.id); sfx.hint(); if (o.onCollect) o.onCollect(x); }
         if (x.k === "x" && !secretGot) { secretGot = true; sfx.found(); if (o.onCollect) o.onCollect(x); }
@@ -278,7 +298,7 @@
     }
     function finish() {
       finished = true; sfx.found();
-      const res = { attempts, crashes, pieces: got.size, piecesTotal: pieceObjs.length, secret: secretGot, usedCheckpoints: cpUsed, ms: performance.now() - t0 };
+      const res = { crashes, pieces: got.size, piecesTotal: pieceObjs.length, secret: secretGot, usedCheckpoints: cpUsed, ms: performance.now() - t0 };
       setTimeout(() => { if (!stopped && o.onFinish) o.onFinish(res); }, 650);
     }
 
@@ -346,17 +366,18 @@
       if (cpOn) for (const c of G.checks) { if (c.t === 0) continue; const X = sx(c.x + .36, v), Y = sy(.25, v); ctx.save(); ctx.fillStyle = c === cp ? (th.piece || "#5cffb0") : "rgba(255,255,255,.35)"; ctx.translate(X, Y); ctx.rotate(Math.PI / 4); ctx.fillRect(-T * .15, -T * .15, T * .3, T * .3); ctx.restore(); }
       if (!deadAt && o.drawHero) {
         const w = st.mode === "cube" ? PHYS.cw : PHYS.sw, h = st.mode === "cube" ? PHYS.ch : PHYS.sh;
-        o.drawHero(ctx, sx(st.x + w / 2, v), sy(st.y, v), T, { mode: st.mode, vy: st.vy, grounded: st.grounded, h: h * T, t: now });
+        const sp = (st.t - st.dbl) / 42;
+        o.drawHero(ctx, sx(st.x + w / 2, v), sy(st.y, v), T, { mode: st.mode, vy: st.vy, grounded: st.grounded, h: h * T, t: now, spin: !st.grounded && sp >= 0 && sp < 1 ? sp : -1 });
       }
       // sparks
       for (const p of sparks) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.c; ctx.fillRect(sx(p.x, v) - 4, sy(p.y, v) - 4, 8, 8); }
       ctx.globalAlpha = 1;
-      // top bar: progress, attempt, pieces
+      // top bar: progress, the run's name, pieces
       const prog = Math.max(0, Math.min(1, st.x / G.endX));
       ctx.fillStyle = "rgba(10,6,32,.6)"; ctx.fillRect(W * .2, 12, W * .6, 10);
       ctx.fillStyle = th.edge || "#3ef2ff"; ctx.fillRect(W * .2, 12, W * .6 * prog, 10);
       ctx.font = `400 ${Math.max(11, T * .2)}px "Press Start 2P", ui-monospace, monospace`; ctx.textAlign = "left"; ctx.fillStyle = "#f6f0ff";
-      ctx.fillText(`ATTEMPT ${attempts}`, 16, 24);
+      if (o.label) ctx.fillText(o.label.toUpperCase(), 16, 24);
       ctx.textAlign = "right"; ctx.fillStyle = th.piece || "#5cffb0";
       ctx.fillText(`${got.size}/${pieceObjs.length}`, W - 16, 24);
       drawPiece(W - 16 - ctx.measureText(`${got.size}/${pieceObjs.length}`).width - 18, 18, 7, th.piece || "#5cffb0", 0);
@@ -396,7 +417,7 @@
       stop() { stopped = true; cancelAnimationFrame(raf); document.removeEventListener("keydown", kd, true); document.removeEventListener("keyup", ku, true); canvas.removeEventListener("pointerdown", pd); removeEventListener("pointerup", pu); removeEventListener("pointercancel", pu); removeEventListener("blur", blur); if (ro) ro.disconnect(); },
       pause(v) { paused = !!v; },
       checkpoints(v) { cpOn = !!v; if (cpOn) cpUsed = true; },
-      get state() { return { x: st.x, t: st.t, attempts, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn }; }
+      get state() { return { x: st.x, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed }; }
     };
   }
 

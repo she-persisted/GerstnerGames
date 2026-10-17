@@ -42,13 +42,20 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Mysteries have to hang together: every clue points at one answer, and kids can solve it from what they collected. Mini Game Survival gives four clues (each with a real science fact), then asks four questions before the reveal. [asked]
 - Easter eggs should add depth to the story, not only jokes: secret diary pages that explain the villain's plan, a hidden word to type, footprints and a whispered glitch message that hint at the twist. [asked]
 - A villain can turn out to be a friend when the reason makes sense: Shadowspine was a tiny, lonely, scared baby Spinosaurus making a giant shadow. [built]
+- Keep the opening friendly and funny, not lonely and grim. Mom asked for "a little bit more friendliness in the upfront story, more amusing" (Mini Game Survival v2). [asked]
+- Fold dinosaur and space puns all through the story text. [asked] For example: dino-snore, dino-MITE, ROAR-some, STAR-ving, Milky WOOZY, "It's not rocket science... oh wait, it IS rocket science!" Keep every clue line plain, so puns never hide a clue. [built]
+- End with a fun clip after the main ending. Mom asked for one where the ship comes alive, becomes friends with the family, and they ride him whenever they want. [asked] In Mini Game Survival, T-Rexy names the ship Zoomasaurus, and the ride keeps looping behind the score card. [built]
 
 ## Gameplay
 - Difficulty adapts to how he plays: harder when he's doing well, easier when he struggles. [asked] In Starward v4, typing speed, math, and word puzzles each have their own level. Two clean answers in a row raise a level, two hard-won answers or one "Show me" lower it, and questions are picked when they appear so they match the current level. [built]
 - Every playthrough must be different. [asked] Starward does this with large question banks, freshly generated math problems, and a list of questions already seen on that computer so they don't repeat. [built]
+- Give every challenge a library of extra questions, so the game varies as the kids replay it. [asked] Mini Game Survival v2 keeps several versions of each mystery question, clue line, and science fact, plus bonus facts and about 35 clue words a topic, and picks ones that computer hasn't seen lately. [built]
 - Mix puzzle types. She asked for riddles plus fill-in-the-blank sentences. [asked] Claude added word scrambles, math word problems, missing numbers, place value, rounding, number patterns, planet order, and odd one out. [built]
 - A game can trade typing races for other mini games. For Mini Game Survival the kids asked for no typing games, and to type in the clues they find instead. Typing practice stays (each clue is typed into a notebook), next to obstacle runs, memory jigsaws, and a letter-guessing game. [asked]
 - Obstacle runs like Geometry Dash: the hero runs by himself, hops, bounces on pads, flies a little ship, and touching a spike sends him back to the start. [asked] After three crashes a Checkpoints helper appears, and every level is checked by a solver before it's used, so it can always be beaten. [built]
+- Runs must start easy. Mom found v1's runs "far too hard": the first run should be easier, and runs should get harder as the game goes on. [asked] Give a double jump in the air. [asked] Mini Game Survival v2 starts at a slower level with lots of flat ground between obstacles and no ship tunnel, then ramps up portal by portal, with spikes that are kinder than they look and a quick tap that always counts. [built]
+- Let players pick Easy or Hard mode. [asked] Easy: slower runs, checkpoints on from the start, smaller puzzles. Hard: faster runs, back to the portal entrance on a crash, and runs score double. Each mode keeps its own adaptive levels, so friends sharing a computer don't change each other's. [built]
+- Don't keep track of failed attempts in the mini games. [asked] No attempt counters, and crashes, wrong letters, extra swaps, and wrong answers never cost points and are never saved. Adaptive difficulty still uses them privately for that one result. [built]
 - Letter-guessing games are kind: wrong letters burn fuel cells instead of drawing a hangman, and running out shows the word to type. [built]
 - Puzzles should match the game's world. For a space game that means space, robotics, and science. [asked]
 - Rewards take effort. He has to explore and solve puzzles to earn each item, and each rocket part takes three challenges, not one. [asked]
@@ -68,13 +75,19 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Each place has its own background music. [asked]
 - Songs are collectibles, kept in a jukebox on the home screen. [asked]
 - She rejected the idea of correct answers adding notes to a melody. [asked]
-- Music can match the game's energy: Mini Game Survival's songs are hardcore (fast, a kick on every beat). [asked] Its mystery hides in the music: each portal's song carries a piece of the weird tune. [built]
+- Music can match the game's energy: Mini Game Survival's songs started out hardcore (fast, a kick on every beat). [asked] Its mystery hides in the music: each portal's song carries a piece of the weird tune. [built]
+- Make the music fun and upbeat. [asked] Mini Game Survival v2's songs are happy dance chiptune: major keys (the Shadow Gate is a bouncy minor), bouncing bass, claps, sparkly arpeggios, and a verse and chorus (`kit/groove.js`). [built]
+- Villains get a voice. Shadowspine has an evil "MWAH-HA-HA-HA!" laugh made in code (`kit/voices.js`), and now and then his voice cracks into a tiny squeak, a hint at the twist. [asked]
 - All music and sound effects are generated in code, so nothing is copyrighted. [built]
 - Music starts after the first click or key press, because browsers block sound until then. [limit]
 
 ## Art
 - The hero should stand out: cute and cartoony against the world. Mini Game Survival puts a cute green T-Rex in a glitchy, bright, flashing neon nebula, and the villain is a solid black silhouette. [asked]
 - Keep flashing gentle: no more than about one glitch a second, never more than three flashes a second, and none at all when the computer asks for reduced motion. [limit]
+- Draw a silhouette villain as one solid, cohesive animal shape, not separate blobs, and give it a small animation (breathing, sway, a jaw that opens when it laughs or talks). [asked]
+- Puzzle pictures should be detailed: lots of little things to spot, which also makes jigsaw pieces easier to tell apart. [asked]
+- Space backgrounds: use real NASA pictures (Hubble and Webb) as inspiration, restyled in the game's neon colors, with a different one for each place. [asked] Mini Game Survival v2 draws neon versions of the Cosmic Cliffs, the Southern Ring Nebula, the Pillars of Creation, a Wolf-Rayet star, the Whirlpool Galaxy, the Horsehead Nebula, the Milky Way, and Andromeda, all drawn by code (no photos copied). [built]
+- Galaxies should be pretty: glowing cores, soft tapered arms dotted with stars and pink star-forming knots, and a mix of kinds (face-on, tilted, edge-on). [asked]
 
 ## Scoring
 - An arcade-style high score board sits on the home screen: one list for everyone, no logins, and players type a name at the end. [asked]

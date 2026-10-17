@@ -1,11 +1,11 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces and hops, Shadowspine on the clouds, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs. Also the music, the toggles, the top bar, and toasts.
- * @requires kit/runner.js, kit/side-hub.js, kit/music.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
+ * @about Everything Mini Game Survival draws in the scene window: story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop). Also the music, the toggles, the top bar, and toasts.
+ * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
 const THEMES = Kit.art.nebula.THEMES;
-const music = Kit.music.create(Kit.songs);
+const music = Kit.groove.create(Kit.songs);
 const toastEl = $("#toast"), toast = Kit.ui.toaster(toastEl);
 const THEME_SONG = { night: "lullaby", whirl: "whirl", hub: "glitchHub", echo: "echo", fern: "fern", lantern: "lantern", shadow: "shadowRun", valley: "homeStomp" };
 
@@ -19,7 +19,7 @@ function img(key, url) {
 const heroImg = (o = {}) => img(`t|${o.pose || "stand"}|${o.face || "smile"}|${o.acc || "none"}|${o.who || "trexy"}|${o.flip ? 1 : 0}`, Kit.art.trexy.url(o, 240));
 const novaImg = (o = {}) => img(`n|${o.face || "smile"}|${o.flip ? 1 : 0}`, Kit.art.nova.url(o, 200));
 const pilotHead = `<g transform="translate(13,-14) scale(.27)">${Kit.art.trexy.g({ face: "happy" })}</g>`;
-const shipImg = (flame, pilot = true) => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? 1 : 0}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotHead : "" }, 320));
+const shipImg = (flame, pilot = true, face = "") => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? 1 : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotHead : "", face }, 320));
 function drawImg(ctx, im, x, y, h, anchor = "bottom") {
   if (!im.complete || !im.naturalWidth) return;
   const w = h * im.naturalWidth / im.naturalHeight;
@@ -56,8 +56,15 @@ function collectSong(id) { const s = songsOwned(); if (!s.includes(id)) { s.push
 function playSong(id) { if (id) music.set(id); }
 
 /* Story stage */
-const ST = { theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false };
-let faceOverride = null, faceUntil = 0, hopAt = -1e9, shrinkFrom = 0, shrinkAt = 0, shadowSay = { text: "", until: 0 }, flinchAt = -1e9;
+const ST = { theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false, shipFace: "", ride: false };
+let faceOverride = null, faceUntil = 0, hopAt = -1e9, hopKind = 1, shrinkFrom = 0, shrinkAt = 0, shadowSay = { text: "", until: 0 }, flinchAt = -1e9;
+let laughUntil = 0, talkUntil = 0, shipTalkUntil = 0;
+// Zoomasaurus talks in happy beeps and wiggles while he does.
+function shipTalk() {
+  shipTalkUntil = performance.now() + 1100;
+  [0, 1, 2, 3, 4].forEach(i => Kit.audio.tone(700 + ((i * 377) % 900), .07, i % 2 ? "square" : "sine", .035, i * .1, 900 + ((i * 523) % 1100)));
+}
+function shipFaceNow(now) { return ST.shipFace === "awake" && now % 3400 < 150 ? "blink" : ST.shipFace; }
 function applyStage(st) {
   for (const k of Object.keys(ST)) if (k in st) ST[k] = st[k];
   if ("theme" in st) { scene.setAttribute("aria-label", sceneLabel()); playSong(THEME_SONG[st.theme]); }
@@ -67,9 +74,19 @@ function sceneLabel() {
   return `T-Rexy in ${where}${ST.shadow ? ", with a giant black Spinosaurus shadow on the clouds" : ""}${ST.nova ? ", with Nova the tiny Spinosaurus" : ""}.`;
 }
 function express(face, ms = 2000) { faceOverride = face; faceUntil = performance.now() + ms; }
-function hop() { hopAt = performance.now(); }
+function hop() { hopAt = performance.now(); hopKind = 1; }
+function doubleHop() { hopAt = performance.now(); hopKind = 2; }
 function flinch() { flinchAt = performance.now(); }
-function sayShadow(text, ms = 2600) { shadowSay = { text, until: performance.now() + ms }; }
+function sayShadow(text, ms = 2600) { shadowSay = { text, until: performance.now() + ms }; shadowTalk(Math.min(ms, 1400)); }
+// Shadowspine's voice and jaw: an evil laugh, or a grumbly mutter while he talks. Now and then his jaw clacks by itself.
+function shadowLaugh() { laughUntil = performance.now() + Kit.voices.evilLaugh() * 1000; }
+function shadowTalk(ms = 1200) { talkUntil = performance.now() + Kit.voices.mutter(ms / 1000) * 1000; }
+function shadowAnim(now) {
+  if (now < laughUntil) return { jaw: 7 + 17 * (.5 + .5 * Math.sin(now / 42)), shake: 1 };
+  if (now < talkUntil) return { jaw: 5 + 11 * Math.abs(Math.sin(now / 80)), shake: 0 };
+  const p = (now % 9000) / 9000;
+  return { jaw: p > .94 ? 6 + 9 * Math.sin((p - .94) / .06 * Math.PI) : 6, shake: 0 };
+}
 function startShrink() { shrinkFrom = ST.shadow || 1; shrinkAt = performance.now(); }
 const shadowK = (now, base = ST.shadow) => {
   let k = base;
@@ -127,12 +144,19 @@ function drawShadowSay(ctx, w, h, now) {
   ctx.fillStyle = "#ffd1e6"; ctx.fillText(shadowSay.text, w * .62, h * .12); ctx.restore();
 }
 function heroFace(now) { return faceUntil > now && faceOverride ? faceOverride : ST.face; }
-function hopY(now, h) { const p = (now - hopAt) / 520; return p >= 0 && p < 1 ? -Math.sin(p * Math.PI) * h * .12 : 0; }
+function hopY(now, h) {
+  if (hopKind === 2) { // a hop, then a second hop from up in the air
+    const p = (now - hopAt) / 900; if (p < 0 || p >= 1) return 0;
+    if (p < .3) return -Math.sin(p / .3 * Math.PI / 2) * h * .1;
+    const q = (p - .3) / .7; return -(h * .1 * (1 - q) + Math.sin(q * Math.PI) * h * .13);
+  }
+  const p = (now - hopAt) / 520; return p >= 0 && p < 1 ? -Math.sin(p * Math.PI) * h * .12 : 0;
+}
 
 function drawStage(ctx, now) {
   const { w, h, dpr } = stageSize || sizeCanvas();
   const k = shadowK(now), th = THEMES[ST.theme] || THEMES.hub;
-  nebula.draw(ctx, { w, h, T: h / 7.4, camX: now / 4000, camY: 0, t: now, dpr }, { theme: ST.theme, shadow: k > .01 ? { x: .74, k, lantern: ST.lantern } : null, whisper: ST.theme === "hub" });
+  nebula.draw(ctx, { w, h, T: h / 7.4, camX: now / 4000, camY: 0, t: now, dpr }, { theme: ST.theme, shadow: k > .01 ? { x: .74, k, lantern: ST.lantern, ...shadowAnim(now) } : null, whisper: ST.theme === "hub" });
   if (k <= .01 && ST.lantern && !ST.nova) { // the lantern stays where the shadow was
     const lx = w * .73, ly = h * .9, r = h * .05, g = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 3);
     g.addColorStop(0, "#fff6c2"); g.addColorStop(.4, "#ffd43b99"); g.addColorStop(1, "#ffd43b00"); ctx.fillStyle = g; ctx.fillRect(lx - r * 3, ly - r * 3, r * 6, r * 6);
@@ -145,10 +169,14 @@ function drawStage(ctx, now) {
     drawImg(ctx, heroImg({ who: "mom", acc: "flower", face: "happy", flip: true }), w * .7, gy, h * .31);
     drawImg(ctx, heroImg({ who: "sis", acc: "bow", face: "happy", flip: true }), w * .5, gy, h * .23);
   }
+  if (ST.ride) { drawRide(ctx, w, h, now); drawShadowSay(ctx, w, h, now); return; }
   if (ST.ship) {
-    const im = shipImg(false, false), bob = reduced ? 0 : Math.sin(now / 700) * h * .01;
-    if (ST.family) drawImg(ctx, im, w * .56, h * .3 + bob, h * .16, "center"); // parked up in the sky
-    else drawImg(ctx, im, w * .62, gy - h * .04 + bob, h * .3);
+    const im = shipImg(false, false, shipFaceNow(now)), bob = reduced ? 0 : Math.sin(now / 700) * h * .01;
+    const wig = !reduced && now < shipTalkUntil ? Math.sin(now / 60) * .08 : 0;
+    ctx.save();
+    if (ST.family) { ctx.translate(w * .56, h * (ST.shipFace ? .27 : .3) + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * (ST.shipFace ? .34 : .16), "center"); } // parked up in the sky
+    else { ctx.translate(w * .62, gy - h * .04 + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * .3); }
+    ctx.restore();
   }
   const tremble = heroFace(now) === "worried" && !reduced ? Math.sin(now / 45) * 1.2 : 0;
   drawImg(ctx, heroImg({ face: heroFace(now), acc: ST.acc, pose: "stand" }), hx + tremble, hy, heroH);
@@ -158,6 +186,27 @@ function drawStage(ctx, now) {
     drawImg(ctx, novaImg({ face: onHead ? "happy" : ST.novaFace, flip: !onHead }), nx, ny, nh);
   }
   drawShadowSay(ctx, w, h, now);
+}
+
+// The end clip: everybody rides Zoomasaurus in loop-de-loops across the sky, with a sparkly trail.
+function drawRide(ctx, w, h, now) {
+  const P = q => { const a = q * Math.PI * 2; return [w * (.5 + .34 * Math.sin(a)), h * (.38 + .13 * Math.sin(a * 2))]; };
+  const p = reduced ? .2 : (now / 6400) % 1, [x, y] = P(p), [x2, y2] = P(p + .003);
+  for (let k = 14; k >= 1; k--) {
+    const [tx, ty] = P(p - k * .007);
+    ctx.globalAlpha = (1 - k / 15) * .8; ctx.fillStyle = ["#ffe94a", "#ff6be0", "#5cffb0", "#21d9ff"][k % 4];
+    ctx.beginPath(); ctx.arc(tx, ty + h * .03, h * .012 * (1 - k / 18), 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const dir = x2 >= x ? 1 : -1, tilt = Math.max(-.35, Math.min(.35, Math.atan2(y2 - y, Math.abs(x2 - x) + 1e-6)));
+  const sh = h * .38, u = sh / 84; // ship picture height, and its drawing units in pixels
+  ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(tilt);
+  drawImg(ctx, shipImg(true, true, ST.shipFace || "happy"), 0, 0, sh, "center");
+  // riders sit along the top of the hull, back to front, and Nova rides on Dad's head
+  const riders = [[heroImg({ who: "sis", acc: "bow", face: "happy" }), -32, 20], [heroImg({ who: "mom", acc: "flower", face: "happy" }), -19, 25], [heroImg({ who: "dad", acc: "glasses", face: "happy" }), -5, 28]];
+  riders.forEach(([im, rx, rh], i) => { const bounce = reduced ? 0 : Math.sin(now / 160 + i) * u * 1.2; drawImg(ctx, im, rx * u, -17 * u + bounce, rh * u); });
+  drawImg(ctx, novaImg({ face: "happy" }), -7 * u, (-17 - 28 * .74) * u + (reduced ? 0 : Math.sin(now / 160 + 2) * u * 1.2), 12 * u);
+  ctx.restore();
 }
 
 /* The crash pad (hub) */
@@ -195,7 +244,7 @@ function drawPortal(ctx, v, p, id, now) {
 }
 function drawHub(ctx, v, hero, bubble) {
   const now = v.t, k = shadowK(now, 1); // Shadowspine always looms over the crash pad
-  nebula.draw(ctx, v, { theme: "hub", shadow: k > .01 ? { x: .66 - v.camX * .006, k, lantern: S.done.includes("whirl") } : null, whisper: true });
+  nebula.draw(ctx, v, { theme: "hub", shadow: k > .01 ? { x: .66 - v.camX * .006, k, lantern: S.done.includes("whirl"), ...shadowAnim(now) } : null, whisper: true });
   const th = THEMES.hub;
   drawFloor(ctx, v.w, v.h, v.ground, th, v.camX, v.T);
   // tiny footprints (they show up after Fern Moon): three toes each, leading off toward the light
@@ -231,7 +280,7 @@ function startHub(onEnter, onFirstMove) {
     onTap: (wx, wy) => {
       if (wy < 3.2) return false;
       S.pokes = (S.pokes || 0) + 1; save(); flinch();
-      sayShadow(POKES[(S.pokes - 1) % POKES.length]); sfx.beep();
+      sayShadow(POKES[(S.pokes - 1) % POKES.length]);
       return true;
     },
     onType: typed => {
@@ -254,7 +303,8 @@ function heroDraw(ctx, x, y, T, hero) {
   }
   const pose = !hero.grounded ? "hop" : (Math.floor(hero.t / 110) % 2 ? "run1" : "run2");
   ctx.save(); ctx.translate(x, y);
-  if (!hero.grounded) ctx.rotate(Math.max(-.3, Math.min(.3, -hero.vy * .018)));
+  if (hero.spin >= 0 && !reduced) { const c = T * .55; ctx.translate(0, -c); ctx.rotate(hero.spin * Math.PI * 2); ctx.translate(0, c); } // double hop: a flip
+  else if (!hero.grounded) ctx.rotate(Math.max(-.3, Math.min(.3, -hero.vy * .018)));
   drawImg(ctx, heroImg({ pose, face: "smile" }), 0, 0, T * 1.2);
   ctx.restore();
 }
@@ -263,12 +313,12 @@ function startRun(opts) {
   stageEl.classList.add("wide");
   const th = THEMES[opts.theme] || THEMES.hub;
   const ctl = Kit.runner.play(cv, {
-    gen: opts.gen, theme: th, tip: opts.tip,
-    drawBackground: (ctx, v) => nebula.draw(ctx, { ...v, dpr: Math.min(2, window.devicePixelRatio || 1) }, { theme: opts.theme, shadow: opts.shadow ? { x: .78, k: .9, lantern: false } : null }),
+    gen: opts.gen, theme: th, tip: opts.tip, label: opts.label,
+    drawBackground: (ctx, v) => nebula.draw(ctx, { ...v, dpr: Math.min(2, window.devicePixelRatio || 1) }, { theme: opts.theme, shadow: opts.shadow ? { x: .78, k: .9, lantern: false, ...shadowAnim(v.t) } : null }),
     drawHero: heroDraw,
     autopilot: () => window.__mgsAutopilot || false,
     speedup: () => window.__mgsSpeedup || 1,
-    onAttempt: opts.onAttempt, onCrash: opts.onCrash, onCollect: opts.onCollect, onMode: opts.onMode, onFinish: opts.onFinish
+    onCrash: opts.onCrash, onCollect: opts.onCollect, onMode: opts.onMode, onDouble: opts.onDouble, onFinish: opts.onFinish
   });
   runCtl = ctl;
   return ctl;

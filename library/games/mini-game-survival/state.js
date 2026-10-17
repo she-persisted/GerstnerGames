@@ -1,7 +1,7 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, the portals and what each one gives, the clue cards, the mystery questions, the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), run speeds, and the clue-word chooser.
- * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, and the clue-word chooser. Saves keep progress only, never how many tries anything took.
+ * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
 const { reduced, focusSoon, blurActive } = Kit.ui;
@@ -9,7 +9,7 @@ const ICON = Kit.art.icons;
 const SHIP = Kit.art.ship;
 const sfx = Kit.audio.sfx;
 
-const KEYS = { save: "mgs.save.v1", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", skill: "mgs.skill" };
+const KEYS = { save: "mgs.save.v2", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq" };
 const panel = $("#panel"), scene = $("#scene"), stageEl = $("#stage"), cv = $("#cv");
 
 // The crash pad: portals in the order T-Rexy visits them. x = where it stands on the pad (in tiles).
@@ -23,29 +23,17 @@ const PORTALS = {
 };
 const PORTAL_ORDER = ["echo", "fern", "lantern", "whirl"];
 
-// What T-Rexy writes in his notebook after each portal. type = the line he types, short to long by typing level.
+// What T-Rexy writes in his notebook after each portal. The line he types, the clue card's science fact, and a bonus fact
+// come from the question library (questions.js), so they change from game to game. short = what the notebook shows.
 const CLUES = {
-  echo: { n: 1, title: "Clue 1: The weird music", saw: "In my memory, the weird music was high and squeaky, like a teeny music box glowing on the hill.",
-    fact: "Science fact: small things make high sounds. Big things make low, booming sounds.",
-    type: ["high and squeaky", "The music was high and squeaky.", "The weird music was high and squeaky, like a tiny music box."], short: "The weird music was high and squeaky." },
-  fern: { n: 2, title: "Clue 2: The missing fish", saw: "The morning after that dinner, our whole basket of fish was gone. Somebody sneaked in and ate them!",
-    fact: "Science fact: real T-Rexes ate meat. My family eats plants AND meat, so we're omnivores. And Spinosaurus? It mostly ate fish!",
-    type: ["the fish were gone", "Somebody ate all of our fish.", "Somebody sneaked into our house and ate all of our fish."], short: "Somebody sneaked in and ate all our fish." },
-  lantern: { n: 3, title: "Clue 3: Tiny footprints", saw: "Teeny-tiny footprints on my windowsill. And a teeny moth by my lamp made a HUGE shadow on the wall.",
-    fact: "Science fact: the closer something is to a light, the bigger its shadow gets.",
-    type: ["tiny footprints", "Tiny footprints were on my window.", "Tiny footprints were on my windowsill, right by the lamp."], short: "Tiny footprints, and a tiny moth with a huge shadow." },
-  whirl: { n: 4, title: "Clue 4: The star lantern", saw: "In the swirl, someone small was standing on a floating rock, holding a glowing star lantern.",
-    fact: "Science fact: a spiral galaxy is a giant pinwheel of billions of stars. Our home galaxy, the Milky Way, is one!",
-    type: ["a star lantern", "Someone small had a star lantern.", "Someone very small was holding a glowing star lantern."], short: "Someone small was holding a star lantern." }
+  echo: { n: 1, title: "Clue 1: The weird music", saw: "In my memory, the weird music was high and squeaky, like a teeny music box glowing on the hill.", short: "The weird music was high and squeaky." },
+  fern: { n: 2, title: "Clue 2: The missing fish", saw: "The morning after that dinner, our whole basket of fish was gone. Somebody sneaked in and ate them!", short: "Somebody sneaked in and ate all our fish." },
+  lantern: { n: 3, title: "Clue 3: Tiny footprints", saw: "Teeny-tiny footprints on my windowsill. And a teeny moth by my lamp made a HUGE shadow on the wall.", short: "Tiny footprints, and a tiny moth with a huge shadow." },
+  whirl: { n: 4, title: "Clue 4: The star lantern", saw: "In the swirl, someone small was standing on a floating rock, holding a glowing star lantern.", short: "Someone small was holding a star lantern." }
 };
 
-// The four mystery questions, asked in order before the big reveal. a = the right option.
-const DEDUCE = [
-  { q: "Why is Shadowspine completely black, with no eyeballs at all?", opts: ["He's wearing black pajamas.", "He's a shadow!", "He rolled in a tar pit."], a: 1, clue: "lantern", nope: "Hmm. What is always a dark shape with no eyes? Check clue 3." },
-  { q: "How can a shadow look GIGANTIC?", opts: ["Something stands really close to a bright light.", "It eats a LOT of snacks.", "It stands really far away from the light."], a: 0, clue: "lantern", nope: "Remember the teeny moth by the lamp? Check clue 3." },
-  { q: "The weird music was high and squeaky. So who played it?", opts: ["Someone gigantic.", "Someone small.", "A whale."], a: 1, clue: "echo", nope: "Do small things make high sounds or low sounds? Check clue 1." },
-  { q: "Fish thief. Sail-shaped shadow. Tiny footprints. A star lantern. Who is behind all of this?", opts: ["A giant Spinosaurus.", "A tiny Spinosaurus with a star lantern.", "Grandma T-Rex."], a: 1, clue: "whirl", nope: "Which dinosaur loved fish, and how big was the one with the lantern? Check clues 2 and 4." }
-];
+// The four mystery questions, asked in order before the big reveal. Each has several versions in the question library.
+const DEDUCE = QBANK.mystery;
 
 // Secret diary pages, one hidden high up in each portal run (a glitchy ? box above a thin ledge with a bounce pad).
 const PAGES = [
@@ -56,24 +44,55 @@ const PAGES = [
 ];
 
 // Things Shadowspine says when you poke him on the crash pad.
-const POKES = ["Hey! Stop poking!", "That TICKLES! I mean... TREMBLE BEFORE ME!", "Quit it! I'm VERY scary!", "Poke me again and I'll... um... be really big at you!", "Okay, that one was kind of nice."];
+const POKES = ["Hey! Stop poking!", "That TICKLES! I mean... TREMBLE BEFORE ME!", "Quit it! I'm VERY scary!", "Poke me again and I'll go super-NOVA! I mean... super SCARY!",
+  "Poke me again and I'll... um... be really big at you!", "You've got some nerve, Tiny Arms. Jurassic nerve!", "Okay, that one was kind of nice."];
 
 const CAST = {
   narrator: { label: "Story", color: "var(--dust)" },
   trexy: { label: "T-Rexy", color: "var(--c-hero)" },
   shadow: { label: "Shadowspine", color: "var(--c-shadow)" },
   nova: { label: "Nova", color: "var(--c-nova)" },
-  family: { label: "T-Rexy's family", color: "var(--c-family)" }
+  family: { label: "T-Rexy's family", color: "var(--c-family)" },
+  ship: { label: "Zoomasaurus", color: "var(--c-ship)" }
 };
 
-// Adaptive skills. run: obstacle runs (1 to 5). jigsaw: 3x3, 3x4, or 4x4 pieces. words: word length and fuel. typing: how long the clue line is.
-const SKILLS = { run: { min: 1, max: 5, start: 2 }, jigsaw: { min: 1, max: 3, start: 2 }, words: { min: 1, max: 3, start: 2 }, typing: { min: 1, max: 3, start: 2 } };
+// Easy or Hard, picked on the title screen (and switchable on the crash pad). ramp = the run level for each portal in order,
+// ending with the Shadow Gate, so runs get harder as the game goes on. secs = about how long each run lasts.
+// Easy turns checkpoints on from the start. Hard sends T-Rexy back to the portal entrance, and its runs score double.
+const MODES = {
+  easy: { label: "Easy", ramp: [1, 2, 2, 3, 3], secs: [14, 16, 18, 20, 24], checkpoints: true, runMult: 1, starts: { jigsaw: 1, words: 1, typing: 1 },
+    about: "Slower runs, checkpoints on, smaller puzzles." },
+  hard: { label: "Hard", ramp: [2, 3, 4, 5, 6], secs: [18, 20, 22, 24, 30], checkpoints: false, runMult: 2, starts: { jigsaw: 2, words: 2, typing: 2 },
+    about: "Faster runs, back to the start when you crash. Runs score double." }
+};
+// Run levels 1 to 6: speed (tiles a second), space (extra flat tiles before each obstacle), ships (ship tunnels per run).
+const RUN_LEVELS = [null,
+  { speed: 5.0, space: 4, ships: 0 }, { speed: 5.6, space: 3, ships: 1 }, { speed: 6.2, space: 2, ships: 1 },
+  { speed: 6.9, space: 1, ships: 1 }, { speed: 7.6, space: 1, ships: 1 }, { speed: 8.3, space: 0, ships: 1 }];
+
+// Adaptive skills, kept separately for each mode so friends sharing a computer don't change each other's levels.
+// run: 1 = one level easier than the ramp, 2 = the ramp, 3 = one level harder. jigsaw: 3x3, 3x4, or 4x4 pieces.
+// words: word length and fuel. typing: how long the clue line is.
+const SKILLS = { run: { min: 1, max: 3 }, jigsaw: { min: 1, max: 3 }, words: { min: 1, max: 3 }, typing: { min: 1, max: 3 } };
 const SKILL_NAME = { run: "Run", jigsaw: "Jigsaw", words: "Word", typing: "Typing" };
-const skills = Kit.adaptive.create({
-  key: KEYS.skill, skills: SKILLS,
-  onChange: (name, level, delta) => { if (delta > 0) { sfx.levelup(); toast(`${SKILL_NAME[name]} level up!`); } }
-});
-const RUN_SPEED = [5.6, 6.4, 7.2, 8.0, 8.8];            // tiles per second at run levels 1 to 5
+const SKILL_SETS = {};
+function skillsFor(mode) {
+  if (!SKILL_SETS[mode]) {
+    const st = MODES[mode].starts, def = {};
+    for (const [k, v] of Object.entries(SKILLS)) def[k] = { ...v, start: k === "run" ? 2 : st[k] };
+    SKILL_SETS[mode] = Kit.adaptive.create({
+      key: KEYS.skill + mode, skills: def,
+      onChange: (name, level, delta) => { if (delta > 0) { sfx.levelup(); toast(name === "run" ? "Runs speed up a little!" : `${SKILL_NAME[name]} level up!`); } }
+    });
+  }
+  return SKILL_SETS[mode];
+}
+const savedMode = () => (store.get(KEYS.mode, "easy") === "hard" ? "hard" : "easy");
+let skills = skillsFor(savedMode());
+function setMode(m) { m = m === "hard" ? "hard" : "easy"; S.mode = m; skills = skillsFor(m); store.set(KEYS.mode, m); }
+const modeOf = () => MODES[S.mode] || MODES.easy;
+// The run level for the nth run (0 to 3 = the portals, 4 = the Shadow Gate).
+const runLevel = n => clamp(modeOf().ramp[n] + skills.level("run") - 2, 1, 6);
 const JIG_GRID = { 1: [3, 3], 2: [3, 4], 3: [4, 4] };   // rows, columns
 const FUEL = { 1: 7, 2: 6, 3: 6 };
 
@@ -81,8 +100,8 @@ const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "
 const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home" };
 
 const fresh = () => ({
-  v: 1, step: 0, parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: WRECK_X, moved: false, pokes: 0, roared: false,
-  stats: { pts: 0, runs: {}, jigs: {}, words: {}, typing: { hits: 0, misses: 0, ms: 0, chars: 0 }, mystery: { right: 0, wrong: 0 } }
+  v: 2, mode: savedMode(), step: 0, picks: {}, parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: WRECK_X, moved: false, pokes: 0, roared: false,
+  stats: { pts: 0, runs: {}, typing: { hits: 0, misses: 0, ms: 0, chars: 0 } }
 });
 let S = fresh();
 let active = false;
@@ -90,7 +109,7 @@ let active = false;
 function save() { if (active) store.set(KEYS.save, S); }
 function loadSave() {
   const d = store.get(KEYS.save, null);
-  if (d && d.v === 1 && d.step > 0 && d.step < STEPS.length - 1) return d;
+  if (d && d.v === 2 && d.step > 0 && d.step < STEPS.length - 1) return d;
   return null;
 }
 
@@ -106,6 +125,18 @@ function wordFor(portal) {
   S.words[portal] = { word: w[0], d: w[1], hint: w[2] };
   save();
   return S.words[portal];
+}
+// Picks one version from a list in the question library, preferring versions this computer hasn't seen lately,
+// and keeps that pick for the rest of this game (so a reload shows the same one).
+function pickVersion(id, list) {
+  S.picks = S.picks || {};
+  if (S.picks[id] != null && list[S.picks[id]] !== undefined) return list[S.picks[id]];
+  let seen = store.get(KEYS.seenq, []); if (!Array.isArray(seen)) seen = [];
+  const all = list.map((x, i) => i), fresh = all.filter(i => !seen.includes(`${id}:${i}`));
+  const i = pick(fresh.length ? fresh : all);
+  seen = [...seen.filter(x => x !== `${id}:${i}`), `${id}:${i}`].slice(-160); store.set(KEYS.seenq, seen);
+  S.picks[id] = i; save();
+  return list[i];
 }
 const shipCfg = () => ({ ...S.parts, paint: S.paint });
 const allParts = () => SHIP.PART_ORDER.every(p => S.parts[p]);

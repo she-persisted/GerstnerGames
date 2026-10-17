@@ -33,8 +33,13 @@ Checks:
        "Fly again"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.
      - All planet puzzles answered, the brave words typed, and the ending reached.
      - High score: a name saves, gets a rank, and shows on the board as a score on this computer.
-  5. Mini Game Survival playthrough, with a fresh browser:
-     - Title, then the story lines (Enter), then the crash pad: type ROAR and poke Shadowspine (Easter eggs), click each portal.
+  5. Mini Game Survival, with fresh browsers:
+     - The question library is checked (every mystery version's answer is one of its options, every clue has lines for all
+       three typing levels, every word topic has plenty of words at each level).
+     - Easy mode: the first run must be level 1 (the slowest) with checkpoints already on, and pressing again in the air must double hop.
+     - The full playthrough is in Hard mode. No screen may show a count of attempts.
+     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine
+       (Easter eggs), click each portal.
      - Runs: the first run is left alone until T-Rexy crashes three times, which must restart him and show the
        Checkpoints button; then the built-in autopilot (the level's own solution, sped up) finishes every run and
        takes the secret route, so all four hidden diary pages must be found.
@@ -42,7 +47,8 @@ Checks:
      - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
      - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
      - After the first portal the page is reloaded, and "Keep going" must resume on the crash pad with the clue saved.
-     - Right answers move on by themselves; the high score saves and the secret ending shows (all four pages).
+     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret
+       ending shows (all four pages).
 Prints PASS or FAIL with the reasons, and exits 1 on FAIL.
 """
 import filecmp
@@ -426,7 +432,7 @@ MGS_STATE_JS = r"""() => {
   if (document.querySelector('#hsForm')) return { kind: 'end', sig };
   if (document.querySelector('#playBtn')) return { kind: 'title', sig, resume: !!document.querySelector('#resumeBtn') };
   if (M.mode === 'hub') return { kind: 'hub', sig };
-  if (M.mode === 'run') { const r = M.run(); return { kind: 'run', sig: sig + '|' + (r ? r.attempts + ':' + Math.floor(r.x) : ''), run: r }; }
+  if (M.mode === 'run') { const r = M.run(); return { kind: 'run', sig: sig + '|' + (r ? r.crashes + ':' + Math.floor(r.x) : ''), run: r }; }
   const jig = document.querySelector('.jig:not(.solved)');
   if (jig && document.querySelector('#scene.jigmode')) return { kind: 'jigsaw', sig: sig + '|' + [...jig.querySelectorAll('.jt')].map(t => t.dataset.home).join(',') };
   const fw = panel.querySelector('.fuelword');
@@ -456,6 +462,8 @@ ART_CHECK_JS = r"""() => {
     for (const face of ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"])
       for (const acc of ["none", "flower", "glasses", "bow", "cap"]) ok(`trexy ${pose} ${face} ${acc}`, A.trexy.svg({ pose, face, acc }));
   for (const face of ["smile", "happy", "worried", "surprised"]) ok(`nova ${face}`, A.nova.svg({ face }));
+  ok("shadowspine", `<svg xmlns="http://www.w3.org/2000/svg">${A.nova.shadow("#000", 12)}</svg>`);
+  for (const face of ["awake", "blink", "happy"]) ok(`ship face ${face}`, decodeURIComponent(A.ship.url({ cockpit: "dino", wings: "bat", thrusters: "two", core: "pink", paint: "lime" }, { flame: true, face, pilot: "<g/>" }).split(",").slice(1).join(",")));
   const S = A.ship, opts = k => [undefined, ...S.PARTS[k].options.map(o => o[0])];
   for (const cockpit of opts("cockpit")) for (const wings of opts("wings")) for (const thrusters of opts("thrusters")) for (const core of opts("core"))
     for (const paint of [undefined, ...S.PAINT_ORDER]) {
@@ -469,13 +477,66 @@ ART_CHECK_JS = r"""() => {
 
 
 def mgs_save(pg):
-    return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v1')); } catch (e) { return null; } }") or {}
+    return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v2')); } catch (e) { return null; } }") or {}
 
 
-def mgs_answers():
-    """Right answers to the mystery questions, read from the game's source in order."""
-    state = (LIB / "games/mini-game-survival/state.js").read_text(encoding="utf-8")
-    return [int(a) for a in re.findall(r'opts: \[[^\]]*\], a: (\d)', state)]
+QBANK_CHECK_JS = r"""() => {
+  const bad = [], QBANK = window.__mgs.qbank;
+  QBANK.mystery.forEach((m, n) => { if (!m.v.length || !m.nope || !m.clue) bad.push(`mystery ${n} is empty`);
+    m.v.forEach((v, i) => { if (!(v.a >= 0 && v.a < v.opts.length)) bad.push(`mystery ${n}.${i} answer is not an option`); if (new Set(v.opts).size !== v.opts.length) bad.push(`mystery ${n}.${i} repeats an option`); }); });
+  for (const p of ["echo", "fern", "lantern", "whirl"]) {
+    if (QBANK.lines[p].length !== 3 || QBANK.lines[p].some(l => !l.length)) bad.push(`clue lines for ${p} need three typing levels`);
+    if (!QBANK.facts[p].length || !QBANK.bonus[p].length) bad.push(`facts missing for ${p}`);
+  }
+  for (const [t, list] of Object.entries(Kit.words.clues)) for (const d of [1, 2, 3]) if (list.filter(w => w[1] === d).length < 8) bad.push(`clue words: only a few level ${d} ${t} words`);
+  return bad;
+}"""
+
+
+def mgs_easy_check(browser, base, rel):
+    """Easy mode: slower first run with checkpoints already on, and the double hop works."""
+    ctx, pg = new_page(browser, "mgs easy mode")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    pg.keyboard.press("e")
+    pg.click("#playBtn")
+    for _ in range(80):
+        if pg.evaluate("window.__mgs.mode") == "hub":
+            break
+        if pg.locator("#panel [data-primary]").count():
+            pg.locator("#panel [data-primary]").click()
+        pg.wait_for_timeout(120)
+    if pg.evaluate("window.__mgs.mode") != "hub":
+        fail("Easy mode: the story never reached the crash pad")
+        ctx.close()
+        return
+    if (mgs_save(pg).get("mode")) != "easy":
+        fail("Easy mode was not saved with the game")
+    for _ in range(30):  # walk to the first portal (clicking it again until T-Rexy jumps in)
+        if pg.evaluate("window.__mgs.mode") != "hub":
+            break
+        hub = pg.evaluate("window.__mgs.hub()")
+        if hub:
+            mgs_hub_click(pg, hub["portals"]["echo"])
+        pg.wait_for_timeout(700)
+    try:
+        pg.wait_for_function("window.__mgs.mode === 'run' && window.__mgs.run() && window.__mgs.run().checkpoints", timeout=15000)
+    except Exception:
+        fail("Easy mode: the first run did not start with checkpoints on")
+        ctx.close()
+        return
+    r = pg.evaluate("window.__mgs.run()")
+    if abs(r["speed"] - 5.0) > .01:
+        fail(f"Easy mode: the first run should be the slowest (level 1), but runs at {r['speed']} tiles a second")
+    if not pg.locator("#runUi .cpchip").count():
+        fail("Easy mode: no 'Checkpoints on' sign during the run")
+    # double hop: press, let go, press again in the air
+    pg.keyboard.down("Space"); pg.wait_for_function("!window.__mgs.run().grounded", timeout=2000); pg.keyboard.up("Space")
+    pg.wait_for_timeout(60); pg.keyboard.down("Space"); pg.wait_for_timeout(40); pg.keyboard.up("Space")
+    if pg.evaluate("window.__mgs.run().air") != 0:
+        fail("pressing again in the air did not double hop")
+    print("  easy mode: first run at level 1 with checkpoints on, double hop ok")
+    ctx.close()
 
 
 def mgs_hub_click(pg, x_tiles, y_tiles=.6):
@@ -491,10 +552,11 @@ def mgs_hub_click(pg, x_tiles, y_tiles=.6):
 
 def mgs_playthrough(browser, base, rel):
     print("Mini Game Survival playthrough")
-    answers = mgs_answers()
     ctx, pg = new_page(browser, "mgs playthrough")
     pg.goto(base + rel)
     pg.wait_for_selector("#playBtn")
+    for b in pg.evaluate(QBANK_CHECK_JS):
+        fail(f"question library: {b}")
     # Every picture the canvas draws is SVG turned into an image, which fails silently if the SVG isn't valid XML
     # (a repeated attribute is enough), so check every pose, face, ship combination, and memory picture first.
     bad = pg.evaluate(ART_CHECK_JS)
@@ -502,7 +564,7 @@ def mgs_playthrough(browser, base, rel):
         fail(f"art is not valid SVG: {b}")
     seen = {"runs": 0, "jigsaws": 0, "words": 0, "clues": 0, "parts": 0, "paints": 0, "deduce": 0, "songs": 0,
             "crashrestart": False, "checkpoints": False, "peek": False, "fix": False, "scan": False, "refuel": False,
-            "wrongclue": False, "roar": False, "poke": False, "resumed": False}
+            "wrongclue": False, "roar": False, "poke": False, "resumed": False, "modeswitch": False, "ship": False}
     reloaded = False
     last_sig, last_change, started = None, time.time(), time.time()
     run_seen, song_steps = None, set()
@@ -521,6 +583,10 @@ def mgs_playthrough(browser, base, rel):
         k = st["kind"]
         if DEBUG:
             print("   ", k, st["sig"][:70].replace("\n", " "))
+        if "Attempt" in st["sig"]:
+            fail(f"a screen shows a count of attempts: {st['sig'][:80]!r}")
+        if "Zoomasaurus" in st["sig"]:
+            seen["ship"] = True
         if SHOTS and k != "busy":
             name = f"{k}-{pg.evaluate('window.__mgs.step')}"
             if name not in shot_names and (k not in shot_kinds or k in ("primary", "hub")):
@@ -541,6 +607,7 @@ def mgs_playthrough(browser, base, rel):
                 if "Clue 1:" not in pg.inner_text("#panel") or "???" in pg.inner_text("#panel").split("Clue 2")[0]:
                     fail("the first clue was not kept in the notebook after reloading")
             else:
+                pg.keyboard.press("h")  # the full playthrough is in Hard mode, which starts from the portal entrance
                 pg.click("#playBtn")
                 pg.wait_for_timeout(350)
 
@@ -565,6 +632,15 @@ def mgs_playthrough(browser, base, rel):
                 seen["roar"] = bool(mgs_save(pg).get("roared"))
                 if not seen["roar"]:
                     fail("typing ROAR on the crash pad did nothing")
+            if not seen["modeswitch"]:
+                pg.click("#modeSwitch"); pg.wait_for_timeout(120)
+                m1 = mgs_save(pg).get("mode")
+                pg.click("#modeSwitch"); pg.wait_for_timeout(120)
+                m2 = mgs_save(pg).get("mode")
+                seen["modeswitch"] = m1 == "easy" and m2 == "hard"
+                if not seen["modeswitch"]:
+                    fail(f"switching modes on the crash pad did not work ({m1}, {m2})")
+                pg.locator("#cv").focus()
             if not seen["poke"]:
                 before = mgs_save(pg).get("pokes", 0)
                 mgs_hub_click(pg, (pg.evaluate("window.__mgs.hub()") or {}).get("heroX", 17), 4.6)
@@ -586,7 +662,7 @@ def mgs_playthrough(browser, base, rel):
                 run_seen = key
                 seen["runs"] += 1
             if seen["runs"] == 1 and not seen["checkpoints"]:
-                if r.get("crashes", 0) >= 1 and r.get("attempts", 1) >= 2:
+                if r.get("crashes", 0) >= 1 and r.get("alive") and r.get("x", 99) < 6:
                     seen["crashrestart"] = True
                 if r.get("crashes", 0) >= 3:
                     try:
@@ -704,7 +780,7 @@ def mgs_playthrough(browser, base, rel):
 
         elif k == "deduce":
             n = seen["deduce"]
-            right = answers[n]
+            right = pg.evaluate("window.__mgs.answer")
             if n == 0:
                 pages = len(mgs_save(pg).get("pages") or [])
                 if pages != 4:
@@ -745,12 +821,12 @@ def mgs_playthrough(browser, base, rel):
     print(f"  {seen['runs']} runs, {seen['jigsaws']} jigsaws, {seen['words']} words, {seen['clues']} clues, {seen['parts']} parts, "
           f"{seen['deduce']} mystery answers, {seen['songs']} songs, {secs}s")
     print("  " + ", ".join(f"{n} {'ok' if seen[n] else 'not seen'}" for n in
-                           ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed")))
+                           ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship")))
     expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7}
     for name, n in expect.items():
         if seen[name] != n:
             fail(f"Mini Game Survival: expected {n} {name}, got {seen[name]}")
-    for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed"):
+    for name in ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship"):
         if not seen[name]:
             fail(f"Mini Game Survival never exercised: {name}")
     ctx.close()
@@ -770,6 +846,7 @@ def main():
                 out = json.loads((LIB / "games/starward/game.json").read_text(encoding="utf-8"))["output"]
                 playthrough(browser, base, out)
                 out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
+                mgs_easy_check(browser, base, out)
                 mgs_playthrough(browser, base, out)
             browser.close()
     finally:

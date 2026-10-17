@@ -41,14 +41,14 @@ function restore() {
 }
 
 Kit.ui.enterAdvances(panel);
-// Read-only peek for the automated play-test: where the crash pad camera is, and which step is showing.
-window.__mgs = { get step() { return S.step; }, get mode() { return mode; }, run: () => runCtl ? runCtl.state : null, hub: () => hubCtl ? { ...hubCtl.view(), heroX: hubCtl.hero.x, portals: Object.fromEntries(Object.entries(PORTALS).map(([k, p]) => [k, p.x])) } : null };
+// Read-only peek for the automated play-test: where the crash pad camera is, which step is showing, and the right mystery answer.
+window.__mgs = { get step() { return S.step; }, get mode() { return mode; }, get answer() { return mysteryAnswer; }, qbank: QBANK, run: () => runCtl ? runCtl.state : null, hub: () => hubCtl ? { ...hubCtl.view(), heroX: hubCtl.hero.x, portals: Object.fromEntries(Object.entries(PORTALS).map(([k, p]) => [k, p.x])) } : null };
 warmImages();
 
 try { window.claude?.hot?.snapshot?.(() => ({ S: JSON.parse(JSON.stringify(S)), active })); } catch (e) { /* not in a viewer */ }
 function boot(data) {
   paintHud(); board.init();
-  if (data && data.S && data.active && data.S.v === 1) { S = Object.assign(fresh(), data.S); active = true; scene.classList.remove("attract"); restore(); go(S.step); }
+  if (data && data.S && data.active && data.S.v === 2) { S = Object.assign(fresh(), data.S); active = true; scene.classList.remove("attract"); restore(); go(S.step); }
   else renderTitle();
 }
 try {

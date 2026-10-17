@@ -1,11 +1,12 @@
 /**
  * @file assets/ship/glitch-ship.js
- * @about A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, and a pilot can peek out of the cockpit.
+ * @about A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, a pilot can peek out of the cockpit, and the ship can wake up with a face on its nose.
  * @provides Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }
  * @requires nothing
  *
  * config  = { cockpit, wings, thrusters, core, paint } (any can be missing)
- * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit }
+ * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit,
+ *             face: awake | blink | happy (eyes and a smile on the nose, for a ship that has come alive) }
  * Drawing space: facing right, centered on 0,0, viewBox -64 -42 128 84.
  */
 (function (Kit) {
@@ -73,6 +74,17 @@
       crystal: `${pilot}<path d="M3 -19 L11 -36 L25 -36 L33 -19 Z" fill="#e7c9ff" fill-opacity=".6" ${S}/><path d="M11 -36 L15 -19 M25 -36 L21 -19 M7 -27 H29" stroke="#fff" stroke-width="1.4" opacity=".75"/>`
     };
     s += part("cockpit", c.cockpit, cockpit[c.cockpit] || "", `<path d="M2 -19 C4 -38 28 -38 32 -17 Z" ${G}/>`);
+
+    // A face on the nose, for a ship that has come alive
+    if (o.face) {
+      const eye = (cx, rx) => o.face === "awake"
+        ? `<ellipse cx="${cx}" cy="-7" rx="${rx}" ry="${rx * 1.2}" fill="#fff" stroke="${LINE}" stroke-width="1.6"/><circle cx="${cx + rx * .35}" cy="-6.4" r="${rx * .55}" fill="#1b1030"/><circle cx="${cx + rx * .55}" cy="-7.8" r="${rx * .2}" fill="#fff"/>`
+        : o.face === "blink" ? `<path d="M${cx - rx} -6 Q${cx} -3.6 ${cx + rx} -6" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`
+        : `<path d="M${cx - rx} -5 Q${cx} -11 ${cx + rx} -5" fill="none" stroke="${LINE}" stroke-width="2.2" stroke-linecap="round"/>`;
+      s += eye(21, 4.2) + eye(31, 3.4);
+      s += `<ellipse cx="17" cy="1" rx="3" ry="1.8" fill="#ff8fb1" opacity=".8"/>`;
+      s += o.face === "happy" ? `<path d="M21 9 Q28 18 35 8 Z" fill="#7a1f3d" ${S}/>` : `<path d="M21 10 Q28 15 34 9" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`;
+    }
     return s;
   }
   const box = (inner, cls = "") => `<svg class="${cls}" viewBox="-64 -42 128 84" aria-hidden="true">${inner}</svg>`;

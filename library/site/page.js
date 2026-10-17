@@ -1,7 +1,7 @@
 /**
  * @file site/page.js
  * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.
- * @requires kit/util.js, kit/audio.js, kit/music.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js
+ * @requires kit/util.js, kit/audio.js, kit/music.js, kit/groove.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js
  */
 const { $, esc } = Kit.util;
 const CAT = JSON.parse($("#catalog").textContent);
@@ -96,7 +96,7 @@ $("#shipControls").addEventListener("change", e => { const s = e.target.closest(
 drawShip();
 
 /* Songs */
-const player = Kit.music.create(Kit.songs);
+const player = Kit.groove.create(Kit.songs); // plays both the simple songs and the dance-style ones
 player.setEnabled(false);
 let playing = null;
 const songFile = id => FILES.find(f => f.path.startsWith("assets/music/") && f.provides === `Kit.songs.${id}`) || {};

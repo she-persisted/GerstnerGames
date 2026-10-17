@@ -6,7 +6,7 @@ Every game in the Child I Fun project is built from the files in this library. E
 
 | Folder | What lives there | Reuse rule |
 |---|---|---|
-| `kit/` | Engines: story flow, puzzle screen, typing flights, digging, walkable map, music player, sound effects, adaptive difficulty, high scores, jukebox, shared styles | Works in any game. Talks to games only through `window.Kit`. |
+| `kit/` | Engines: story flow, puzzle screen, typing flights, digging, walkable map, music players (simple and dance-style), sound effects, cartoon voices, adaptive difficulty, high scores, jukebox, obstacle runs, jigsaw, letter-guessing, side-view hub, shared styles | Works in any game. Talks to games only through `window.Kit`. |
 | `assets/` | Art and music: characters, rocket, side-view worlds, map art, icons, songs | Any game can include them. |
 | `content/` | Question banks (tagged easy, medium, hard), question generators, word lists | Any game can draw from them. |
 | `games/<id>/` | One game's own parts: settings, story, screens, layout, `game.json`, and any legacy single-file versions | Only that game. |
@@ -64,11 +64,15 @@ Copy `games/starward/game.json` and keep only the kit modules, assets, and conte
 
 Starward's skills: typing speed 1 to 10, math 1 to 5 (about 2nd to 4th grade), word puzzles 1 to 3. Questions are picked when they appear, so they always match the current level.
 
-Mini Game Survival's skills: runs 1 to 5 (speed and obstacles), jigsaw 1 to 3 (3x3, 3x4, 4x4), clue words 1 to 3 (word length and fuel), typing 1 to 3 (how long the clue line is).
+Mini Game Survival's skills, kept separately for Easy and Hard mode: runs (one level easier or harder than the mode's ramp, which climbs from portal to portal; run levels go 1 to 6), jigsaw 1 to 3 (3x3, 3x4, 4x4), clue words 1 to 3 (word length and fuel), typing 1 to 3 (how long the clue line is). Its mistakes are used only for that result and never shown or saved.
 
 ## Obstacle runs
 
-`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it.
+`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it.
+
+## Music
+
+Two players share one set of controls, so the jukebox works with both: `kit/music.js` plays simple 32-step songs (Starward), and `kit/groove.js` plays dance-style songs with sixteenth-note patterns, verses and choruses, claps, and arpeggios (Mini Game Survival). `kit/groove.js` can also play the simple songs.
 
 ## Question format
 

@@ -1,18 +1,20 @@
 /**
  * @file games/mini-game-survival/screens.js
- * @about Mini Game Survival's screens: title (high scores and jukebox), story lines, the crash pad with the clue notebook, obstacle runs, memory jigsaws, glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here. Right answers cheer and move on by themselves.
- * @requires kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js
+ * @about Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs, memory jigsaws, glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves.
+ * @requires games/mini-game-survival/questions.js, kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js
  */
 const board = Kit.scoreboard.create({ storeKey: KEYS.scores });
 const CHEERS = ["Roar-some!", "Dino-mite!", "T-Rexcellent!", "Glitch-tastic!", "Jurassic genius!", "Tiny arms, HUGE brain!",
-  "Big head energy!", "Stomp, stomp, CORRECT!", "Totally Rex-tacular!", "Your brain just did a backflip!"];
+  "Big head energy!", "Stomp, stomp, CORRECT!", "Totally Rex-tacular!", "Your brain just did a backflip!", "Out of this world!",
+  "Star-tastic!", "Galaxy brain!", "Dino-sore? Dino-SCORE!", "Comet-ly correct!"];
 let heroTap = null;
 
 const PORTRAIT = {
   trexy: () => `<svg class="portrait" viewBox="-12 -96 68 56" aria-hidden="true">${Kit.art.trexy.g({ face: "smile" })}</svg>`,
-  nova: () => `<svg class="portrait" viewBox="2 -50 56 46" aria-hidden="true">${Kit.art.nova.g({ lantern: false })}</svg>`,
-  shadow: () => `<svg class="portrait" viewBox="-56 -64 110 70" aria-hidden="true">${Kit.art.nova.shadow("#000")}</svg>`,
-  family: () => `<svg class="portrait" viewBox="-12 -100 68 58" aria-hidden="true">${Kit.art.trexy.g({ who: "mom", acc: "flower", face: "happy" })}</svg>`
+  nova: () => `<svg class="portrait" viewBox="12 -53 42 37" aria-hidden="true">${Kit.art.nova.g({ lantern: false })}</svg>`,
+  shadow: () => `<svg class="portrait" viewBox="-62 -64 116 68" aria-hidden="true">${Kit.art.nova.shadow("#000", 14)}</svg>`,
+  family: () => `<svg class="portrait" viewBox="-12 -100 68 58" aria-hidden="true">${Kit.art.trexy.g({ who: "mom", acc: "flower", face: "happy" })}</svg>`,
+  ship: () => `<svg class="portrait" viewBox="-6 -40 48 40" aria-hidden="true">${SHIP.svg(shipCfg(), { face: "happy" })}</svg>`
 };
 const headIcon = `<svg viewBox="-10 -92 66 50" aria-hidden="true">${Kit.art.trexy.g({ face: "think" })}</svg>`;
 
@@ -28,28 +30,52 @@ function renderJukebox() {
 function renderTitle() {
   active = false; flow.bump();
   startStage(); hideMemory();
-  applyStage({ theme: "hub", face: "smile", acc: "none", shadow: 1, nova: false, ship: false, family: false, lantern: false });
+  applyStage({ theme: "hub", face: "smile", acc: "none", shadow: 1, nova: false, ship: false, family: false, lantern: false, shipFace: "", ride: false });
   scene.classList.add("attract"); $("#place").textContent = "";
   const saved = loadSave();
+  let pickMode = savedMode();
   panel.innerHTML = `<div class="card title">
     <div><h2 class="big glitchy-big"><span class="glitchy" data-text="MINI GAME">MINI GAME</span><br><span class="hot">SURVIVAL</span></h2><p class="byline">A T-Rexy mystery</p></div>
+    <div class="modepick" role="radiogroup" aria-label="Pick a mode">
+      ${Object.entries(MODES).map(([id, m]) => `<button type="button" role="radio" class="modebtn" id="mode-${id}" data-mode="${id}" aria-checked="false">${esc(m.label)} <span class="kbd">${m.label[0]}</span></button>`).join("")}
+    </div>
+    <p class="modeabout" id="modeAbout" aria-live="polite"></p>
     <div class="actions start">
       <button class="btn big" type="button" data-primary id="playBtn">Play ${ICON.go}</button>
-      ${saved ? `<button type="button" class="btn ghost" id="resumeBtn">${ICON.retry} Keep going</button>` : ""}
+      ${saved ? `<button type="button" class="btn ghost" id="resumeBtn">${ICON.retry} Keep going <small>(${esc((MODES[saved.mode] || MODES.easy).label)})</small></button>` : ""}
     </div>
     <div class="board panel-board" data-scoreboard></div>
     <section class="jukebox" aria-label="Jukebox"><p class="eyebrow">${ICON.note.replace('class="note-ic" ', "")} Jukebox</p><div class="jlist" id="jukeList"></div></section>
   </div>`;
   board.render(); renderJukebox();
+  const showMode = (m, say) => {
+    pickMode = m;
+    panel.querySelectorAll(".modebtn").forEach(b => { const on = b.dataset.mode === m; b.setAttribute("aria-checked", on); b.classList.toggle("on", on); b.tabIndex = on ? 0 : -1; });
+    $("#modeAbout").textContent = MODES[m].about;
+    if (say) { sfx.key(); if (m === "hard") shadowLaugh(); }
+  };
+  showMode(pickMode);
+  panel.querySelectorAll(".modebtn").forEach(b => b.addEventListener("click", () => showMode(b.dataset.mode, true)));
+  const modeKey = e => {
+    if (e.target && e.target.matches && e.target.matches("input, textarea")) return;
+    const k = e.key.toLowerCase();
+    if (k === "e" || k === "h") { e.preventDefault(); showMode(k === "e" ? "easy" : "hard", true); }
+    else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && document.activeElement && document.activeElement.classList.contains("modebtn")) {
+      e.preventDefault(); showMode(pickMode === "easy" ? "hard" : "easy", true); focusSoon($("#mode-" + pickMode));
+    }
+  };
+  document.addEventListener("keydown", modeKey);
+  flow.setCleanup(() => document.removeEventListener("keydown", modeKey));
   bindPrimary(() => {
+    document.removeEventListener("keydown", modeKey);
     Kit.audio.ctx(); music.unlock();
-    S = fresh(); active = true; store.del(KEYS.save); scene.classList.remove("attract");
+    S = fresh(); setMode(pickMode); active = true; store.del(KEYS.save); scene.classList.remove("attract");
     resetStage(); paintHud(); go(0);
   });
   const rb = $("#resumeBtn");
-  if (rb) rb.addEventListener("click", () => { Kit.audio.ctx(); music.unlock(); S = Object.assign(fresh(), saved); active = true; scene.classList.remove("attract"); restore(); go(S.step); });
+  if (rb) rb.addEventListener("click", () => { document.removeEventListener("keydown", modeKey); Kit.audio.ctx(); music.unlock(); S = Object.assign(fresh(), saved); setMode(S.mode); active = true; scene.classList.remove("attract"); restore(); go(S.step); });
 }
-function resetStage() { applyStage({ theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false }); }
+function resetStage() { applyStage({ theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false, shipFace: "", ride: false }); }
 
 /* Story */
 function renderSay(st) {
@@ -61,9 +87,10 @@ function renderSay(st) {
     <div class="actions">${nextBtn("Next", '<span class="kbd">Enter</span>')}</div>
   </div>`;
   if (st.face) express(st.face, 3000);
-  if (st.hop) { hop(); setTimeout(hop, 600); }
-  if (st.who === "shadow") { flinch(); Kit.audio.tone(110, .4, "sawtooth", .04, 0, 70); }
+  if (st.hop === 2) doubleHop(); else if (st.hop) { hop(); setTimeout(hop, 600); }
+  if (st.who === "shadow") { if (/MWA|HA!/.test(st.x)) shadowLaugh(); else shadowTalk(Math.min(2400, 500 + st.x.length * 22)); }
   if (st.who === "nova") Kit.audio.tone(1400, .08, "sine", .04);
+  if (st.who === "ship") shipTalk();
   bindPrimary(next);
 }
 
@@ -75,14 +102,22 @@ function notebookHTML() {
     <p class="nb-head">${headIcon.replace("<svg", '<svg style="width:46px;height:36px"')} Clue Notebook</p>
     ${nextLine ? `<p class="nb-next">${esc(nextLine)}</p>` : ""}
     ${S.moved ? "" : `<p class="walkhint"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> to walk. <span class="kbd">Enter</span> to jump in.</p>`}
+    <p class="nb-mode">${esc(modeOf().label)} mode <button type="button" class="btn ghost small" id="modeSwitch">Switch to ${S.mode === "hard" ? "Easy" : "Hard"}</button></p>
     ${PORTAL_ORDER.map(id => S.clues.includes(id) ? `<p class="clue-note"><b>Clue ${CLUES[id].n}:</b> ${esc(CLUES[id].short)}</p>` : `<p class="clue-note empty">Clue ${CLUES[id].n}: ???</p>`).join("")}
     ${S.pages.length ? `<p class="eyebrow">Mysterious notes (${S.pages.length} of 4)</p>${[...S.pages].sort().map(i => `<p class="diary">${esc(PAGES[i])}<span class="paw" aria-label="signed with a tiny footprint">&#x2234;</span></p>`).join("")}` : ""}
   </div>`;
 }
 function renderHub() {
   $("#place").textContent = "The Crash Pad";
-  panel.innerHTML = notebookHTML();
-  startHub(() => next(), () => { panel.innerHTML = notebookHTML(); });
+  const paint = () => {
+    panel.innerHTML = notebookHTML();
+    $("#modeSwitch").addEventListener("click", () => {
+      setMode(S.mode === "hard" ? "easy" : "hard"); save(); paint(); blurActive();
+      toast(S.mode === "hard" ? "Hard mode! Runs score double." : "Easy mode! Checkpoints on, slower runs.");
+    });
+  };
+  paint();
+  startHub(() => next(), () => paint());
   blurActive();
 }
 
@@ -95,13 +130,15 @@ async function countdown(alive) {
   setTimeout(() => { if (el.querySelector(".go")) el.innerHTML = ""; }, 600);
   return true;
 }
-function runPortal({ theme, name, level, length, pieces, secret, extraShip, shadow, onPiecePage, done }) {
-  const speed = RUN_SPEED[level - 1];
-  const gen = Kit.runner.generate({ chunks: Kit.levels.runner, level, speed, length: speed * length, pieces, secret, extraShip });
+// n = which run this is (0 to 3 the portals, 4 the Shadow Gate): later runs use higher levels, set by the mode's ramp.
+function runPortal({ theme, name, n, pieces, secret, shadow, onPiecePage, done }) {
+  const M = modeOf(), level = runLevel(n), RL = RUN_LEVELS[level];
+  const ships = n === 4 ? RL.ships + 1 : RL.ships;
+  const gen = Kit.runner.generate({ chunks: Kit.levels.runner, level, speed: RL.speed, space: RL.space, ships, length: RL.speed * M.secs[n], pieces, secret });
   $("#place").textContent = name;
   const tok = flow.token(), firstRun = !S.tipped;
   startStage(); applyStage({ theme, face: "smile" }); stageEl.classList.add("wide"); blurActive();
-  const ui = $("#runUi");
+  const ui = $("#runUi"), autoCp = M.checkpoints;
   let cpOn = false;
   function turnOnCp() {
     if (cpOn || !runCtl) return; cpOn = true; runCtl.checkpoints(true);
@@ -116,43 +153,52 @@ function runPortal({ theme, name, level, length, pieces, secret, extraShip, shad
   const cKey = e => { if ((e.key === "c" || e.key === "C") && ui.querySelector("#cpBtn")) turnOnCp(); };
   document.addEventListener("keydown", cKey);
   flow.setCleanup(() => document.removeEventListener("keydown", cKey));
+  if (shadow) setTimeout(() => { if (flow.alive(tok)) shadowLaugh(); }, 300);
   countdown(() => flow.alive(tok)).then(ok => {
     if (!ok) return;
     startRun({
-      gen, theme, shadow, tip: firstRun ? "Space, Up, or click to hop. His hop is tiny!" : "",
-      onCrash: n => { if (n === 1 && firstRun) toast("Ouch! Back to the start."); if (n >= 3) showCp(); },
+      gen, theme, shadow, label: name, tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
+      onCrash: c => { if (c === 1 && firstRun) toast(autoCp ? "Oops! Back to the last checkpoint." : "Oops! Back to the start."); if (c >= 3 && !autoCp) showCp(); },
       onCollect: o => { if (o.k === "x" && onPiecePage) onPiecePage(); },
       onMode: m => { if (m === "ship" && !S.shipTip) { S.shipTip = true; save(); toast("Ship mode! Hold to fly up."); } },
-      onFinish: res => { document.removeEventListener("keydown", cKey); done(res); }
+      onDouble: () => { if (!S.dblTip) { S.dblTip = true; save(); toast("Double hop! Dino-MITE!"); } },
+      onFinish: res => { document.removeEventListener("keydown", cKey); done(res, level); }
     });
+    if (autoCp) { runCtl.checkpoints(true); ui.innerHTML = `<span class="cpchip">${ICON.check} Checkpoints on</span>`; }
     if (firstRun) { S.tipped = true; save(); }
     blurActive();
   });
 }
-function runOutcome(res) { return res.usedCheckpoints ? "gaveup" : res.crashes <= 1 ? "clean" : res.crashes <= 4 ? "ok" : "struggle"; }
+// Feeds the run level. The crash count is only looked at here and is never shown or saved.
+function runOutcome(res) {
+  if (res.usedCheckpoints && !modeOf().checkpoints) return "struggle";
+  return res.crashes <= 1 ? "clean" : res.crashes <= 4 ? "ok" : "struggle";
+}
 function renderRun(st) {
   const P = PORTALS[st.p], [rows, cols] = JIG_GRID[skills.level("jigsaw")];
+  const i = PORTAL_ORDER.indexOf(st.p);
   runPortal({
-    theme: P.theme, name: P.name, level: skills.level("run"), length: 22, pieces: rows * cols, secret: true,
+    theme: P.theme, name: P.name, n: i, pieces: rows * cols, secret: true,
     onPiecePage: () => {
-      const i = PORTAL_ORDER.indexOf(st.p);
       if (!S.pages.includes(i)) { S.pages.push(i); save(); }
       toast("A secret page! Someone's diary...");
     },
-    done: res => {
-      const pts = res.usedCheckpoints ? 100 + 5 * res.pieces : Math.max(100, 400 + 15 * res.pieces - 20 * res.crashes);
-      S.stats.pts += pts; S.stats.runs[st.p] = { crashes: res.crashes, pieces: res.pieces, total: res.piecesTotal, checkpoints: res.usedCheckpoints, secret: res.secret };
+    done: (res, level) => {
+      S.stats.pts += Math.round((300 + 20 * res.pieces) * modeOf().runMult);
+      S.stats.runs[st.p] = { level, pieces: res.pieces, total: res.piecesTotal, secret: res.secret };
       skills.record("run", runOutcome(res)); save();
-      afterRun(P, res, `${res.pieces} of ${res.piecesTotal} memory pieces`);
+      afterRun(P, res, `${res.pieces} of ${res.piecesTotal} memory pieces`, level);
     }
   });
 }
-function afterRun(P, res, piecesText) {
+const RUN_CHEERS = ["Tiny arms, mighty legs!", "Boing, boing, BOOM!", "Spikes? What spikes?", "That run was dino-MITE!", "Out of this world!", "Jurassic-ly awesome!", "You're a shooting STAR!", "The glitch never saw you coming!"];
+function afterRun(P, res, piecesText, level) {
   startStage(); applyStage({ theme: P.theme, face: "happy" }); express("happy", 2400); hop();
   panel.innerHTML = `<div class="card">
     <p class="eyebrow">${esc(P.name)}</p>
     <h2 class="big">Portal <span class="hot">cleared!</span></h2>
-    <div class="statrow"><span class="stat"><b>${esc(piecesText)}</b></span><span class="stat">Attempts: <b>${res.attempts}</b></span>${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>
+    <p class="line" style="font-size:1.05rem">${esc(pick(RUN_CHEERS))}</p>
+    <div class="statrow"><span class="stat"><b>${esc(piecesText)}</b></span><span class="stat">Level <b>${level}</b> run</span>${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>
   </div>`;
   const t = flow.token();
   setTimeout(() => { if (flow.alive(t)) next(); }, 2400);
@@ -185,8 +231,7 @@ function renderJigsaw(st) {
       if (!nudged && ++moves > rows * cols + 4) { nudged = true; fixBtn.classList.add("nudge"); express("think", 1500); }
     },
     onDone: r => {
-      const pts = Math.max(80, 300 - 8 * Math.max(0, r.moves - r.best) - 40 * r.peeks - 60 * r.fixes);
-      S.stats.pts += pts; S.stats.jigs[st.p] = r;
+      S.stats.pts += 300;
       const outcome = r.fixes >= 3 ? "gaveup" : (r.fixes === 0 && r.peeks === 0 && r.moves <= r.best + 2) ? "clean" : (r.fixes === 0 && r.moves <= r.best + 8) ? "ok" : "struggle";
       skills.record("jigsaw", outcome); save();
       panel.querySelectorAll(".help").forEach(b => { b.disabled = true; });
@@ -214,8 +259,7 @@ function renderWord(st) {
     onScan: () => hop(),
     onOut: () => express("worried", 3000),
     onWin: r => {
-      S.stats.pts += r.out ? 40 : 150 + 40 * r.fuelLeft;
-      S.stats.words[st.p] = { word: w.word, misses: r.misses, scans: r.scans, out: r.out };
+      S.stats.pts += 300;
       const outcome = r.out ? "gaveup" : (r.misses <= 1 && !r.scans) ? "clean" : r.misses >= 4 ? "struggle" : "ok";
       skills.record("words", outcome); save();
       express("happy", 2000); hop();
@@ -228,10 +272,11 @@ function renderWord(st) {
 
 /* Typing a clue into the notebook */
 function renderClue(st) {
-  const C = CLUES[st.p], L = skills.level("typing"), text = C.type[L - 1];
+  const C = CLUES[st.p], L = skills.level("typing"), text = pickVersion(`line.${st.p}.${L}`, QBANK.lines[st.p][L - 1]);
+  const fact = pickVersion(`fact.${st.p}`, QBANK.facts[st.p]), bonus = pickVersion(`bonus.${st.p}`, QBANK.bonus[st.p]);
   startStage(); applyStage({ face: "think" }); hideMemory();
   panel.innerHTML = `<div class="card">
-    <div class="cluecard"><h3>${esc(C.title)}</h3><p>${esc(C.saw)}</p><p class="fact">${esc(C.fact)}</p></div>
+    <div class="cluecard"><h3>${esc(C.title)}</h3><p>${esc(C.saw)}</p><p class="fact">${esc(fact)}</p><p class="bonus">${esc(bonus)}</p></div>
     <p class="digtip">Type the clue into your notebook.</p>
     <div class="typehost" id="typeHost"></div>
   </div>`;
@@ -302,22 +347,24 @@ function renderSong(st) {
 /* The Shadow Gate */
 function renderFinal() {
   runPortal({
-    theme: "shadow", name: "The Shadow Gate", level: skills.level("run"), length: 30, pieces: 8, secret: false, extraShip: true, shadow: true,
-    done: res => {
-      const pts = res.usedCheckpoints ? 200 + 5 * res.pieces : Math.max(200, 600 + 20 * res.pieces - 20 * res.crashes);
-      S.stats.pts += pts; S.stats.runs.gate = { crashes: res.crashes, pieces: res.pieces, total: res.piecesTotal, checkpoints: res.usedCheckpoints };
+    theme: "shadow", name: "The Shadow Gate", n: 4, pieces: 8, secret: false, shadow: true,
+    done: (res, level) => {
+      S.stats.pts += Math.round((500 + 25 * res.pieces) * modeOf().runMult);
+      S.stats.runs.gate = { level, pieces: res.pieces, total: res.piecesTotal };
       skills.record("run", runOutcome(res)); save();
-      afterRun(PORTALS.gate, res, `${res.pieces} of ${res.piecesTotal} star shards`);
+      afterRun(PORTALS.gate, res, `${res.pieces} of ${res.piecesTotal} star shards`, level);
     }
   });
 }
 
 /* The mystery */
+let mysteryAnswer = -1; // the play-test reads this to pick the right answer
 function renderDeduce(st) {
-  const D = DEDUCE[st.n];
+  const step = DEDUCE[st.n], D = { ...step, ...pickVersion(`mystery.${st.n}`, step.v) };
+  mysteryAnswer = D.a;
   startStage(); applyStage({ face: "think" });
   const order = shuffle(D.opts.map((t, i) => i));
-  let wrong = 0, done = false;
+  let done = false;
   panel.innerHTML = `<div class="card">
     <div class="headrow"><p class="eyebrow">Solve the mystery</p>${Kit.ui.pips(st.n, 4)}</div>
     <p class="q">${esc(D.q)}</p>
@@ -330,12 +377,11 @@ function renderDeduce(st) {
     const fb = $("#fb");
     if (Number(b.dataset.i) === D.a) {
       done = true; b.classList.add("yes"); panel.querySelectorAll(".choice").forEach(x => { x.disabled = true; });
-      S.stats.mystery.right++; S.stats.pts += wrong ? 50 : 150; save();
+      S.stats.pts += 150; save();
       sfx.right(); express("happy", 2000); hop();
       fb.className = "feedback good cheer"; fb.textContent = pick(CHEERS);
       const t = flow.token(); setTimeout(() => { if (flow.alive(t)) next(); }, 1700);
     } else {
-      wrong++; S.stats.mystery.wrong++; save();
       b.classList.add("no"); b.disabled = true; sfx.wrong(); express("think", 1800);
       fb.className = "feedback oops"; fb.textContent = D.nope;
       const C = CLUES[D.clue];
@@ -357,7 +403,9 @@ function renderShrink() {
 }
 
 /* Ending */
-// Score = run, jigsaw, clue word, and mystery points + 20 x typing words per minute + 5 x typing accuracy percent + 250 per secret page.
+// Score = run points (300 + 20 per memory piece; the Shadow Gate 500 + 25 per star shard; double in Hard mode) + 300 per jigsaw
+// + 300 per clue word + 150 per mystery answer + 20 x typing words per minute + 5 x typing accuracy percent + 250 per secret page.
+// Mistakes, crashes, and helpers never cost points.
 function computeScore() {
   const t = S.stats.typing;
   const acc = t.hits + t.misses ? Math.round(t.hits / (t.hits + t.misses) * 100) : 0;
@@ -373,13 +421,13 @@ function renderEnd() {
     <h2 class="big">T-Rexy is <span class="hot">home!</span></h2>
     ${S.pages.length === 4 ? `<p class="secret-end">Secret ending! Nova's diary had one more page: a crayon drawing of her and T-Rexy, labeled BEST FRIENDS (probably).</p>` : ""}
     <div class="scorecard" aria-label="Your score">
-      <p class="sc-row"><span>Runs, puzzles, and clues</span><span>${sc.gamePts}</span></p>
+      <p class="sc-row"><span>Runs, puzzles, and clues${S.mode === "hard" ? " (Hard mode: runs count double)" : ""}</span><span>${sc.gamePts}</span></p>
       <p class="sc-row"><span>Typing speed: ${sc.wpm} words per minute</span><span>${sc.speedPts}</span></p>
       <p class="sc-row"><span>Typing accuracy: ${sc.acc}%</span><span>${sc.accPts}</span></p>
       <p class="sc-row"><span>Secret pages: ${S.pages.length} of 4</span><span>${sc.pagePts}</span></p>
       <p class="sc-row sc-total"><span>Score</span><span>${sc.total}</span></p>
     </div>
-    <div class="levels">${Object.keys(SKILLS).map(k => `<span class="lvl"><b>${SKILL_NAME[k]}</b> level ${skills.level(k)} of ${SKILLS[k].max}</span>`).join("")}</div>
+    <div class="levels"><span class="lvl"><b>${esc(modeOf().label)}</b> mode</span><span class="lvl"><b>Fastest run</b> level ${Math.max(1, ...Object.values(S.stats.runs).map(r => r.level || 1))} of 6</span>${["jigsaw", "words", "typing"].map(k => `<span class="lvl"><b>${SKILL_NAME[k]}</b> level ${skills.level(k)} of ${SKILLS[k].max}</span>`).join("")}</div>
     <form class="answer" id="hsForm" autocomplete="off">
       <label class="sr" for="hsName">Your name for the high score board</label>
       <input id="hsName" class="field arcade-field" maxlength="10" placeholder="YOUR NAME">
@@ -396,7 +444,7 @@ function renderEnd() {
     const nm = $("#hsName").value.replace(/[^A-Za-z0-9 ]/g, "").trim().slice(0, 10);
     if (!nm) { $("#hsName").focus(); return; }
     $("#hsForm").querySelectorAll("input,button").forEach(x => { x.disabled = true; });
-    const rank = await board.save({ name: nm, score: sc.total, pages: S.pages.length, wpm: sc.wpm, acc: sc.acc, levels: skills.snapshot(), at: new Date().toISOString() });
+    const rank = await board.save({ name: nm, score: sc.total, mode: S.mode, pages: S.pages.length, wpm: sc.wpm, acc: sc.acc, levels: skills.snapshot(), at: new Date().toISOString() });
     $("#rankMsg").textContent = rank && rank <= 10 ? `#${rank}!` : "Saved!";
     sfx.join(); express("happy", 2500); hop();
     const ab = $("#againBtn"); ab.className = "btn"; focusSoon(ab);
