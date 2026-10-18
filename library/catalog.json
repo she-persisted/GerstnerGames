@@ -742,7 +742,7 @@
   {
    "path": "games/mini-game-survival/game.json",
    "layer": "Games",
-   "bytes": 4157,
+   "bytes": 4549,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1401,8 +1401,14 @@
     {
      "version": 3,
      "date": "2026-10-17",
-     "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+     "url": "https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD",
      "notes": "Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory jigsaw with a keep-going or run-again choice and a full-catch bonus, L and R move back and forward through the story, hints that show the keys only when a player is stuck, and a real recorded villain laugh (CC0)."
+    },
+    {
+     "version": 4,
+     "date": "2026-10-17",
+     "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+     "notes": "Checkpoints always on; Hard mode needs every memory piece to move on; obstacles on the beat with the music kept in time; PERFECT hops; catch sparkles, landing dust, and a crash shake; 12 unlockable looks for T-Rexy and his closet on the crash pad."
     }
    ],
    "source": "games/mini-game-survival",

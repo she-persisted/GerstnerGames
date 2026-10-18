@@ -114,7 +114,7 @@ Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 
 |---|---|---|---|
 | v1 | 2026-10-17 | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | First version. |
 | v4 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Checkpoints always on; Hard mode needs every memory piece; obstacles on the beat with music in time; PERFECT hops; sparkles, dust, and crash shake; 12 unlockable looks and T-Rexy's closet. |
-| v3 | 2026-10-17 | V3_ARCHIVE (archive) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
+| v3 | 2026-10-17 | https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD (archive) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
 | v2 | 2026-10-17 | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | Easier runs that ramp up, double hop, Easy and Hard modes, no attempt counting, funnier opening with puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip. |
 
 ## Ideas for later
