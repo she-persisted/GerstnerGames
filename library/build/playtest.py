@@ -59,7 +59,11 @@ Checks:
        and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes
        every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.
        Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.
-       Every run must end with every piece caught, which unlocks 5 of T-Rexy's looks.
+       Every run must end with every piece caught.
+     - Looks: every finished run, jigsaw, and clue word unlocks one of T-Rexy's looks, with a New look card, so the
+       playthrough ends with all 12. The closet on every crash pad visit shows exactly 12 slots (nothing was skipped).
+       From saved games: with three runs skipped it shows only the 4 empty slots still reachable this game, with a
+       look already found in an earlier game it still shows 12, and with every look found it shows no empty slots.
      - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.
      - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
      - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
@@ -874,6 +878,56 @@ def mgs_easy_check(browser, base, rel):
     ctx.close()
 
 
+CLOSET_JS = r"""() => { const c = document.querySelector('#panel .closet'); if (!c) return null;
+  return { slots: c.querySelectorAll('.lookbtn').length, have: c.querySelectorAll('.lookbtn[data-look]').length,
+    empty: c.querySelectorAll('.lookbtn.locked').length, label: c.querySelector('.closet-n').textContent.trim(),
+    tip: c.querySelector('.closet-tip').textContent.trim() }; }"""
+
+
+def mgs_closet_check(browser, base, rel):
+    """The closet only shows the empty slots that can still be filled this game, from three saved games at the crash pad."""
+    ctx, pg = new_page(browser, "mgs closet")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    plan = pg.evaluate("({ steps: window.__mgs.steps, events: window.__mgs.lookSteps(), order: window.__mgs.lookOrder })")
+    hubs = [i for i, t in enumerate(plan["steps"]) if t == "hub"]
+    events, order = plan["events"], plan["order"]
+    if len(events) != 13 or len(order) != 12:
+        fail(f"expected 13 mini games that unlock looks (12 plus the Shadow Gate) and 12 looks, got {len(events)} and {len(order)}")
+        ctx.close()
+        return
+
+    def closet_at(step, passed, got, have):
+        save = {"v": 3, "mode": "easy", "step": step, "seed": 12345, "moved": True, "passed": passed, "looks": got,
+                "done": [p for p in ("echo", "fern", "lantern", "whirl") if f"word.{p}" in got], "clues": []}
+        pg.evaluate("([s, l]) => { localStorage.setItem('mgs.save.v3', JSON.stringify(s)); localStorage.setItem('mgs.looks', JSON.stringify(l)); }",
+                    [save, {"have": have, "head": "", "back": "", "skin": ""}])
+        pg.goto(base + rel)
+        pg.wait_for_selector("#resumeBtn")
+        pg.click("#resumeBtn")
+        pg.wait_for_selector("#panel .closet", timeout=5000)
+        return pg.evaluate(CLOSET_JS)
+
+    # Three runs skipped, every other mini game finished, now at the crash pad before the Whirlpool Galaxy:
+    # 6 looks found, and only 4 more can come this game (the galaxy's run, jigsaw, and word, and the Shadow Gate run).
+    hub = hubs[3]
+    got = [ev for i, ev in events if i < hub and not ev.startswith("run.")]
+    c = closet_at(hub, list(range(hub)), got, order[:6])
+    if not c or (c["have"], c["empty"], c["label"]) != (6, 4, "6 of 10") or "next game" not in c["tip"]:
+        fail(f"with three runs skipped, the closet should show 6 looks and 4 empty slots ('6 of 10', more next game), found {c}")
+    # A new game with 3 looks from an earlier game: the other 9 can all come this game.
+    c2 = closet_at(hubs[0], list(range(hubs[0])), [], order[:3])
+    if not c2 or (c2["have"], c2["empty"], c2["label"]) != (3, 9, "3 of 12"):
+        fail(f"a new game with 3 looks found before should show 3 looks and 9 empty slots, found {c2}")
+    # Every look found: no empty slots.
+    c3 = closet_at(hubs[0], list(range(hubs[0])), [], order)
+    if not c3 or (c3["have"], c3["empty"]) != (12, 0) or "Every look found" not in c3["tip"]:
+        fail(f"with every look found the closet should show 12 looks and no empty slots, found {c3}")
+    if c and c2 and c3:
+        print(f"  closet: {c['label']} with three runs skipped, {c2['label']} with 3 found before, {c3['label']} with all found")
+    ctx.close()
+
+
 MGS_RESUME_JS = r"""step => { localStorage.setItem('mgs.save.v3', JSON.stringify({ v: 3, mode: 'easy', step, seed: 12345, moved: true })); }"""
 
 
@@ -1001,7 +1055,9 @@ def mgs_playthrough(browser, base, rel):
     seen = {"runs": 0, "jigsaws": 0, "words": 0, "clues": 0, "parts": 0, "paints": 0, "deduce": 0, "songs": 0,
             "crashrestart": False, "checkpoints": False, "peek": False, "fix": False, "scan": False, "refuel": False,
             "wrongclue": False, "roar": False, "poke": False, "resumed": False, "modeswitch": False, "ship": False,
-            "hint": False, "rerun": False, "bonus": False, "noskip": False, "hardall": False, "closet": False, "musicsync": False}
+            "hint": False, "rerun": False, "bonus": False, "noskip": False, "hardall": False, "closet": False, "musicsync": False,
+            "lookcards": 0, "closetvisits": 0}
+    closet_seen = set()
     reloaded = False
     last_sig, last_change, started = None, time.time(), time.time()
     run_seen, song_steps = None, set()
@@ -1066,6 +1122,13 @@ def mgs_playthrough(browser, base, rel):
                 pg.reload()
                 pg.wait_for_selector("#playBtn")
                 continue
+            hub_step = pg.evaluate("window.__mgs.step")
+            c = pg.evaluate(CLOSET_JS)
+            if c and hub_step not in closet_seen:  # (the closet may not be drawn yet on the first look at a new screen)
+                closet_seen.add(hub_step)
+                if c["slots"] != 12 or c["label"] != f"{c['have']} of 12":
+                    fail(f"with no mini game skipped, the closet should show all 12 slots, found {c}")
+                seen["closetvisits"] += 1
             if not seen["closet"] and pg.locator("#panel .lookbtn[data-look]").count():
                 before = pg.evaluate("window.__mgs.looks()")
                 pg.locator("#panel .lookbtn[data-look]").first.click(); pg.wait_for_timeout(120)
@@ -1202,7 +1265,12 @@ def mgs_playthrough(browser, base, rel):
             if pg.locator(".jig.solved").count():
                 seen["jigsaws"] += 1
                 try:
-                    pg.wait_for_function("!document.querySelector('#jigProg')", timeout=6000)
+                    pg.wait_for_selector("#panel .unlock", timeout=1500)
+                    seen["lookcards"] += 1
+                except Exception:
+                    fail(f"solving jigsaw {seen['jigsaws']} did not show a New look card")
+                try:
+                    pg.wait_for_function("!document.querySelector('#jigProg')", timeout=8000)
                 except Exception:
                     fail("a solved jigsaw did not move on by itself")
                     break
@@ -1239,9 +1307,13 @@ def mgs_playthrough(browser, base, rel):
                 fail(f"guessing every letter of {word!r} did not win")
                 break
             seen["words"] += 1
+            if pg.locator("#panel .unlock").count():
+                seen["lookcards"] += 1
+            else:
+                fail(f"solving clue word {seen['words']} did not show a New look card")
             if pg.locator("#panel [data-primary]").count():
                 fail("a Next button appeared after a clue word")
-            pg.wait_for_function("!document.querySelector('.fuelword')", timeout=5000)
+            pg.wait_for_function("!document.querySelector('.fuelword')", timeout=8000)
 
         elif k == "refuel":
             s = mgs_save(pg)
@@ -1253,7 +1325,11 @@ def mgs_playthrough(browser, base, rel):
                 pg.wait_for_selector("#fb.good.cheer", timeout=3000)
                 seen["refuel"] = True
                 seen["words"] += 1
-                pg.wait_for_function("!document.querySelector('.fuelword')", timeout=5000)
+                if pg.locator("#panel .unlock").count():
+                    seen["lookcards"] += 1
+                else:
+                    fail("a clue word solved by refueling did not show a New look card")
+                pg.wait_for_function("!document.querySelector('.fuelword')", timeout=8000)
             except Exception:
                 fail("typing the word after running out of fuel did not refuel")
                 break
@@ -1307,8 +1383,8 @@ def mgs_playthrough(browser, base, rel):
                 if r.get("pieces") != r.get("total"):
                     fail(f"the {key} run caught {r.get('pieces')} of {r.get('total')} pieces (Hard mode needs all of them)")
             looks = pg.evaluate("window.__mgs.looks()")
-            if len(looks.get("have", [])) != 5:
-                fail(f"catching every piece in all 5 runs should unlock 5 looks, got {looks.get('have')}")
+            if len(looks.get("have", [])) != 12:
+                fail(f"finishing every run, jigsaw, and clue word should unlock all 12 looks, got {looks.get('have')}")
             seen["rerun"] = bool((runs.get("fern") or {}).get("full"))
             if not seen["rerun"]:
                 fail("running Fern Moon again did not end with every piece caught")
@@ -1335,7 +1411,7 @@ def mgs_playthrough(browser, base, rel):
     print("  " + ", ".join(f"{n} {'ok' if seen[n] else 'not seen'}" for n in
                            ("crashrestart", "checkpoints", "peek", "fix", "scan", "refuel", "wrongclue", "roar", "poke", "resumed", "modeswitch", "ship",
                             "hint", "rerun", "bonus", "noskip", "hardall", "closet", "musicsync")))
-    expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7}
+    expect = {"runs": 5, "jigsaws": 4, "words": 4, "clues": 4, "parts": 4, "paints": 1, "deduce": 4, "songs": 7, "lookcards": 8, "closetvisits": 5}
     for name, n in expect.items():
         if seen[name] != n:
             fail(f"Mini Game Survival: expected {n} {name}, got {seen[name]}")
@@ -1347,6 +1423,7 @@ def mgs_playthrough(browser, base, rel):
         if not seen.get("hintclear_" + where):
             fail(f"Mini Game Survival never checked where a hint sits: {where}")
     print("  hints stay off the play area: above the crash pad, in the floor under a run, under the jigsaw board")
+    print(f"  looks: a New look card after every jigsaw and clue word, all 12 looks by the end, 12 closet slots on all {seen['closetvisits']} crash pad visits")
     ctx.close()
 
 
@@ -1369,6 +1446,7 @@ def main():
                 out = mgs_out
                 mgs_pieces_check(browser, base, out)
                 mgs_easy_check(browser, base, out)
+                mgs_closet_check(browser, base, out)
                 mgs_touch_check(browser, base, out)
                 mgs_playthrough(browser, base, out)
             browser.close()

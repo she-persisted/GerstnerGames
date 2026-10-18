@@ -121,20 +121,35 @@ function notebookHTML() {
     ${S.pages.length ? `<p class="eyebrow">Mysterious notes (${S.pages.length} of 4)</p>${[...S.pages].sort().map(i => `<p class="diary">${esc(PAGES[i])}<span class="paw" aria-label="signed with a tiny footprint">&#x2234;</span></p>`).join("")}` : ""}
   </div>`;
 }
-// T-Rexy's closet: every look unlocked so far (click to put it on or take it off), and a "?" for each one still to find.
+// T-Rexy's closet: every look unlocked so far (click to put it on or take it off), then a "?" for each look this game can
+// still unlock (one per mini game left), so it never shows empty slots nobody can fill this game.
 function closetHTML() {
   const icon = (slot, id) => {
     const o = slot === "skin" ? { face: "happy", skin: id } : slot === "head" ? { face: "happy", acc: id } : { face: "happy", back: id, pose: "run1" };
     const vb = slot === "back" ? "-60 -98 120 100" : Kit.art.trexy.headView(o);
     return `<svg viewBox="${vb}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`;
   };
-  const items = LOOK_ORDER.map(([slot, id]) => LOOK.have.includes(id)
-    ? `<button type="button" class="lookbtn${LOOK[slot] === id ? " on" : ""}" data-slot="${slot}" data-look="${id}" aria-pressed="${LOOK[slot] === id}" title="${esc(lookName(slot, id))}">${icon(slot, id)}<span class="sr">${esc(lookName(slot, id))}</span></button>`
-    : `<span class="lookbtn locked" aria-hidden="true">?</span>`).join("");
-  return `<div class="closet"><p class="eyebrow">T-Rexy's closet <span class="closet-n">${LOOK.have.length} of ${LOOK_ORDER.length}</span></p>
+  const have = LOOK_ORDER.filter(([, id]) => LOOK.have.includes(id)), open = looksReachable(), locked = LOOK_ORDER.length - have.length;
+  const items = have.map(([slot, id]) => `<button type="button" class="lookbtn${LOOK[slot] === id ? " on" : ""}" data-slot="${slot}" data-look="${id}" aria-pressed="${LOOK[slot] === id}" title="${esc(lookName(slot, id))}">${icon(slot, id)}<span class="sr">${esc(lookName(slot, id))}</span></button>`).join("")
+    + `<span class="lookbtn locked" aria-hidden="true">?</span>`.repeat(open);
+  const tipLine = !locked ? "Every look found. Fashion-saurus!"
+    : open ? `Finish a mini game to unlock a new look!${open < locked ? " More to find next game." : ""}`
+    : "More looks to find next game!";
+  return `<div class="closet"><p class="eyebrow">T-Rexy's closet <span class="closet-n">${have.length} of ${have.length + open}</span></p>
     <div class="closet-row" role="group" aria-label="T-Rexy's looks">${items}</div>
-    ${LOOK.have.length < LOOK_ORDER.length ? `<p class="closet-tip">Catch every piece in a run to unlock a new look!</p>` : `<p class="closet-tip">Every look found. Fashion-saurus!</p>`}</div>`;
+    <p class="closet-tip">${tipLine}</p></div>`;
 }
+// The "New look!" card on a mini game's results, and T-Rexy's happy dance to go with it.
+const lookCard = look => look ? `<div class="unlock"><svg viewBox="-62 -126 122 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
+    <div><p class="unlock-new">New look!</p><p class="unlock-name">${esc(look.name)}</p><p class="unlock-tip">T-Rexy put it on. Change looks in his closet on the crash pad.</p></div></div>` : "";
+const gainLook = ev => { const look = earnLook(ev); if (look) warmLook(); return look; };
+function cheerLook(look) {
+  if (!look) return;
+  const t = flow.token();
+  setTimeout(() => { if (flow.alive(t)) sfx.join(); }, 500);
+  express("happy", 3400); dinoNoise("trexy", "wee", 1.1); toast(`New look: ${look.name}!`);
+}
+const LOOK_PAUSE = 4200; // how long a results screen with a new look stays up, so there's time to see it
 function renderHub() {
   $("#place").textContent = "The Crash Pad";
   const paint = () => {
@@ -206,8 +221,9 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
     hideHint();
     const all = res.piecesTotal > 0 && res.pieces >= res.piecesTotal;
     const pts = res.skipped ? 0 : Math.round((base + per * res.pieces + PERFECT_PTS * (res.perfects || 0)) * M.runMult) + (all ? FULL_BONUS : 0);
-    // The first full catch of this run in this game unlocks (and puts on) T-Rexy's next look.
-    if (all && !(prev && prev.full)) { res.look = unlockLook(); if (res.look) warmLook(); }
+    // Finishing the run (not skipping it) unlocks and puts on T-Rexy's next look, once per game. In Hard mode a portal run
+    // is only finished once every piece is caught.
+    if (!res.skipped && (all || !needAll)) res.look = gainLook(`run.${key}`);
     S.stats.runs[key] = { level, secs, ships, total: res.piecesTotal, have: res.gotIdx, pieces: res.pieces, secret: !!(res.secret || (prev && prev.secret)), pts: Math.max(pts, prev ? prev.pts || 0 : 0), full: all || !!(prev && prev.full) };
     if (!res.skipped) skills.record("run", runOutcome(res));
     if (all || !needAll) markPassed();
@@ -296,8 +312,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   if (all || !missing) dinoNoise("trexy", all ? "excited" : "happy", .2);
   const head = res.skipped ? `Run <span class="hot">skipped</span>` : `Portal <span class="hot">cleared!</span>`;
   const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.perfects ? `<span class="stat"><b>${res.perfects}</b> perfect hop${res.perfects > 1 ? "s" : ""}</span>` : ""}${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
-  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 122 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
-    <div><p class="unlock-new">New look!</p><p class="unlock-name">${esc(res.look.name)}</p><p class="unlock-tip">T-Rexy put it on. Change looks in his closet on the crash pad.</p></div></div>` : "";
+  const look = lookCard(res.look);
   const t = flow.token();
   if (all || missing <= 0) {
     panel.innerHTML = `<div class="card">
@@ -309,8 +324,8 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
       ${look}
     </div>`;
     if (all) sfx.levelup();
-    if (res.look) { setTimeout(() => { if (flow.alive(t)) sfx.join(); }, 500); express("happy", 3400); dinoNoise("trexy", "wee", 1.1); toast(`New look: ${res.look.name}!`); }
-    setTimeout(() => { if (flow.alive(t)) next(); }, res.look ? 4200 : all ? 2800 : 2400);
+    cheerLook(res.look);
+    setTimeout(() => { if (flow.alive(t)) next(); }, res.look ? LOOK_PAUSE : all ? 2800 : 2400);
     return;
   }
   const again = () => go(S.step), one = missing === 1 ? what.replace(/s$/, "") : what;
@@ -340,6 +355,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
     <h2 class="big">${head}</h2>
     ${stats}
     <p class="gapnote">${missing} ${one} got away${memory ? ", so the memory will have holes in it" : ""}. Catch every one for <b>+${FULL_BONUS}</b> bonus points!</p>
+    ${look}
     <div class="actions choicebtns">
       <button type="button" class="btn" data-primary id="keepGoing" disabled>Keep going <span class="kbd">Enter</span></button>
       <button type="button" class="btn ghost" id="runAgain" disabled>${ICON.retry} Run it again <span class="kbd">A</span></button>
@@ -347,6 +363,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   </div>`;
   bindPrimary(next);
   $("#runAgain").addEventListener("click", again);
+  cheerLook(res.look);
   unlock("#keepGoing"); // a short pause first, so a hop pressed as the run ends doesn't pick for you
   const aKey = e => { if (ready && (e.key === "a" || e.key === "A") && !e.repeat) { e.preventDefault(); again(); } };
   document.addEventListener("keydown", aKey);
@@ -398,21 +415,23 @@ function renderJigsaw(st) {
       if (!nudged && ++moves > tiles + 4) { nudged = true; fixBtn.classList.add("nudge"); express("think", 1500); }
     },
     onDone: r => {
-      clearHints(); markPassed();
+      clearHints();
       const nothingToDo = r.moves <= 0 && r.fixes === 0; // every piece left was already home
       if (!skipping && !nothingToDo) {
         S.stats.pts += 300;
         const outcome = r.fixes >= 3 ? "gaveup" : (r.fixes === 0 && r.peeks === 0 && r.moves <= r.best + 2) ? "clean" : (r.fixes === 0 && r.moves <= r.best + 8) ? "ok" : "struggle";
         skills.record("jigsaw", outcome);
       }
-      save();
+      const look = skipping ? null : gainLook(`jigsaw.${st.p}`); // a finished jigsaw (not skipped with R) unlocks the next look
+      markPassed(); save();
       panel.querySelectorAll(".help").forEach(b => { b.disabled = true; });
       const fb = $("#fb"); fb.className = "feedback good cheer";
       fb.textContent = r.gaps ? `${pick(CHEERS)} Most of the memory is back!` : pick(CHEERS);
-      express("happy", 2400); hop(); dinoNoise("trexy", "happy", .2);
+      if (look) fb.insertAdjacentHTML("afterend", lookCard(look));
+      express("happy", 2400); hop(); dinoNoise("trexy", "happy", .2); cheerLook(look);
       onForward(null);
       const t = flow.token();
-      setTimeout(() => { if (flow.alive(t)) next(); }, 2200);
+      setTimeout(() => { if (flow.alive(t)) next(); }, look ? LOOK_PAUSE : 2200);
     }
   });
   panel.querySelector('[data-help="peek"]').addEventListener("click", () => { jig.peek(); express("think", 1200); });
@@ -428,7 +447,7 @@ function renderJigsaw(st) {
 function renderWord(st) {
   const P = PORTALS[st.p], w = wordFor(st.p), L = skills.level("words");
   startStage(); applyStage({ theme: P.theme, face: "think" }); $("#place").textContent = P.name;
-  let misses = 0;
+  let misses = 0, look = null;
   const ctl = Kit.fuelWord.render(panel, {
     head: `<p class="eyebrow">${esc(P.name)}: glitch-locked clue word</p>`,
     tip: touchMode ? "Tap letters to guess the word. Wrong letters burn fuel!" : "Type letters to guess the word. Wrong letters burn fuel!",
@@ -442,11 +461,14 @@ function renderWord(st) {
     onWin: r => {
       S.stats.pts += 300;
       const outcome = r.out ? "gaveup" : (r.misses <= 1 && !r.scans) ? "clean" : r.misses >= 4 ? "struggle" : "ok";
+      look = gainLook(`word.${st.p}`); // a solved word (even after refueling) unlocks the next look
       skills.record("words", outcome); markPassed(); save();
       clearHints(); onForward(null);
       express("happy", 2000); hop(); dinoNoise("trexy", "excited", .2);
+      if (look) { const out = $("#fwOut", panel); if (out) out.innerHTML = lookCard(look); cheerLook(look); }
     },
-    onDone: () => next()
+    // The word stays up 1.7 s after it's solved; a new look gets the same time on screen as after a run.
+    onDone: () => { if (!look) return next(); const t = flow.token(); setTimeout(() => { if (flow.alive(t)) next(); }, LOOK_PAUSE - 1700); }
   });
   heroTap = () => ctl.use("scan");
   navKeys("arrows"); // letters are guesses here

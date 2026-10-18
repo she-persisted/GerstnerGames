@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (kept on this computer across games), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (one for each mini game finished, so all of them fit in one game, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -103,7 +103,7 @@ const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "
 const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home" };
 
 const fresh = () => ({
-  v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: HERO_START, moved: false, pokes: 0, roared: false,
+  v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, looks: [], hubX: HERO_START, moved: false, pokes: 0, roared: false,
   stats: { pts: 0, runs: {}, typing: { hits: 0, misses: 0, ms: 0, chars: 0 } }
 });
 let S = fresh();
@@ -164,8 +164,10 @@ function markPassed(i = S.step) { if (!S.passed.includes(i)) { S.passed.push(i);
 const FULL_BONUS = 200; // for catching every memory piece (or star shard) in a run
 const PERFECT_PTS = 10; // for each hop right on the beat over something dangerous (doubled in Hard mode, like all run points)
 
-// T-Rexy's looks: catching every piece in a run (the first time in a game) unlocks the next one in this order and puts it on.
-// They stay unlocked on this computer for every game after. The closet on the crash pad changes what he wears.
+// T-Rexy's looks: every mini game finished (each portal's run, jigsaw, and clue word, the first time in a game) unlocks the next
+// one in this order and puts it on, so all 12 can be found in one game. The Shadow Gate run unlocks one too, to make up for a
+// run that was skipped. Skipping a mini game with R unlocks nothing. Looks stay unlocked on this computer for every game after.
+// The closet on the crash pad changes what he wears, and only shows the empty slots that can still be filled this game.
 // slot = head (hats), back (rocket backpack, cape), or skin (his color). Drawings and names are in assets/characters/trexy.js.
 const LOOK_ORDER = [["head", "helmet"], ["skin", "galaxy"], ["back", "rocket"], ["head", "wizard"], ["skin", "gold"], ["head", "headphones"],
   ["back", "cape"], ["skin", "ocean"], ["head", "crown"], ["head", "party"], ["skin", "bubblegum"], ["head", "shades"]];
@@ -186,6 +188,20 @@ function unlockLook() {
   const [slot, id] = next;
   LOOK.have.push(id); LOOK[slot] = id; saveLooks();
   return { slot, id, name: lookName(slot, id) };
+}
+// The mini games that unlock a look, as [story step, name] pairs: "run.echo", "jigsaw.echo", "word.echo", ..., "run.gate".
+const lookSteps = () => STEPS.map((st, i) => [i, st.t === "final" ? "run.gate" : ["run", "jigsaw", "word"].includes(st.t) ? `${st.t}.${st.p}` : ""]).filter(([, ev]) => ev);
+// A finished mini game unlocks the next look, once per game. Returns { slot, id, name }, or null.
+function earnLook(ev) {
+  S.looks = S.looks || [];
+  if (S.looks.includes(ev)) return null;
+  S.looks.push(ev); save();
+  return unlockLook();
+}
+// How many more looks this game can still unlock: one for each mini game not finished or skipped yet, up to the looks still locked.
+function looksReachable() {
+  const got = S.looks || [], left = lookSteps().filter(([i, ev]) => !got.includes(ev) && !S.passed.includes(i)).length;
+  return Math.min(LOOK_ORDER.length - LOOK.have.length, left);
 }
 // Puts a look on, or takes it off if he's already wearing it.
 function toggleLook(slot, id) { LOOK[slot] = LOOK[slot] === id ? "" : id; saveLooks(); }
