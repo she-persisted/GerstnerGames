@@ -34,11 +34,14 @@ Checks:
      - All planet puzzles answered, the brave words typed, and the ending reached.
      - High score: a name saves, gets a rank, and shows on the board as a score on this computer.
   5. Mini Game Survival, with fresh browsers:
-     - The question library is checked (every mystery version's answer is one of its options, every clue has lines for all
-       three typing levels, every word topic has plenty of words at each level).
+     - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named
+       before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no
+       repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never
+       twice in a row, and a half-used deck carries over to the next game.
      - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret
        routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle
-       of every chunk one hop can clear. The recorded villain laughs must decode.
+       of every chunk one hop can clear. The recorded villain laughs and dino noises must decode, and the dino noises must
+       cover every mood and make sound at every voice pitch.
      - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,
        pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).
      - The full playthrough is in Hard mode. No screen may show a count of attempts.
@@ -159,8 +162,8 @@ def serve():
     return srv, f"http://127.0.0.1:{srv.server_address[1]}/"
 
 
-def new_page(browser, tag, console_ok=False):
-    ctx = browser.new_context(viewport={"width": SIZE[0], "height": SIZE[1]})
+def new_page(browser, tag, console_ok=False, **ctx_opts):
+    ctx = browser.new_context(**({"viewport": {"width": SIZE[0], "height": SIZE[1]}} | ctx_opts))
     ctx.route(re.compile(r"https://fonts\.(googleapis|gstatic)\.com/.*"), lambda r: r.abort())
     pg = ctx.new_page()
 
@@ -493,13 +496,23 @@ def mgs_save(pg):
 
 QBANK_CHECK_JS = r"""() => {
   const bad = [], QBANK = window.__mgs.qbank;
-  QBANK.mystery.forEach((m, n) => { if (!m.v.length || !m.nope || !m.clue) bad.push(`mystery ${n} is empty`);
-    m.v.forEach((v, i) => { if (!(v.a >= 0 && v.a < v.opts.length)) bad.push(`mystery ${n}.${i} answer is not an option`); if (new Set(v.opts).size !== v.opts.length) bad.push(`mystery ${n}.${i} repeats an option`); }); });
+  QBANK.mystery.forEach((m, n) => { if (m.v.length < 8 || !m.nope || !m.clue) bad.push(`mystery ${n} needs 8 versions, a clue, and a hint`);
+    m.v.forEach((v, i) => { if (!(v.a >= 0 && v.a < v.opts.length)) bad.push(`mystery ${n}.${i} answer is not an option`); if (new Set(v.opts).size !== v.opts.length) bad.push(`mystery ${n}.${i} repeats an option`);
+      if (/nova/i.test(v.q + v.opts.join(" "))) bad.push(`mystery ${n}.${i} names Nova before the player meets her`); }); });
   for (const p of ["echo", "fern", "lantern", "whirl"]) {
-    if (QBANK.lines[p].length !== 3 || QBANK.lines[p].some(l => !l.length)) bad.push(`clue lines for ${p} need three typing levels`);
-    if (!QBANK.facts[p].length || !QBANK.bonus[p].length) bad.push(`facts missing for ${p}`);
+    if (QBANK.lines[p].length !== 3 || QBANK.lines[p].some(l => l.length < 6)) bad.push(`clue lines for ${p} need six lines at each of three typing levels`);
+    if (QBANK.facts[p].length < 8 || QBANK.bonus[p].length < 14 || QBANK.saw[p].length < 4) bad.push(`not enough facts or memory texts for ${p}`);
+    for (const list of [QBANK.lines[p].flat(), QBANK.facts[p], QBANK.bonus[p], QBANK.saw[p]]) if (new Set(list).size !== list.length) bad.push(`a ${p} list repeats itself`);
   }
   for (const [t, list] of Object.entries(Kit.words.clues)) for (const d of [1, 2, 3]) if (list.filter(w => w[1] === d).length < 8) bad.push(`clue words: only a few level ${d} ${t} words`);
+  // Dealing: every version comes up once before any repeats, a new deck never starts with the last one dealt, and decks last across games.
+  const keep = localStorage.getItem("mgs.decks"), got = [];
+  for (let i = 0; i < 40; i++) got.push(window.__mgs.deal("test.deck", 8));
+  for (let b = 0; b < 40; b += 8) if (new Set(got.slice(b, b + 8)).size !== 8) bad.push(`deck ${b / 8} repeated a version before using them all: ${got.slice(b, b + 8)}`);
+  for (let i = 1; i < 40; i++) if (got[i] === got[i - 1]) bad.push(`the same version came up twice in a row: ${got}`);
+  const half = [0, 1, 2].map(() => window.__mgs.deal("test.deck", 8)), stored = JSON.parse(localStorage.getItem("mgs.decks"))["test.deck"];
+  if (stored.left.length !== 5 || half.some(x => stored.left.includes(x))) bad.push("a half-used deck isn't kept for the next game");
+  if (keep === null) localStorage.removeItem("mgs.decks"); else localStorage.setItem("mgs.decks", keep);
   return bad;
 }"""
 
@@ -565,6 +578,33 @@ def mgs_pieces_check(browser, base, rel):
         if not l["got"] or abs(l["got"] - l["want"]) > .15:
             fail(f"villain laugh {l['id']} did not decode right ({l['got']:.2f}s, expected {l['want']}s)")
     print("  villain laughs: " + ", ".join(f"{l['id']} {l['got']:.1f}s" for l in laughs))
+    # The cute dino noises must decode, cover every mood the game asks for, and actually make sound at the pitches the game uses.
+    chirps = pg.evaluate("""async () => {
+      const list = (Kit.sounds && Kit.sounds.dinoChirps) || [], out = { clips: [], moods: [...new Set(list.map(c => c.mood))], loud: [] };
+      for (const c of list) { const b = await Kit.voices.clipBuffer(new OfflineAudioContext(1, 24000, 24000), c); out.clips.push({ id: c.id, want: c.seconds, got: b ? b.duration : 0 }); }
+      for (const [mood, pitch] of [["happy", 1], ["excited", 1.4], ["curious", .74]]) {
+        const oc = new OfflineAudioContext(1, 44100, 44100);
+        for (const c of list) await Kit.voices.clipBuffer(oc, c);
+        const secs = Kit.voices.chirp({ ctx: oc, mood, pitch });
+        await new Promise(r => setTimeout(r, 30));
+        const buf = await oc.startRendering(), d = buf.getChannelData(0);
+        let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
+        out.loud.push({ mood, pitch, secs, peak });
+      }
+      return out;
+    }""")
+    if len(chirps["clips"]) < 4:
+        fail("not enough recorded dino noises in the game")
+    for c in chirps["clips"]:
+        if not c["got"] or abs(c["got"] - c["want"]) > .1:
+            fail(f"dino noise {c['id']} did not decode right ({c['got']:.2f}s, expected {c['want']}s)")
+    for m in ["happy", "excited", "curious"]:
+        if m not in chirps["moods"]:
+            fail(f"no {m} dino noise")
+    for l in chirps["loud"]:
+        if l["secs"] <= 0 or l["peak"] < .1:
+            fail(f"a {l['mood']} dino noise at pitch {l['pitch']} made no sound (peak {l['peak']:.3f})")
+    print("  dino noises: " + ", ".join(f"{c['id']} {c['got']:.2f}s" for c in chirps["clips"]) + "; all moods play at every voice pitch")
     ctx.close()
 
 
@@ -677,6 +717,107 @@ def mgs_easy_check(browser, base, rel):
         if gaps["g"] != gaps["t"] - gaps["keep"]:
             fail(f"a run with no pieces caught should leave {gaps['t'] - gaps['keep']} holes in the memory (every tile but the clues), found {gaps['g']}")
         print(f"  L and R: story lines, skip a run, back, forward past the finished run; jigsaw has {gaps['g']} holes, clues kept")
+    ctx.close()
+
+
+MGS_RESUME_JS = r"""step => { localStorage.setItem('mgs.save.v3', JSON.stringify({ v: 3, mode: 'easy', step, seed: 12345, moved: true })); }"""
+
+
+def mgs_resume_at(pg, base, rel, kind):
+    """Saves a game that stopped at the first step of this kind, reloads, and taps Keep going. Returns the step number."""
+    step = pg.evaluate(f"window.__mgs.steps.indexOf({json.dumps(kind)})")
+    pg.evaluate(MGS_RESUME_JS, step)
+    pg.goto(base + rel)
+    pg.wait_for_selector("#resumeBtn")
+    pg.tap("#resumeBtn")
+    pg.wait_for_timeout(500)
+    return step
+
+
+def mgs_touch_check(browser, base, rel):
+    """A phone: touch mode turns on, the page fits the screen, the back and forward buttons work, tapping walks and hops,
+    runs are wide enough to see what's coming, and the phone's keyboard types a clue without any letter counted twice."""
+    ctx, pg = new_page(browser, "mgs phone", viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    look = pg.evaluate("""() => ({ touchy: document.body.classList.contains('touchy'), wide: document.documentElement.scrollWidth - innerWidth,
+      badges: [...document.querySelectorAll('#panel .kbd')].filter(k => k.offsetParent !== null).length })""")
+    if not look["touchy"]:
+        fail("phone: touch mode did not turn on")
+    if look["wide"] > 1:
+        fail(f"phone: the title screen is {look['wide']}px wider than the phone, so the page scrolls sideways")
+    if look["badges"]:
+        fail(f"phone: {look['badges']} key badges still show in touch mode")
+    # Story: the back and forward buttons show (instead of the L and R tip) and step through the story.
+    say = mgs_resume_at(pg, base, rel, "say")
+    vis = pg.evaluate("""() => ({ pad: getComputedStyle(document.querySelector('#navPad')).display, tip: (document.querySelector('.navhint') || {}).offsetParent !== null })""")
+    if vis["pad"] == "none" or vis["tip"]:
+        fail(f"phone: story lines should show the back and forward buttons, not the L and R tip ({vis})")
+    pg.tap("#navFwd"); pg.wait_for_timeout(400)
+    fwd = pg.evaluate("window.__mgs.step")
+    pg.tap("#navBack"); pg.wait_for_timeout(400)
+    back = pg.evaluate("window.__mgs.step")
+    if not (fwd > say and back == say):
+        fail(f"phone: the forward and back buttons went from step {say} to {fwd} and back to {back}")
+    # The crash pad: tapping a portal walks T-Rexy there.
+    mgs_resume_at(pg, base, rel, "hub")
+    h0 = pg.evaluate("window.__mgs.hub()")
+    if not h0:
+        fail("phone: the crash pad did not open")
+    else:
+        box = pg.locator("#cv").bounding_box()
+        x = box["x"] + max(4, min(box["width"] - 4, (h0["portals"]["echo"] - h0["camX"]) * h0["T"]))
+        pg.touchscreen.tap(x, box["y"] + h0["ground"] - h0["T"] * .6)
+        pg.wait_for_timeout(900)
+        h1 = pg.evaluate("window.__mgs.hub()")
+        if h1 and abs(h1["heroX"] - h0["heroX"]) < .5:
+            fail("phone: tapping a portal on the crash pad did not walk T-Rexy toward it")
+    # A run: at least 15 tiles fit across, and a tap hops.
+    mgs_resume_at(pg, base, rel, "run")
+    st = None
+    for _ in range(40):
+        st = pg.evaluate("window.__mgs.run()")
+        if st and st.get("t", 0) > .3:
+            break
+        pg.wait_for_timeout(150)
+    if not st:
+        fail("phone: the run did not start")
+    else:
+        box = pg.locator("#cv").bounding_box()
+        pg.touchscreen.tap(box["x"] + box["width"] * .6, box["y"] + box["height"] * .5)
+        up = False
+        for _ in range(12):
+            pg.wait_for_timeout(40)
+            r = pg.evaluate("window.__mgs.run()") or {}
+            if r.get("y", 0) > .05 or r.get("vy", 0) > 0 or r.get("grounded") is False:
+                up = True
+                break
+        if not up:
+            fail("phone: tapping the run did not hop")
+        T = (pg.evaluate("window.__mgs.run()") or {}).get("tile", 0)
+        if not T or box["width"] / T < 14.9:
+            fail(f"phone: only {box['width'] / max(T, 1):.1f} tiles fit across the run (want at least 15)")
+    pg.keyboard.press("r"); pg.wait_for_timeout(300)
+    # Typing a clue with the phone's keyboard: half the letters as a phone keyboard sends them (text only, no key names),
+    # half as key presses. Every letter must count once.
+    mgs_resume_at(pg, base, rel, "clue")
+    if not pg.locator(".phonekeys").is_visible():
+        fail("phone: the Open keyboard button is missing on the clue typing screen")
+    else:
+        pg.tap(".phonebox")
+        text = pg.evaluate("document.querySelector('#lineText').textContent")
+        half = len(text) // 2
+        for ch in text[:half]:
+            pg.keyboard.insert_text(ch)
+        pg.keyboard.type(text[half:], delay=15)
+        pg.wait_for_timeout(500)
+        typ = pg.evaluate("window.__mgs.typing()")
+        done = pg.locator("#panel .feedback.good").count()
+        if not done or typ["misses"] or typ["hits"] != len(text):
+            fail(f"phone: typing \"{text}\" with the phone keyboard counted {typ['hits']} letters and {typ['misses']} misses (want {len(text)} and 0)")
+    if SHOTS:
+        pg.screenshot(path=str(pathlib.Path(SHOTS) / "mgs-phone-clue.png"))
+    print("  phone: touch mode, fits the screen, back and forward buttons, tap to walk and hop, 15+ tiles across runs, phone keyboard types once per letter")
     ctx.close()
 
 
@@ -1063,6 +1204,7 @@ def main():
                 out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
                 mgs_pieces_check(browser, base, out)
                 mgs_easy_check(browser, base, out)
+                mgs_touch_check(browser, base, out)
                 mgs_playthrough(browser, base, out)
             browser.close()
     finally:

@@ -3,7 +3,7 @@
 **Spoiler warning:** this doc explains the mystery's twist. The kids asked to be surprised, so don't read the "Mystery" section out loud or reveal it in voice mode unless they ask for spoilers.
 
 Home page (always the newest version): https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ
-QR card: `library/dist/mini-game-survival-v5-qr.png`
+QR card: `library/dist/mini-game-survival-v6-qr.png`
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/` (see claude/game-library.md)
 
 ## Design (October 17, 2026, by voice, with Child I and two friends)
@@ -38,9 +38,6 @@ Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/
 - Replace the "awful robot" laugh with a real recording of a silly villain laugh from the internet. (Mom downloaded the CC0 "Evil Laughs" pack from OpenGameArt and attached it.)
 - Hints that show the buttons to press ("Hint: ..."), only when a player has been stuck a while.
 
-## v5 changes Mom asked for (October 17, 2026)
-- Make T-Rexy cuter and a little more expressive: bigger shiny eyes and a moving brow, rosier blush, a head shine, new faces (blink, excited, determined, a sweat drop when worried), blinking, faces that react during runs, and a little squash and stretch when he hops and lands.
-
 ## v4 changes Mom asked for (October 17, 2026)
 - "Always run with checkpoints. It's not an option." Checkpoints are on in every mode, and the Checkpoints button is gone.
 - "In hard mode they have to collect all puzzle pieces to progress."
@@ -48,12 +45,21 @@ Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/
 - Unlockable looks for T-Rexy: catching every piece in a run earns hats and colors.
 - Obstacles on the beat: jumps line up with the music, like Geometry Dash.
 
+## v5 changes Mom asked for (October 17, 2026)
+- Make T-Rexy cuter and a little more expressive: bigger shiny eyes and a moving brow, rosier blush, a head shine, new faces (blink, excited, determined, a sweat drop when worried), blinking, faces that react during runs, and a little squash and stretch when he hops and lands.
+
+## v6 changes Mom asked for (October 17, 2026)
+- "Find cute happy noises for the dinosaurs." (Mom downloaded the CC0 "80 CC0 creature SFX" pack by rubberduck from OpenGameArt and attached it.)
+- "Add enough flexibility to play on a phone too."
+- "At the crash pad, put the dino next to the spaceship, not in front of it. Show it looking crashed, then fix it as he finds bits."
+- "Mix up the questions and facts so that it's new every time they play."
+
 ## How it plays
 - Title screen: pick Easy or Hard (click, or press E or H), then Play or Keep going, plus the high score board and a jukebox of the songs found so far. The crash pad's notebook can switch modes mid-game.
   - Easy: slower runs and smaller puzzles to begin with.
   - Hard: faster runs, bigger puzzles, runs score double, and every memory piece has to be caught to move on.
   - Both: checkpoints are always on.
-- The Crash Pad: T-Rexy walks left and right (arrow keys or A and D, or click), and jumps into the next glowing portal with Enter. The side panel is his Clue Notebook, with **T-Rexy's closet**: every look he has unlocked (click one to put it on or take it off) and a "?" for each still to find. Shadowspine looms over the pad.
+- The Crash Pad: T-Rexy walks left and right (arrow keys or A and D, or click or tap), and jumps into the next glowing portal with Enter (or a tap on it). He stands beside his crashed ship. At first it's tilted, cracked, and smoking, with scrap around it; each part he finds fixes it a little more (less tilt, less smoke, fewer cracks, and its label counts the parts), and once all four parts and the paint are on, it floats and glows: "Your ship: ready to fly!". The side panel is his Clue Notebook, with **T-Rexy's closet**: every look he has unlocked (click one to put it on or take it off) and a "?" for each still to find. Shadowspine looms over the pad.
 - Each of the four portals has the same four mini games, then a spaceship part and a song:
   1. **Portal run** (side-scroller): T-Rexy runs by himself. Space, Up, or click to hop (tiny!), and press again in the air for a double hop (he does a flip). Yellow bounce pads launch him high, pink portals turn him into a little ship (hold to fly up, let go to sink), green portals turn him back. Touch a spike or a wall and he goes back to the last checkpoint. Nothing counts attempts. Glowing memory pieces sit along the way, every one on the path that beats the run. Esc pauses.
      - **On the beat**: the countdown ticks in time with the portal's song, and the song starts on GO. Each obstacle's first hop lands on a beat, and the ground, pads, and pieces pulse with it. A hop pressed right on the beat over a spike, gap, or step pops "PERFECT!" (10 points, and a streak counter for perfect hops in a row). The music stops on a crash and picks up in time at the checkpoint.
@@ -63,13 +69,16 @@ Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/
      - Some got away, in Hard: only **Run it again** (Enter or A). The story can't move on, and R can't skip the run, until every piece is caught.
   2. **Memory jigsaw**: the memory pieces make a picture. Swap tiles (click two, or arrow keys and Enter). Helpers: Peek, and Fix one (also by tapping T-Rexy). Pieces that got away in the run leave glitchy "?" holes, the same share of the tiles as the pieces missed (9 of 12 caught means 3 holes in a 12-tile picture). Tiles that show a clue never become holes.
   3. **Glitch-locked clue word**: a hangman-style letter game made friendly. A hint, a fuel tank, and letter keys. Wrong letters burn fuel; Scan reveals a letter (also by tapping T-Rexy). Out of fuel, the word is shown and he types it to refuel. About 35 words per topic, so replays bring new ones.
-  4. **Clue notebook**: a clue card (what he remembers, a science fact, and a fun bonus fact), and he types the clue line into his notebook. Each clue has three versions per typing level, and each fact has several versions (`games/mini-game-survival/questions.js`).
+  4. **Clue notebook**: a clue card (what he remembers, a science fact, and a fun bonus fact), and he types the clue line into his notebook. Each portal has 4 ways to tell the memory, 6 clue lines per typing level, 8 versions of the science fact, and 14 bonus facts (`games/mini-game-survival/questions.js`).
 - Portals: Echo Rings (sound and music), Fern Moon (food and dinosaurs), Lantern Lab (light and shadows), Whirlpool Galaxy (space). Parts in that order: Thrusters, Wings, Glitch Core, Cockpit. Then he picks a paint job.
 - The Shadow Gate: the final, longer run, with Shadowspine in the background. Its star shards are a bonus in both modes (catching them all unlocks a look too).
 - **T-Rexy's looks** (12, unlocked in this order): Space Helmet, Galaxy Purple, Rocket Backpack, Wizard Hat, Golden Scales, DJ Headphones, Super Cape, Ocean Blue, Glitch Crown, Party Hat, Bubblegum Pink, Star Shades. One hat, one back item, and one color at a time. Up to 5 unlock in a game (one per run), and they stay unlocked on that computer. They show everywhere he appears; his cap in the opening scene shows instead of a hat.
-- Solve the mystery: four multiple-choice questions (keys 1 to 3), each with four versions that test the same idea. A wrong answer points to the clue that helps.
+- Solve the mystery: four multiple-choice questions (keys 1 to 3), each with eight versions that test the same idea, with the answers in a new order every time. A wrong answer points to the clue that helps.
+- **New every game**: every list in the question library is dealt like a shuffled deck kept on that computer, so a version only comes back after every other version in its list has had a turn, and never twice in a row. With 8 to 14 versions a list, kids get several games in a row with no repeats, on top of about 35 clue words a topic.
+- **Dino noises**: T-Rexy chirps, coos, hums, and goes "ooh!", "wheee!", and "hm?" on happy, surprised, and thinking story lines and when he wins something (a right answer, a saved clue, a ship part, a new look, a full catch). Tapping him makes him chirp. Nova has a higher voice, and T-Rexy's family (Dad lowest, then Mom, then his little sister) cheers together when he gets home. No noises during runs, so the music stays clear.
+- **Phones and tablets**: touch a screen and the game switches to touch mode. Tap to hop and to walk, tap a portal to jump in, tap letters and answers. Key badges hide, and hints say what to tap. Back and forward buttons in the scene's top corner do what L and R do (hidden during runs and jigsaws, so a stray tap can't skip). Typing a clue has an Open keyboard button that brings up the phone's keyboard. Upright phones get a run about as tall as it is wide with at least 15 tiles across; sideways phones put the scene and the side panel next to each other. A mouse click switches back to keyboard tips.
 - **L and R** move back and forward through the story on every screen (the left and right arrow keys work too, except where those keys are already taken). L goes back to the story line before. R goes forward: it skips a run, finishes a jigsaw or a typed clue, picks the first choice, shows a mystery answer, or jumps into the next portal from the crash pad. Skipped parts earn no points, and going forward again skips mini games already finished. Typing screens use the arrow keys instead, because their letters are for typing; runs and jigsaws use only L and R. On the crash pad, R waits a moment, so typing ROAR still works.
-- **Hints**: a "Hint:" bubble with the keys to press appears only when someone seems stuck: after doing nothing on a screen for a while (9 seconds on the crash pad, 10 to 20 seconds elsewhere), after 3 wrong letters in a clue word (try the vowels), right away in a run after a crash with no key pressed yet, and after 2 crashes at the same obstacle (a tip for that obstacle: spikes, gaps, ledges, steps, bounce pads, the low ceiling, the ship, the secret path). Pressing anything hides it.
+- **Hints**: a "Hint:" bubble with the keys to press (or, on a touch screen, what to tap) appears only when someone seems stuck: after doing nothing on a screen for a while (9 seconds on the crash pad, 10 to 20 seconds elsewhere), after 3 wrong letters in a clue word (try the vowels), right away in a run after a crash with no key pressed yet, and after 2 crashes at the same obstacle (a tip for that obstacle: spikes, gaps, ledges, steps, bounce pads, the low ceiling, the ship, the secret path). Pressing anything hides it.
 - Ending, then the end clip: the ship blinks awake, T-Rexy names him Zoomasaurus, the family welcomes him, and everybody rides him in loop-de-loops across the sky (that ride keeps playing behind the score card). Then the score card, a name for the high score board, the mode, and levels reached.
 
 ## Mystery (spoilers)
@@ -110,20 +119,24 @@ Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 
 - Flashing is gentle: a thin stripe glitches at most about once a second for a tenth of a second; with "reduce motion" on there are no glitches.
 - Backgrounds (`assets/worlds/glitch-nebula.js`) are neon takes on NASA Hubble and Webb pictures, drawn by code: the Cosmic Cliffs (crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation and the fern moon (Fern Moon), a Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its companion (Whirlpool Galaxy), the Horsehead Nebula (Shadow Gate), and the Milky Way with Andromeda and a crescent moon (Fern Valley at night). Every sky also has noise-made gas and dust, deep-field galaxies, stars with Webb's eight-point spikes, and drifting face-on, tilted, and edge-on galaxies.
 - Music (`kit/groove.js`): upbeat sixteenth-note chiptune with verses and choruses, claps, open hats, arpeggios, and an echo on the lead. Shadowspine's mutter is made in code in `kit/voices.js`, which plays his laugh from two recordings in `assets/sounds/villain-laughs.js`: "Laugh 4" and "Laugh 7" from the "Evil Laughs" pack by Eldritch Grim on OpenGameArt (CC0, public domain), trimmed, evened out, and stored as small MP3s. If a browser can't play them, the old made-in-code laugh takes over.
+- Dino noises (`assets/sounds/dino-chirps.js`): six "cute" sounds from the "80 CC0 creature SFX" pack by rubberduck on OpenGameArt (CC0), trimmed, evened out, and stored as small MP3s: chirp, ooh, hum, wee, huh, and coo, each tagged happy, excited, or curious. `Kit.voices.chirp` plays one (never the same twice in a row) and speeds it up or slows it down for each dinosaur's voice.
+- Touch support lives in `games/mini-game-survival/touch.js`. The play-test plays on a phone-sized touch screen too: touch mode, no sideways scrolling, the back and forward buttons, tap to walk and hop, 15 tiles across a run, and typing a whole clue with the phone keyboard with every letter counted once.
 - Shared pieces: `kit/runner.js`, `kit/jigsaw.js`, `kit/fuel-word.js`, `kit/side-hub.js`, `kit/groove.js`, `kit/voices.js`; T-Rexy, Nova, the glitch ship (now with a face), the memory pictures, the neon backgrounds, eight songs, the science word bank.
 
 ## Versions
 | Version | Date | Page | What changed |
 |---|---|---|---|
 | v1 | 2026-10-17 | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | First version. |
-| v5 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | A cuter, more expressive T-Rexy: big shiny eyes, a mood brow, new faces, blinking, reactions in runs, squash and stretch. |
+| v6 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Cute recorded dino noises (each dinosaur in its own voice), phone and tablet play, a crashed ship beside T-Rexy that gets fixed part by part, and a much bigger question library dealt so every game is new. |
+| v5 | 2026-10-17 | V5_ARCHIVE (archive) | A cuter, more expressive T-Rexy: big shiny eyes, a mood brow, new faces, blinking, reactions in runs, squash and stretch. |
 | v4 | 2026-10-17 | https://claude.ai/artifact/CqvjvxnbGtkFK8WTWmjDGj (archive) | Checkpoints always on; Hard mode needs every memory piece; obstacles on the beat with music in time; PERFECT hops; sparkles, dust, and crash shake; 12 unlockable looks and T-Rexy's closet. |
 | v3 | 2026-10-17 | https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD (archive) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
 | v2 | 2026-10-17 | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | Easier runs that ramp up, double hop, Easy and Hard modes, no attempt counting, funnier opening with puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip. |
 
 ## Ideas for later
+- Waiting on play-testing v6: whether the dino noises are cute or too much (they're easy to tone down), whether phone play feels good upright or sideways, and whether kids notice the ship getting fixed.
 - Waiting on play-testing v4: whether Easy's first run feels right, whether the double hop is easy to find, whether ship mode feels controllable, whether kids find the secret pages, whether Hard's every-piece rule feels fair or frustrating, whether they notice the beat and chase PERFECT hops, which looks they pick, and whether hints come at the right time.
 - Not chosen yet from the fun ideas: pieces that play the lullaby's notes, racing a friend's ghost, a Murdle-style logic grid for the mystery, and a build-your-own run editor.
-- The laugh pack has seven more laughs; any of them can replace or join the two in use.
+- The laugh pack has seven more laughs; any of them can replace or join the two in use. The creature pack has four more "cute" sounds (cute_03, 06, 07, 10) that sounded flatter or sadder in a pitch check, plus burbles and eating sounds that could fit a snack moment.
 - Per-player skill levels if friends share one Chromebook (today levels are per computer).
 - More portals, a practice mode for each run, or a level editor so the kids can build their own runs.

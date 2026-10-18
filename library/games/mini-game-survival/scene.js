@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family), the walkable crash pad with its portals and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
+ * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
  * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
@@ -8,12 +8,13 @@ const THEMES = Kit.art.nebula.THEMES;
 const music = Kit.groove.create(Kit.songs);
 const toastEl = $("#toast"), toast = Kit.ui.toaster(toastEl);
 
-/* Hints, only when a player seems stuck. [Key] in a hint shows as a key button. */
+/* Hints, only when a player seems stuck. [Key] in a hint shows as a key button. A hint can also be a tip() from touch.js,
+   with keyboard words and touch-screen words; the right ones are picked when it shows. */
 const hintEl = $("#hint");
 let hintIdle = { text: "", ms: 0, timer: 0 }, hintHide = 0;
 const keyHtml = text => esc(text).replace(/\[([^\]]+)\]/g, (m, k) => `<span class="kbd">${k}</span>`);
 function showHint(text, ms = 6500) {
-  hintEl.innerHTML = `<b>Hint:</b> ${keyHtml(text)}`; hintEl.classList.add("on");
+  hintEl.innerHTML = `<b>Hint:</b> ${keyHtml(typeof text === "function" ? text() : text)}`; hintEl.classList.add("on");
   clearTimeout(hintHide); if (ms) hintHide = setTimeout(() => hintEl.classList.remove("on"), ms);
 }
 function hideHint() { clearTimeout(hintHide); hintEl.classList.remove("on"); }
@@ -113,6 +114,23 @@ function sayShadow(text, ms = 2600) { shadowSay = { text, until: performance.now
 // Shadowspine's voice and jaw: an evil laugh, or a grumbly mutter while he talks. Now and then his jaw clacks by itself.
 function shadowLaugh() { laughUntil = performance.now() + Kit.voices.evilLaugh() * 1000; }
 function shadowTalk(ms = 1200) { talkUntil = performance.now() + Kit.voices.mutter(ms / 1000) * 1000; }
+// Cute recorded dino noises (assets/sounds/dino-chirps.js). Each dinosaur has its own pitch: bigger dinosaurs sound lower.
+// noise = a mood (happy, excited, curious) or one noise by name (chirp, ooh, hum, wee, huh, coo). delay is in seconds.
+const DINO_PITCH = { trexy: 1, nova: 1.4, dad: .74, mom: .88, sister: 1.22 };
+const DINO_MOODS = ["happy", "excited", "curious"];
+let noiseAt = 0;
+function dinoNoise(who = "trexy", noise = "happy", delay = 0) {
+  const when = performance.now() + delay * 1000;
+  if (Math.abs(when - noiseAt) < 350) return 0;   // no pile-ups when lots of happy things happen at once
+  noiseAt = when;
+  const pitch = (DINO_PITCH[who] || 1) * (.96 + Math.random() * .08);
+  return Kit.voices.chirp(DINO_MOODS.includes(noise) ? { mood: noise, pitch, at: delay } : { clip: noise, pitch, at: delay });
+}
+// The whole family cheers, each in their own voice.
+function familyCheer(delay = 0) {
+  ["dad", "mom", "sister", "trexy"].forEach((w, i) => Kit.voices.chirp({ mood: i % 2 ? "excited" : "happy", pitch: DINO_PITCH[w], at: delay + i * .26 }));
+  noiseAt = performance.now() + (delay + .8) * 1000;
+}
 function shadowAnim(now) {
   if (now < laughUntil) return { jaw: 7 + 17 * (.5 + .5 * Math.sin(now / 42)), shake: 1 };
   if (now < talkUntil) return { jaw: 5 + 11 * Math.abs(Math.sin(now / 80)), shake: 0 };
@@ -276,7 +294,7 @@ function drawPortal(ctx, v, p, id, now) {
   // name tag
   ctx.globalAlpha = done ? .7 : open ? 1 : .55;
   ctx.font = `700 ${Math.max(12, T * .2)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center"; ctx.fillStyle = "#f6f0ff";
-  ctx.fillText(p.name, x, gy + T * .42);
+  edgeText(ctx, p.name, x, gy + T * .42, v.w);
   if (open && !done) { const b = reduced ? 0 : Math.abs(Math.sin(now / 300)) * T * .14; ctx.fillStyle = THEMES.hub.pad; ctx.beginPath(); ctx.moveTo(x - T * .16, cy - ry - T * .34 - b); ctx.lineTo(x + T * .16, cy - ry - T * .34 - b); ctx.lineTo(x, cy - ry - T * .12 - b); ctx.closePath(); ctx.fill(); }
   ctx.restore();
 }
@@ -293,10 +311,7 @@ function drawHub(ctx, v, hero, bubble) {
       for (let t = -1; t <= 1; t++) { ctx.beginPath(); ctx.arc(fx + s * 1.4, fy + t * s * 1.1, s * .5, 0, Math.PI * 2); ctx.fill(); } }
     ctx.restore();
   }
-  // the ship wreck in the middle of the pad
-  const wx = (WRECK_X - v.camX) * v.T, tilt = allParts() ? 0 : -.18;
-  ctx.save(); ctx.translate(wx, v.ground - v.T * .55); ctx.rotate(tilt); drawImg(ctx, shipImg(false, false), 0, 0, v.T * 1.7, "center"); ctx.restore();
-  ctx.font = `700 ${Math.max(12, v.T * .2)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center"; ctx.fillStyle = "#b7a9ea"; ctx.fillText("Your ship", wx, v.ground + v.T * .42);
+  drawWreck(ctx, v, now);
   for (const id of [...PORTAL_ORDER, "gate"]) drawPortal(ctx, v, PORTALS[id], id, now);
   // T-Rexy
   const pose = hero.walking ? (Math.floor(now / 140) % 2 ? "run1" : "run2") : "stand";
@@ -305,12 +320,71 @@ function drawHub(ctx, v, hero, bubble) {
   if (bubble) drawBubble(ctx, hx, v.ground - v.T * 1.5, bubble.text);
   drawShadowSay(ctx, v.w, v.h, now);
 }
+// The ship on the crash pad. At first it's a real wreck: nose dug into the ground, smoking, sparking, cracked, with scrap
+// all around. Every part T-Rexy brings back fixes it a little more (less tilt, less smoke, fewer cracks and scraps).
+// With all four parts and a paint job it floats up off the ground, good as new and glowing.
+const WRECK_SCRAP = [[-2.3, .1, .3], [-1.75, .26, .2], [-2.75, .3, .16], [1.55, .2, .18], [-1.3, .32, .14], [1.9, .34, .12]];
+function drawWreck(ctx, v, now) {
+  const T = v.T, parts = SHIP.PART_ORDER.filter(p => S.parts[p]).length, fixed = parts === SHIP.PART_ORDER.length && !!S.paint;
+  const broken = fixed ? 0 : 1 - parts / SHIP.PART_ORDER.length * .8; // 1 = just crashed, .2 = every part on but no paint yet
+  const wx = (WRECK_X - v.camX) * T, cy = v.ground - T * .55, tilt = .4 * broken, sink = T * .32 * broken;
+  const lift = fixed ? T * .28 + (reduced ? 0 : Math.sin(now / 650) * T * .06) : 0;
+  if (fixed) { // a soft glow on the pad under the floating ship
+    const g = ctx.createRadialGradient(wx, v.ground, 0, wx, v.ground, T * 1.6);
+    g.addColorStop(0, "rgba(92,255,176,.45)"); g.addColorStop(1, "rgba(92,255,176,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(wx, v.ground, T * 1.6, T * .3, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  // scrap metal on the ground, one less for every part fixed
+  const scraps = Math.round(WRECK_SCRAP.length * Math.max(0, broken - .2) / .8);
+  WRECK_SCRAP.slice(0, scraps).forEach(([dx, dy, r], i) => {
+    const x = wx + dx * T, y = v.ground + dy * T * .4, k = r * T;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(i * 1.3);
+    ctx.beginPath(); ctx.moveTo(-k, k * .3); ctx.lineTo(-k * .3, -k * .6); ctx.lineTo(k * .8, -k * .2); ctx.lineTo(k * .5, k * .5); ctx.closePath();
+    ctx.fillStyle = "#2a1660"; ctx.fill(); ctx.strokeStyle = i % 2 ? "#3ef2ff" : "#ff3ec8"; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+  });
+  ctx.save(); ctx.translate(wx, cy + sink - lift); ctx.rotate(tilt);
+  const sh = T * 1.7, im = shipImg(false, false);
+  drawImg(ctx, im, 0, 0, sh, "center");
+  // cracks across the hull
+  const cracks = Math.ceil(3 * Math.max(0, broken - .2) / .8);
+  ctx.strokeStyle = "rgba(10,6,32,.85)"; ctx.lineWidth = Math.max(1.5, T * .035); ctx.lineJoin = "round";
+  [[-.55, -.12, 1], [.1, .05, -1], [-.15, -.2, 1]].slice(0, cracks).forEach(([cx, cy2, d]) => {
+    ctx.beginPath(); ctx.moveTo(cx * sh, cy2 * sh);
+    for (let j = 1; j <= 4; j++) ctx.lineTo((cx + j * .07) * sh, (cy2 + (j % 2 ? .05 : -.02) * d) * sh);
+    ctx.stroke();
+  });
+  ctx.restore();
+  // smoke puffs drifting up from the back, and now and then a little spark
+  const puffs = Math.ceil(3 * Math.max(0, broken - .15));
+  for (let i = 0; i < puffs; i++) {
+    const ph = reduced ? i / 3 + .15 : ((now / 1700 + i / 3) % 1);
+    const px = wx - T * .55 - ph * T * .5, py = cy + sink - T * .25 - ph * T * 1.7, r = T * (.16 + .3 * ph);
+    ctx.globalAlpha = (1 - ph) * .42 * broken; ctx.fillStyle = "#cfc6ee";
+    ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if (broken > .5 && !reduced && now % 1100 < 110) {
+    ctx.strokeStyle = "#ffe94a"; ctx.lineWidth = 2;
+    for (let i = 0; i < 4; i++) { const a = -Math.PI / 2 + (i - 1.5) * .5; ctx.beginPath(); ctx.moveTo(wx + T * .35, cy + sink - T * .1); ctx.lineTo(wx + T * .35 + Math.cos(a) * T * .3, cy + sink - T * .1 + Math.sin(a) * T * .3); ctx.stroke(); }
+  }
+  if (fixed && !reduced) for (let i = 0; i < 3; i++) { // a few sparkles around the fixed ship
+    const a = now / 900 + i * 2.1, sx2 = wx + Math.cos(a) * T * 1.4, sy2 = cy - lift + Math.sin(a * 1.3) * T * .5, z = T * .07 * (1 + Math.sin(now / 200 + i));
+    ctx.fillStyle = "#ffe94a"; ctx.beginPath(); ctx.moveTo(sx2, sy2 - z * 2); ctx.lineTo(sx2 + z * .5, sy2); ctx.lineTo(sx2, sy2 + z * 2); ctx.lineTo(sx2 - z * .5, sy2); ctx.closePath(); ctx.fill();
+  }
+  const label = fixed ? "Your ship: ready to fly!" : parts ? `Your ship: ${parts} of ${SHIP.PART_ORDER.length} parts fixed` : "Your ship (CRASHED!)";
+  ctx.font = `700 ${Math.max(12, T * .2)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center"; ctx.fillStyle = fixed ? "#5cffb0" : "#b7a9ea"; edgeText(ctx, label, wx, v.ground + T * .42, v.w);
+}
+// A centered name tag that slides in from the edge instead of being cut off when its thing is half off a narrow screen.
+function edgeText(ctx, text, x, y, w) {
+  const half = ctx.measureText(text).width / 2 + 6, fit = clamp(x, half, Math.max(half, w - half));
+  ctx.fillText(text, Math.abs(fit - x) < half ? fit : x, y);
+}
 function startHub(onEnter, onFirstMove) {
   stopMode(); mode = "hub";
   ST.theme = "hub"; playSong("glitchHub");
   const stops = [...PORTAL_ORDER, "gate"].map(id => ({ id, x: PORTALS[id].x, open: portalOpen(id) }));
   hubCtl = Kit.sidehub.create(cv, {
-    width: HUB_W, start: S.hubX || WRECK_X, speed: 4.4, stops,
+    width: HUB_W, start: S.hubX || HERO_START, speed: 4.4, stops,
     draw: drawHub,
     onEnter: s => { S.hubX = hubCtl.hero.x; save(); sfx.liftoff(); onEnter(s); },
     onNear: s => { if (s) sfx.arrive(); },

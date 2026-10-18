@@ -68,11 +68,13 @@ Mini Game Survival's skills, kept separately for Easy and Hard mode: runs (one l
 
 ## Obstacle runs
 
-`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it. Give the generator the music's beat (`beat`, seconds per beat) and each chunk's first hop lands on a beat; `play()` then pulses the ground on the beat, pops "PERFECT!" for hops right on it, and reports its clock (`onClock`) so a game can keep the music in time (`kit/groove.js` has `restart` and `hush` for that).
+`kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it. Give the generator the music's beat (`beat`, seconds per beat) and each chunk's first hop lands on a beat; `play()` then pulses the ground on the beat, pops "PERFECT!" for hops right on it, and reports its clock (`onClock`) so a game can keep the music in time (`kit/groove.js` has `restart` and `hush` for that). On a narrow screen (like a phone), tiles shrink so at least 15 fit across a run; `kit/side-hub.js` does the same with 11 tiles across a hub.
 
 ## Music
 
 Two players share one set of controls, so the jukebox works with both: `kit/music.js` plays simple 32-step songs (Starward), and `kit/groove.js` plays dance-style songs with sixteenth-note patterns, verses and choruses, claps, and arpeggios (Mini Game Survival). `kit/groove.js` can also play the simple songs.
+
+Recorded voices live in `assets/sounds/` and play through `kit/voices.js`: `evilLaugh` takes turns between recorded villain laughs, and `chirp` plays a cute creature noise by mood (happy, excited, curious) at any pitch, so each character can have its own voice.
 
 ## Question format
 

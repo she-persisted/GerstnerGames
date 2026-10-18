@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (kept on this computer across games), the version picker for the question library, a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (kept on this computer across games), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -9,11 +9,12 @@ const ICON = Kit.art.icons;
 const SHIP = Kit.art.ship;
 const sfx = Kit.audio.sfx;
 
-const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", seenq: "mgs.seenq", looks: "mgs.looks" };
+const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", decks: "mgs.decks", looks: "mgs.looks" };
 const panel = $("#panel"), scene = $("#scene"), stageEl = $("#stage"), cv = $("#cv");
 
 // The crash pad: portals in the order T-Rexy visits them. x = where it stands on the pad (in tiles).
-const HUB_W = 36, WRECK_X = 17.5;
+// The ship wreck sits at WRECK_X; T-Rexy starts beside it (HERO_START), not in front of it.
+const HUB_W = 36, WRECK_X = 17.5, HERO_START = WRECK_X + 2.6;
 const PORTALS = {
   echo:    { name: "Echo Rings", theme: "echo", song: "echo", part: "thrusters", memory: "home", words: "sound", x: 5, color: "#21d9ff", icon: "note" },
   fern:    { name: "Fern Moon", theme: "fern", song: "fern", part: "wings", memory: "dinner", words: "food", x: 11, color: "#8cff3b", icon: "fern" },
@@ -23,13 +24,14 @@ const PORTALS = {
 };
 const PORTAL_ORDER = ["echo", "fern", "lantern", "whirl"];
 
-// What T-Rexy writes in his notebook after each portal. The line he types, the clue card's science fact, and a bonus fact
-// come from the question library (questions.js), so they change from game to game. short = what the notebook shows.
+// What T-Rexy writes in his notebook after each portal. What the clue card says he saw, the line he types, the science
+// fact, and a bonus fact come from the question library (questions.js), so they change from game to game.
+// short = what the notebook shows.
 const CLUES = {
-  echo: { n: 1, title: "Clue 1: The weird music", saw: "In my memory, the weird music was high and squeaky, like a teeny music box glowing on the hill.", short: "The weird music was high and squeaky." },
-  fern: { n: 2, title: "Clue 2: The missing fish", saw: "The morning after that dinner, our whole basket of fish was gone. Somebody sneaked in and ate them!", short: "Somebody sneaked in and ate all our fish." },
-  lantern: { n: 3, title: "Clue 3: Tiny footprints", saw: "Teeny-tiny footprints on my windowsill. And a teeny moth by my lamp made a HUGE shadow on the wall.", short: "Tiny footprints, and a tiny moth with a huge shadow." },
-  whirl: { n: 4, title: "Clue 4: The star lantern", saw: "In the swirl, someone small was standing on a floating rock, holding a glowing star lantern.", short: "Someone small was holding a star lantern." }
+  echo: { n: 1, title: "Clue 1: The weird music", short: "The weird music was high and squeaky." },
+  fern: { n: 2, title: "Clue 2: The missing fish", short: "Somebody sneaked in and ate all our fish." },
+  lantern: { n: 3, title: "Clue 3: Tiny footprints", short: "Tiny footprints, and a tiny moth with a huge shadow." },
+  whirl: { n: 4, title: "Clue 4: The star lantern", short: "Someone small was holding a star lantern." }
 };
 
 // The four mystery questions, asked in order before the big reveal. Each has several versions in the question library.
@@ -101,7 +103,7 @@ const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "
 const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home" };
 
 const fresh = () => ({
-  v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: WRECK_X, moved: false, pokes: 0, roared: false,
+  v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, hubX: HERO_START, moved: false, pokes: 0, roared: false,
   stats: { pts: 0, runs: {}, typing: { hits: 0, misses: 0, ms: 0, chars: 0 } }
 });
 let S = fresh();
@@ -127,15 +129,27 @@ function wordFor(portal) {
   save();
   return S.words[portal];
 }
-// Picks one version from a list in the question library, preferring versions this computer hasn't seen lately,
-// and keeps that pick for the rest of this game (so a reload shows the same one).
+// Deals version numbers for one list in the question library like a shuffled deck of cards: every version comes up once
+// before any of them repeats, and a new deck never starts with the one just dealt. Decks are kept on this computer, so
+// each new game keeps dealing where the last one stopped. (If a list gets more versions, its deck is reshuffled.)
+function deal(id, n) {
+  let decks = store.get(KEYS.decks, {}); if (!decks || typeof decks !== "object" || Array.isArray(decks)) decks = {};
+  const old = decks[id], last = old && Number.isInteger(old.last) ? old.last : -1;
+  const d = old && old.n === n && Array.isArray(old.left) ? old : { n, left: [], last };
+  d.left = d.left.filter(i => Number.isInteger(i) && i >= 0 && i < n);
+  if (!d.left.length) {
+    d.left = shuffle([...Array(n).keys()]);
+    if (n > 1 && d.left[0] === last) d.left.push(d.left.shift());
+  }
+  const i = d.left.shift(); d.last = i; decks[id] = d; store.set(KEYS.decks, decks);
+  return i;
+}
+// Picks one version from a list in the question library (dealt from its deck), and keeps that pick for the rest of
+// this game, so a reload shows the same one.
 function pickVersion(id, list) {
   S.picks = S.picks || {};
   if (S.picks[id] != null && list[S.picks[id]] !== undefined) return list[S.picks[id]];
-  let seen = store.get(KEYS.seenq, []); if (!Array.isArray(seen)) seen = [];
-  const all = list.map((x, i) => i), fresh = all.filter(i => !seen.includes(`${id}:${i}`));
-  const i = pick(fresh.length ? fresh : all);
-  seen = [...seen.filter(x => x !== `${id}:${i}`), `${id}:${i}`].slice(-160); store.set(KEYS.seenq, seen);
+  const i = deal(id, list.length);
   S.picks[id] = i; save();
   return list[i];
 }

@@ -6,7 +6,10 @@
  * stage:  { theme, face, acc, nova, novaFace, shadow (size, 0 = gone), lantern, ship, family, shipFace (awake | happy: the ship has come alive),
  *           ride (everybody rides the ship in loops across the sky) }  changes what the scene shows; only the keys given change
  * say:    { who: narrator | trexy | shadow | nova | family | ship, x: text, face?: smile | happy | worried | surprised | think | dizzy | sleepy, hop?: true (two hops) | 2 (a double hop) }
- *         Shadowspine laughs his evil laugh on lines with MWA or HA!, and mutters on the rest.
+ *         Shadowspine laughs his evil laugh on lines with MWA or HA!, and mutters on the rest. T-Rexy makes a cute dino noise on
+ *         happy, surprised, and think lines (see FACE_NOISE in screens.js).
+ *         noise?: happy | excited | curious, or one noise by name (chirp, ooh, hum, wee, huh, coo): a cute dino noise for Nova or
+ *         T-Rexy's family (the whole family cheers together).
  * run, jigsaw, word, clue, part: { p: portal id from PORTALS in state.js }      hub: walk the crash pad to the next portal
  * final:  the Shadow Gate run      deduce: { n: question number in DEDUCE }      shrink: the giant shadow shrinks away
  */
@@ -121,23 +124,23 @@ const STEPS = [
   { t: "say", who: "trexy", face: "happy", x: "I've got it! Shadowspine isn't a giant at all. He's a SHADOW!" },
   { t: "shrink" },
   { t: "say", who: "narrator", x: "T-Rexy peeked behind the star lantern. And there, holding it with two teeny hands, was..." },
-  { t: "say", who: "nova", x: "Eep! You found me!" },
+  { t: "say", who: "nova", noise: "ooh", x: "Eep! You found me!" },
   { t: "say", who: "trexy", face: "surprised", x: "You're TINY!" },
-  { t: "say", who: "nova", x: "I'm Nova. I'm a baby Spinosaurus. And I'm kind of the smallest one in the whole universe." },
+  { t: "say", who: "nova", noise: "happy", x: "I'm Nova. I'm a baby Spinosaurus. And I'm kind of the smallest one in the whole universe." },
   { t: "say", who: "trexy", face: "think", x: "So YOU played the squeaky music? And swooped me up? And ate our fish?" },
-  { t: "say", who: "nova", x: "Yes, yes, and... the fish were FIN-tastic." },
+  { t: "say", who: "nova", noise: "chirp", x: "Yes, yes, and... the fish were FIN-tastic." },
   { t: "say", who: "nova", x: "I've been all alone out here for SO long. I wanted a friend. But everybody says T-Rexes eat EVERYTHING." },
   { t: "say", who: "nova", x: "So I stood super close to my lantern to make a giant scary shadow. Then you couldn't eat me, and I could be the boss of ALL the T-Rexes!" },
   { t: "say", who: "trexy", face: "happy", x: "Nova, my family are omnivores. We eat plants and meat. But we NEVER eat friends." },
-  { t: "say", who: "nova", x: "Friends? Like... me?" },
+  { t: "say", who: "nova", noise: "huh", x: "Friends? Like... me?" },
   { t: "say", who: "trexy", face: "happy", hop: true, x: "Yep! I've been lonely out here too. Want to come home with me?" },
   { t: "song", id: "lullaby" },
   { t: "say", who: "narrator", x: "Nova wound up her music box. The squeaky lullaby played, and a swirly galaxy opened up, pointing straight to Fern Valley." },
   { t: "stage", theme: "valley", shadow: 0, lantern: false, nova: true, ship: true, face: "happy" },
   { t: "say", who: "narrator", x: "T-Rexy flew his ship through the swirl, with Nova riding on his head." },
-  { t: "say", who: "nova", x: "Best. Space. Taxi. EVER! Five stars! Well... a billion stars." },
+  { t: "say", who: "nova", noise: "excited", x: "Best. Space. Taxi. EVER! Five stars! Well... a billion stars." },
   { t: "stage", family: true },
-  { t: "say", who: "family", x: "T-REXY! You're home! (And who is THIS cutie?)" },
+  { t: "say", who: "family", noise: "happy", x: "T-REXY! You're home! (And who is THIS cutie?)" },
   { t: "say", who: "narrator", x: "Mom hugged him. Dad hugged him. His little sister hugged Nova so hard she squeaked." },
   { t: "say", who: "narrator", x: "And Shadowspine DID take over the T-Rex population after all..." },
   { t: "say", who: "narrator", x: "...as the official Boss of Dessert. (Fern pie with sprinkles. It was out of this world.)" },
@@ -149,12 +152,12 @@ const STEPS = [
   { t: "say", who: "trexy", face: "surprised", x: "My ship is ALIVE?! All that glitchy nebula magic must have zapped you awake!" },
   { t: "say", who: "trexy", face: "happy", hop: 2, x: "I'll call you... ZOOMASAURUS!" },
   { t: "say", who: "ship", x: "ZOOMASAURUS! Best. Name. EVER. My engines are doing a happy dance! Vroom-vroom-beep!" },
-  { t: "say", who: "family", x: "A talking spaceship? Welcome to the family, Zoomasaurus! Do you like fern pie?" },
+  { t: "say", who: "family", noise: "happy", x: "A talking spaceship? Welcome to the family, Zoomasaurus! Do you like fern pie?" },
   { t: "say", who: "ship", x: "I run on rocket fuel... but I'll try ONE bite. Okay, maybe two. Okay, the whole pie." },
   { t: "stage", ride: true, shipFace: "happy", family: false },
   { t: "say", who: "narrator", x: "From then on, whenever anybody wanted a ride, they just whistled. And Zoomasaurus zoomed right over." },
   { t: "say", who: "narrator", x: "Rides to school. Picnics on the Fern Moon. Loop-de-loops around Saturn's rings, just for fun." },
-  { t: "say", who: "nova", x: "WHEEE! This time it's the GOOD kind of wheee!" },
+  { t: "say", who: "nova", noise: "wee", x: "WHEEE! This time it's the GOOD kind of wheee!" },
   { t: "say", who: "ship", x: "Buckle up, everybody! Next stop: EVERYWHERE! Beep boop!" },
   { t: "song", id: "homeStomp" },
   { t: "end" }

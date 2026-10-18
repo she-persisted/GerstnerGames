@@ -27,7 +27,7 @@
  *
  * play(canvas, { gen, theme, label, have, beat, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero), onCrash(n, info),
  *               onCollect(obj), onMode(mode), onDouble(), onPerfect(streak), onClock(seconds, running), onFinish(result),
- *               autopilot(), speedup(), drop(), tip })
+ *               autopilot(), speedup(), drop(), tip, pauseTip })
  *   beat = seconds per beat (same as generate's): the ground, pads, and pieces pulse on it, and a hop pressed within about
  *   0.09 s of a beat that carries the hero over a spike, gap, or step pops "PERFECT!" when he lands (onPerfect(streak);
  *   a streak counts perfect hops in a row and a crash resets it).
@@ -38,6 +38,9 @@
  *   help) and info = { x, why, mode, chunk: { id, tag } | null, pressed (has the player pressed jump yet) }; nothing is
  *   kept after the run. result = { crashes, pieces, piecesTotal, gotIdx, secret, usedCheckpoints, skipped, perfects, ms }
  *   drop() is a play-test hook: that many of the first pieces can't be caught.
+ *   tip = words shown near the top for the first few seconds (shrunk to fit a narrow screen). pauseTip = the line under
+ *   PAUSED (default "Space to keep going"). Hop with Space, Up, W, a click, or a tap. Tiles are about a ninth of the
+ *   screen's height, but at least 15 tiles fit across, so a narrow screen (like a phone) still shows what's coming.
  *   hero (for drawHero) = { mode, vy, grounded, h, t, spin } where spin goes 0 to 1 during a double hop's flip, else -1.
  */
 (function (Kit) {
@@ -353,7 +356,8 @@
     function size() {
       const r = canvas.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
       W = r.width; H = r.height; canvas.width = Math.max(1, Math.round(W * d)); canvas.height = Math.max(1, Math.round(H * d));
-      ctx.setTransform(d, 0, 0, d, 0, 0); T = Math.max(30, H / 9.2);
+      // Tile size: about 9 tiles tall, but on a narrow screen (like a phone) at least 15 tiles wide, so the hero can see what's coming.
+      ctx.setTransform(d, 0, 0, d, 0, 0); T = Math.max(22, Math.min(H / 9.2, W / 15));
     }
     const ro = (() => { try { const x = new ResizeObserver(size); x.observe(canvas); return x; } catch (e) { addEventListener("resize", size); return null; } })();
     size();
@@ -557,14 +561,17 @@
       ctx.save(); ctx.translate(W - 16, 20); ctx.scale(bump, bump); ctx.fillText(`${got.size}/${pieceObjs.length}`, 0, 4); ctx.restore();
       drawPiece(W - 16 - ctx.measureText(`${got.size}/${pieceObjs.length}`).width - 18, 18, 7, th.piece || "#5cffb0", 0);
       if (tipUntil && now < tipUntil && o.tip) {
-        ctx.font = `700 ${Math.max(15, T * .3)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(10,6,32,.7)"; const tw = ctx.measureText(o.tip).width; ctx.fillRect(W / 2 - tw / 2 - 16, 40, tw + 32, T * .5);
-        ctx.fillStyle = th.pad || "#ffe94a"; ctx.fillText(o.tip, W / 2, 40 + T * .36);
+        let fs = Math.max(15, T * .3); ctx.font = `700 ${fs}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center";
+        const fit = (W - 48) / ctx.measureText(o.tip).width;   // shrink the tip to fit a narrow screen
+        if (fit < 1) { fs = Math.max(10, fs * fit); ctx.font = `700 ${fs}px "Baloo 2", system-ui, sans-serif`; }
+        const tw = ctx.measureText(o.tip).width, th2 = Math.max(T * .5, fs * 1.7);
+        ctx.fillStyle = "rgba(10,6,32,.7)"; ctx.fillRect(W / 2 - tw / 2 - 16, 40, tw + 32, th2);
+        ctx.fillStyle = th.pad || "#ffe94a"; ctx.fillText(o.tip, W / 2, 40 + th2 * .7);
       }
       if (paused) {
         ctx.fillStyle = "rgba(10,6,32,.72)"; ctx.fillRect(0, 0, W, H);
         ctx.fillStyle = "#f6f0ff"; ctx.textAlign = "center"; ctx.font = `400 ${Math.max(16, T * .4)}px "Press Start 2P", ui-monospace, monospace`;
-        ctx.fillText("PAUSED", W / 2, H / 2); ctx.font = `600 ${Math.max(14, T * .26)}px system-ui, sans-serif`; ctx.fillText("Space to keep going", W / 2, H / 2 + T * .6);
+        ctx.fillText("PAUSED", W / 2, H / 2); ctx.font = `600 ${Math.max(14, T * .26)}px system-ui, sans-serif`; ctx.fillText(o.pauseTip || "Space to keep going", W / 2, H / 2 + T * .6);
       }
     }
     function frame(now) {
@@ -598,7 +605,7 @@
       pause(v) { setPaused(!!v); },
       checkpoints(v) { cpOn = !!v; if (cpOn) cpUsed = true; },
       skip() { if (!finished && !stopped) finish(true); },
-      get state() { return { x: st.x, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed, perfects, streak }; }
+      get state() { return { x: st.x, y: st.y, vy: st.vy, tile: T, t: st.t, crashes, pieces: got.size, alive: st.alive, mode: st.mode, finished, secret: secretGot, checkpoints: cpOn, air: st.air, grounded: st.grounded, speed: L.speed, perfects, streak }; }
     };
   }
 

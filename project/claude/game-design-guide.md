@@ -50,6 +50,7 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Difficulty adapts to how he plays: harder when he's doing well, easier when he struggles. [asked] In Starward v4, typing speed, math, and word puzzles each have their own level. Two clean answers in a row raise a level, two hard-won answers or one "Show me" lower it, and questions are picked when they appear so they match the current level. [built]
 - Every playthrough must be different. [asked] Starward does this with large question banks, freshly generated math problems, and a list of questions already seen on that computer so they don't repeat. [built]
 - Give every challenge a library of extra questions, so the game varies as the kids replay it. [asked] Mini Game Survival v2 keeps several versions of each mystery question, clue line, and science fact, plus bonus facts and about 35 clue words a topic, and picks ones that computer hasn't seen lately. [built]
+- Questions and facts should be new every time they play. [asked] Mini Game Survival v6 has 8 versions of each mystery question, 6 clue lines per typing level, 8 science facts and 14 bonus facts per portal, and 4 ways to tell each memory, and deals every list like a shuffled deck saved on that computer: nothing comes back until every other version has had a turn, and never twice in a row. Every version of a mystery question tests the same idea, and every fact is checked for accuracy. [built]
 - Mix puzzle types. She asked for riddles plus fill-in-the-blank sentences. [asked] Claude added word scrambles, math word problems, missing numbers, place value, rounding, number patterns, planet order, and odd one out. [built]
 - A game can trade typing races for other mini games. For Mini Game Survival the kids asked for no typing games, and to type in the clues they find instead. Typing practice stays (each clue is typed into a notebook), next to obstacle runs, memory jigsaws, and a letter-guessing game. [asked]
 - Obstacle runs like Geometry Dash: the hero runs by himself, hops, bounces on pads, flies a little ship, and touching a spike sends him back. [asked] Every level is checked by a solver before it's used, so it can always be beaten. [built]
@@ -78,6 +79,9 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Give positive reinforcement through the hero's face: happy and surprised reactions to what he does. [asked]
 - Tap the hero for help when there are no friends to tap: in Mini Game Survival, tapping T-Rexy uses Scan or Fix one. [built]
 - Building and customizing: he picks the style of each rocket part and the paint color. [built]
+- Show the thing being built getting fixed. [asked] Mini Game Survival v6's ship sits crashed on the crash pad (tilted, cracked, smoking, scrap all around) and looks a little less broken with each part he finds, until it floats and glows. [built]
+- Put the hero next to an important object, not in front of it. [asked] On Mini Game Survival's crash pad, T-Rexy starts beside his ship. [built]
+- Games should play on a phone too. [asked] Mini Game Survival v6 switches to touch mode on a touch screen: tap to hop, walk, and pick; hints say what to tap; back and forward buttons stand in for L and R; typing opens the phone's keyboard; and the layout fits upright and sideways phones with no sideways scrolling. Keyboard play is unchanged. [built]
 
 ## Music and sound
 - Each place has its own background music. [asked]
@@ -86,6 +90,7 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 - Music can match the game's energy: Mini Game Survival's songs started out hardcore (fast, a kick on every beat). [asked] Its mystery hides in the music: each portal's song carries a piece of the weird tune. [built]
 - Make the music fun and upbeat. [asked] Mini Game Survival v2's songs are happy dance chiptune: major keys (the Shadow Gate is a bouncy minor), bouncing bass, claps, sparkly arpeggios, and a verse and chorus (`kit/groove.js`). [built]
 - Villains get a voice. [asked] Shadowspine's evil laugh was made in code at first, and Mom called it "awful": use a real recording of a silly villain laugh instead. [asked] Mini Game Survival v3 takes turns between two high, cackly laughs from the CC0 "Evil Laughs" pack by Eldritch Grim (OpenGameArt), saved in `assets/sounds/villain-laughs.js`. A high laugh is also a quiet hint that the villain is small. [built]
+- Cute characters get cute voices. [asked] "Find cute happy noises for the dinosaurs." Mini Game Survival v6 uses six "cute" sounds from the CC0 "80 CC0 creature SFX" pack by rubberduck (OpenGameArt), saved in `assets/sounds/dino-chirps.js`: chirps, coos, a hum, "ooh!", "wheee!", and "hm?". Each dinosaur gets its own pitch (smaller is higher), they play on happy story lines and wins, and never during runs, so the music stays clear. [built]
 - Voices made in code sound robotic. For voices, use real recordings that are CC0 (public domain), credit the author anyway, and keep each clip short and small. [asked] Music and other sound effects are still generated in code, so nothing is copyrighted. [built]
 - This workspace can't download from most websites (OpenGameArt included). Mom downloads the file and attaches it to the chat. [limit]
 - Music starts after the first click or key press, because browsers block sound until then. [limit]
@@ -111,9 +116,9 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 ## Technical defaults that worked
 - Source lives in the Game Library as separate files: shared engines in kit/, art and music in assets/, questions and words in content/, game-only parts in games/<id>/. Every file starts with a header saying what it does, what it provides, and what it needs. [asked]
 - Each game is built into one self-contained web page, published as an artifact, that runs in Chrome on the Chromebook with no install.
-- Keyboard first: arrow keys or WASD to move, Enter to continue, and typing for answers. The mouse and touchscreen also work, including tapping friends for hints.
+- Keyboard first: arrow keys or WASD to move, Enter to continue, and typing for answers. The mouse and touchscreen also work, including tapping friends for hints. Since Mini Game Survival v6, a game can also be played on a phone (see Gameplay). [asked]
 - Progress and skill levels save in the browser, so he can stop and pick up later.
-- Every change passes `library/build/playtest.py`, which plays Starward and Mini Game Survival start to finish in a headless browser (Mini Game Survival's runs are finished by the level's own solution). It also checks that every memory piece can be caught, that the recorded laughs play, L and R, hints, missing pieces, and running a portal again. Visual changes also get a screenshot check; `--shots=DIR` saves one of every Mini Game Survival screen. [asked]
+- Every change passes `library/build/playtest.py`, which plays Starward and Mini Game Survival start to finish in a headless browser (Mini Game Survival's runs are finished by the level's own solution). It also checks that every memory piece can be caught, that the recorded laughs and dino noises play, the question library and its dealer, phone play on a touch screen, L and R, hints, missing pieces, and running a portal again. Visual changes also get a screenshot check; `--shots=DIR` saves one of every Mini Game Survival screen. [asked]
 
 ## Starting a new game: questions for Child I, one at a time
 1. What is the game about, and where does it happen?

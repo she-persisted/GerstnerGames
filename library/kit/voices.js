@@ -1,14 +1,19 @@
 /**
  * @file kit/voices.js
- * @about Cartoon villain voices: an evil laugh and a grumbly mutter for when a villain talks. The laugh is a real recording when the game includes recorded laughs (like assets/sounds/villain-laughs.js), taking turns between them; otherwise it's made in code, like the mutter: each syllable a buzzy tone shaped by vowel filters, with a breathy "h" or a humming "m" at the start, plus a little echo.
- * @provides Kit.voices { evilLaugh(options) -> seconds, mutter(seconds, options) -> seconds, clipBuffer(audioContext, clip) -> Promise<AudioBuffer | null> }
+ * @about Cartoon voices. For villains: an evil laugh and a grumbly mutter for when a villain talks. The laugh is a real recording when the game includes recorded laughs (like assets/sounds/villain-laughs.js), taking turns between them; otherwise it's made in code, like the mutter: each syllable a buzzy tone shaped by vowel filters, with a breathy "h" or a humming "m" at the start, plus a little echo. For cute characters: chirp plays a real recorded happy creature noise (like assets/sounds/dino-chirps.js), pitched up or down so each character sounds like itself.
+ * @provides Kit.voices { evilLaugh(options) -> seconds, mutter(seconds, options) -> seconds, chirp(options) -> seconds, clipBuffer(audioContext, clip) -> Promise<AudioBuffer | null> }
  * @requires kit/audio.js
  *
  * evilLaugh({ clip (which recorded laugh, default: take turns), volume (0 to 1, default .85), synth (true = the made-in-code laugh),
  *             pitch (Hz, default 120), has (how many HAs, default 4), squeak (true to end with a tiny voice crack; default: now and then) })
  *   Recorded laughs come from Kit.sounds.villainLaughs: [{ id, seconds, src (data: URL) }]. A new laugh cuts off the one still playing.
  * mutter(seconds, { pitch })
- * Both return how long they last, so a game can animate along with them. They stay silent when sound is off (Kit.audio.setEnabled),
+ * chirp({ mood (happy | excited | curious, default happy), pitch (1 = as recorded, 2 = an octave higher, .8 = lower; default 1),
+ *         volume (0 to 1, default .7), clip (an id, to pick one), at (seconds from now, default 0) })
+ *   Plays one recorded noise from Kit.sounds.dinoChirps: [{ id, mood, seconds, src (data: URL) }], never the same one twice in a row
+ *   when there's a choice. Pitch also changes speed, like a record player, so a bigger character gets a lower, slower voice.
+ *   Returns 0 when the game has no recorded noises.
+ * All three return how long they last, so a game can animate along with them. They stay silent when sound is off (Kit.audio.setEnabled),
  * but still return their length. Pass { ctx: someAudioContext, at: seconds } to draw into another context (the play-test uses this).
  */
 (function (Kit) {
@@ -108,5 +113,28 @@
     perform(plan, o);
     return sec;
   }
-  Kit.voices = { evilLaugh, mutter, clipBuffer };
+  // Cute recorded noises for happy characters.
+  let lastChirp = "";
+  function chirp(o = {}) {
+    const all = (Kit.sounds && Kit.sounds.dinoChirps) || [];
+    if (!all.length) return 0;
+    let list = o.clip ? all.filter(c => c.id === o.clip) : all.filter(c => c.mood === (o.mood || "happy"));
+    if (!list.length) list = all;
+    if (list.length > 1) list = list.filter(c => c.id !== lastChirp);
+    const clip = list[Math.floor(Math.random() * list.length)], rate = o.pitch || 1;
+    lastChirp = clip.id;
+    const a = o.ctx || (A.enabled ? A.ctx() : null);
+    if (a) {
+      const when = (o.ctx ? 0 : a.currentTime) + (o.at || 0);
+      clipBuffer(a, clip).then(buf => {
+        if (!buf) return;   // this browser couldn't read the recording
+        const src = a.createBufferSource(), g = a.createGain();
+        src.buffer = buf; src.playbackRate.value = rate; g.gain.value = o.volume == null ? .7 : o.volume;
+        src.connect(g).connect(a.destination);
+        src.start(Math.max(when, o.ctx ? 0 : a.currentTime));
+      });
+    }
+    return clip.seconds / rate;
+  }
+  Kit.voices = { evilLaugh, mutter, chirp, clipBuffer };
 })(window.Kit = window.Kit || {});

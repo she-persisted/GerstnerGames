@@ -1,9 +1,9 @@
 {
   "id": "mini-game-survival",
-  "title": "Mini Game Survival v5",
-  "version": 5,
+  "title": "Mini Game Survival v6",
+  "version": 6,
   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
-  "output": "dist/mini-game-survival-v5.html",
+  "output": "dist/mini-game-survival-v6.html",
   "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
@@ -69,6 +69,7 @@
     "assets/music/nova-lullaby.js",
     "assets/music/home-stomp.js",
     "assets/sounds/villain-laughs.js",
+    "assets/sounds/dino-chirps.js",
     "content/levels/runner-chunks.js",
     "content/words/clue-words.js"
   ],
@@ -77,6 +78,7 @@
     "games/mini-game-survival/state.js",
     "games/mini-game-survival/story.js",
     "games/mini-game-survival/scene.js",
+    "games/mini-game-survival/touch.js",
     "games/mini-game-survival/screens.js",
     "games/mini-game-survival/boot.js"
   ],

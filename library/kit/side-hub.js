@@ -25,7 +25,8 @@
     function size() {
       const r = canvas.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1);
       W = r.width; H = r.height; canvas.width = Math.max(1, Math.round(W * dpr)); canvas.height = Math.max(1, Math.round(H * dpr));
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); T = Math.max(30, H / 7.4);
+      // Tile size: about a seventh of the height, but at least 11 tiles fit across a narrow screen (like a phone).
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); T = Math.max(24, Math.min(H / 7.4, W / 11));
     }
     const ro = (() => { try { const x = new ResizeObserver(size); x.observe(canvas); return x; } catch (e) { addEventListener("resize", size); return null; } })();
     size();

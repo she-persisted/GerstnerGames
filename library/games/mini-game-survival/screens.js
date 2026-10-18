@@ -85,6 +85,8 @@ function renderTitle() {
 function resetStage() { applyStage({ theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false, shipFace: "", ride: false }); }
 
 /* Story */
+// The cute dino noise T-Rexy makes on a story line with this face (story lines can also name a noise).
+const FACE_NOISE = { happy: "happy", excited: "excited", surprised: "ooh", think: "huh" };
 function renderSay(st) {
   const c = CAST[st.who];
   startStage(); $("#place").textContent = "";
@@ -92,13 +94,15 @@ function renderSay(st) {
     <div class="whorow">${PORTRAIT[st.who] ? PORTRAIT[st.who]() : ""}<p class="who">${esc(c.label)}</p></div>
     <p class="line">${esc(st.x)}</p>
     <div class="actions">${nextBtn("Next", '<span class="kbd">Enter</span>')}</div>
-    <p class="navhint"><span class="kbd">L</span> back &nbsp; <span class="kbd">R</span> forward</p>
+    <p class="navhint k-only"><span class="kbd">L</span> back &nbsp; <span class="kbd">R</span> forward</p>
   </div>`;
-  hintIfIdle("Press [Enter] for the next line. [L] goes back a line.", 15000);
+  hintIfIdle(tip("Press [Enter] for the next line. [L] goes back a line.", "Tap Next for the next line. The \u25C0 button goes back a line."), 15000);
   if (st.face) express(st.face, 3000);
+  const noise = st.noise || (st.who === "trexy" ? FACE_NOISE[st.face] : "");
+  if (noise) { if (st.who === "family") familyCheer(.15); else dinoNoise(st.who, noise, .12); }
   if (st.hop === 2) doubleHop(); else if (st.hop) { hop(); setTimeout(hop, 600); }
   if (st.who === "shadow") { if (/MWA|HA!/.test(st.x)) shadowLaugh(); else shadowTalk(Math.min(2400, 500 + st.x.length * 22)); }
-  if (st.who === "nova") Kit.audio.tone(1400, .08, "sine", .04);
+  if (st.who === "nova" && !noise) Kit.audio.tone(1400, .08, "sine", .04);
   if (st.who === "ship") shipTalk();
   bindPrimary(next);
 }
@@ -110,7 +114,7 @@ function notebookHTML() {
   return `<div class="card notebook">
     <p class="nb-head">${headIcon.replace("<svg", '<svg style="width:46px;height:36px"')} Clue Notebook</p>
     ${nextLine ? `<p class="nb-next">${esc(nextLine)}</p>` : ""}
-    ${S.moved ? "" : `<p class="walkhint"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> to walk. <span class="kbd">Enter</span> to jump in.</p>`}
+    ${S.moved ? "" : `<p class="walkhint"><span class="k-only"><span class="kbd">&larr;</span> <span class="kbd">&rarr;</span> to walk. <span class="kbd">Enter</span> to jump in.</span><span class="t-only">Tap where T-Rexy should walk. Tap a glowing portal to jump in.</span></p>`}
     <p class="nb-mode">${esc(modeOf().label)} mode <button type="button" class="btn ghost small" id="modeSwitch">Switch to ${S.mode === "hard" ? "Easy" : "Hard"}</button></p>
     ${closetHTML()}
     ${PORTAL_ORDER.map(id => S.clues.includes(id) ? `<p class="clue-note"><b>Clue ${CLUES[id].n}:</b> ${esc(CLUES[id].short)}</p>` : `<p class="clue-note empty">Clue ${CLUES[id].n}: ???</p>`).join("")}
@@ -161,7 +165,7 @@ function renderHub() {
   startHub(leave, () => paint());
   navKeys("letters"); // the arrow keys walk here
   onForward(() => { sfx.liftoff(); leave(); });
-  hintIfIdle("Walk with [\u2190] [\u2192]. At the glowing portal, press [Enter] to jump in.", 9000);
+  hintIfIdle(tip("Walk with [\u2190] [\u2192]. At the glowing portal, press [Enter] to jump in.", "Tap the glowing portal to walk there, then tap it again to jump in."), 9000);
   blurActive();
 }
 
@@ -226,11 +230,12 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
     startRun({
       gen, theme, shadow, label: name, have, song, beat,
       onPerfect: () => { express("excited", 900); if (!S.perfTip) { S.perfTip = true; save(); toast("PERFECT! You hopped right on the beat!"); } },
-      tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
+      tip: firstRun ? (touchMode ? "Tap to hop. Tap again in the air to DOUBLE hop!" : "Space, Up, or click to hop. Press again in the air to DOUBLE hop!") : "",
+      pauseTip: touchMode ? "Tap to keep going" : "",
       onCrash: (c, info = {}) => {
         if (c === 1 && firstRun) toast("Oops! Back to the last checkpoint.");
         // Hints only when needed: right away if no key has been pressed yet, or after two crashes at the same spot.
-        if (!info.pressed) { showHint("Press [Space], [\u2191], or click to hop!"); return; }
+        if (!info.pressed) { showHint(tip("Press [Space], [\u2191], or click to hop!", "Tap the screen to hop!")); return; }
         const here = info.chunk ? info.chunk.id : "start";
         spotCrashes = here === spot ? spotCrashes + 1 : 1; spot = here;
         if (spotCrashes >= 2) showHint(runHint(info));
@@ -250,7 +255,7 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
 const RUN_HINTS = [
   [/^secret$/, "Stay on the low path to get through. The high path hides a secret!"],
   [/low-ceiling/, "Low ceiling! Hop only when you need to, and skip the double hop."],
-  [/spike-3|spike-run/, "Lots of spikes! Hop, then press again in the air to DOUBLE hop over them all."],
+  [/spike-3|spike-run/, "Lots of spikes! Hop, then hop again in the air to DOUBLE hop over them all."],
   [/spike-pit/, "Hop over the spiky pit. Double hop if you need more air!"],
   [/spike-2|spike-spike/, "Two spikes! Hop a little early so you clear them both."],
   [/tower|stairs|step/, "Hop up onto each block, one at a time."],
@@ -260,9 +265,9 @@ const RUN_HINTS = [
   [/^spike$/, "Hop just before the spike. Not too early!"]
 ];
 function runHint(info) {
-  if (info.mode === "ship" || (info.chunk && info.chunk.tag === "ship")) return "Ship mode! Hold [Space] to fly up. Let go to drift down.";
+  if (info.mode === "ship" || (info.chunk && info.chunk.tag === "ship")) return tip("Ship mode! Hold [Space] to fly up. Let go to drift down.", "Ship mode! Hold your finger on the screen to fly up. Let go to drift down.");
   const id = info.chunk ? info.chunk.id : "", h = RUN_HINTS.find(([re]) => re.test(id));
-  return h ? h[1] : "Hop just before the danger. Press again in the air to DOUBLE hop!";
+  return h ? h[1] : "Hop just before the danger. Hop again in the air to DOUBLE hop!";
 }
 // Feeds the run level. The crash count is only looked at here and is never shown or saved.
 function runOutcome(res) {
@@ -288,6 +293,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   clearHints();
   const missing = res.piecesTotal - res.pieces;
   startStage(); applyStage({ theme: P.theme, face: all ? "happy" : "smile" }); express(all ? "excited" : !missing ? "happy" : "think", 2400); hop();
+  if (all || !missing) dinoNoise("trexy", all ? "excited" : "happy", .2);
   const head = res.skipped ? `Run <span class="hot">skipped</span>` : `Portal <span class="hot">cleared!</span>`;
   const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.perfects ? `<span class="stat"><b>${res.perfects}</b> perfect hop${res.perfects > 1 ? "s" : ""}</span>` : ""}${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
   const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 116 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
@@ -303,7 +309,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
       ${look}
     </div>`;
     if (all) sfx.levelup();
-    if (res.look) { setTimeout(() => { if (flow.alive(t)) sfx.join(); }, 500); express("happy", 3400); toast(`New look: ${res.look.name}!`); }
+    if (res.look) { setTimeout(() => { if (flow.alive(t)) sfx.join(); }, 500); express("happy", 3400); dinoNoise("trexy", "wee", 1.1); toast(`New look: ${res.look.name}!`); }
     setTimeout(() => { if (flow.alive(t)) next(); }, res.look ? 4200 : all ? 2800 : 2400);
     return;
   }
@@ -326,7 +332,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
     document.addEventListener("keydown", aKey);
     flow.setCleanup(() => document.removeEventListener("keydown", aKey));
     onForward(again);
-    hintIfIdle("Press [Enter] to run it again. Grab the glowing pieces you missed!", 12000);
+    hintIfIdle(tip("Press [Enter] to run it again. Grab the glowing pieces you missed!", "Tap Run it again. Grab the glowing pieces you missed!"), 12000);
     return;
   }
   panel.innerHTML = `<div class="card">
@@ -346,7 +352,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   document.addEventListener("keydown", aKey);
   flow.setCleanup(() => document.removeEventListener("keydown", aKey));
   onForward(() => next());
-  hintIfIdle("Press [Enter] to keep going, or [A] to run it again and catch the rest.", 12000);
+  hintIfIdle(tip("Press [Enter] to keep going, or [A] to run it again and catch the rest.", "Tap Keep going, or Run it again to catch the rest."), 12000);
 }
 
 /* Memory jigsaws */
@@ -373,7 +379,7 @@ function renderJigsaw(st) {
     : run && run.pieces < run.total ? `You caught ${run.pieces} of ${run.total} pieces. T-Rexy's big brain remembered the rest!` : "";
   panel.innerHTML = `<div class="card">
     <p class="eyebrow">${esc(P.name)}: a lost memory</p>
-    <p class="digtip">Swap two pieces to fix the picture. Click two, or use the arrow keys and Enter.</p>
+    <p class="digtip">Swap two pieces to fix the picture. <span class="k-only">Click two, or use the arrow keys and Enter.</span><span class="t-only">Tap two pieces to swap them.</span></p>
     ${gapLine ? `<p class="line gapnote" style="font-size:1rem">${esc(gapLine)}</p>` : ""}
     <div class="statrow"><span class="stat" id="jigProg"><b>0</b> of ${tiles} home</span></div>
     <div class="helpers">
@@ -403,7 +409,7 @@ function renderJigsaw(st) {
       panel.querySelectorAll(".help").forEach(b => { b.disabled = true; });
       const fb = $("#fb"); fb.className = "feedback good cheer";
       fb.textContent = r.gaps ? `${pick(CHEERS)} Most of the memory is back!` : pick(CHEERS);
-      express("happy", 2400); hop();
+      express("happy", 2400); hop(); dinoNoise("trexy", "happy", .2);
       onForward(null);
       const t = flow.token();
       setTimeout(() => { if (flow.alive(t)) next(); }, 2200);
@@ -414,7 +420,7 @@ function renderJigsaw(st) {
   heroTap = () => { jig.fix(); hop(); };
   navKeys("letters"); // the arrow keys move around the puzzle
   onForward(() => { skipping = true; while (jig.fix()) { /* put every piece home */ } });
-  hintIfIdle("Click a piece, then click the spot where it goes. Stuck? Click Fix one, or Peek at the picture.", 15000);
+  hintIfIdle(tip("Click a piece, then click the spot where it goes. Stuck? Click Fix one, or Peek at the picture.", "Tap a piece, then tap the spot where it goes. Stuck? Tap Fix one, or Peek at the picture."), 15000);
   flow.setCleanup(() => jig.stop());
 }
 
@@ -425,11 +431,11 @@ function renderWord(st) {
   let misses = 0;
   const ctl = Kit.fuelWord.render(panel, {
     head: `<p class="eyebrow">${esc(P.name)}: glitch-locked clue word</p>`,
-    tip: "Type letters to guess the word. Wrong letters burn fuel!",
+    tip: touchMode ? "Tap letters to guess the word. Wrong letters burn fuel!" : "Type letters to guess the word. Wrong letters burn fuel!",
     word: w.word, hint: w.hint, fuel: FUEL[L], cheers: CHEERS, helperHtml: headIcon, checkHtml: ICON.check,
     onGuess: (c, ok) => {
       express(ok ? "happy" : "worried", 900);
-      if (!ok && ++misses === 3) showHint("Try the vowels: [A] [E] [I] [O] [U]. Or click Scan to light up a letter.");
+      if (!ok && ++misses === 3) showHint(tip("Try the vowels: [A] [E] [I] [O] [U]. Or click Scan to light up a letter.", "Try the vowels: A, E, I, O, U. Or tap Scan to light up a letter."));
     },
     onScan: () => hop(),
     onOut: () => express("worried", 3000),
@@ -438,44 +444,48 @@ function renderWord(st) {
       const outcome = r.out ? "gaveup" : (r.misses <= 1 && !r.scans) ? "clean" : r.misses >= 4 ? "struggle" : "ok";
       skills.record("words", outcome); markPassed(); save();
       clearHints(); onForward(null);
-      express("happy", 2000); hop();
+      express("happy", 2000); hop(); dinoNoise("trexy", "excited", .2);
     },
     onDone: () => next()
   });
   heroTap = () => ctl.use("scan");
   navKeys("arrows"); // letters are guesses here
   onForward(() => { markPassed(); next(); }); // skipping the word earns no points
-  hintIfIdle("Type a letter you think is in the word. The hint above helps!", 14000);
+  hintIfIdle(tip("Type a letter you think is in the word. The hint above helps!", "Tap a letter you think is in the word. The hint above helps!"), 14000);
   flow.setCleanup(() => ctl.stop());
 }
 
 /* Typing a clue into the notebook */
 function renderClue(st) {
   const C = CLUES[st.p], L = skills.level("typing"), text = pickVersion(`line.${st.p}.${L}`, QBANK.lines[st.p][L - 1]);
+  const saw = pickVersion(`saw.${st.p}`, QBANK.saw[st.p]);
   const fact = pickVersion(`fact.${st.p}`, QBANK.facts[st.p]), bonus = pickVersion(`bonus.${st.p}`, QBANK.bonus[st.p]);
   startStage(); applyStage({ face: "think" }); hideMemory();
   panel.innerHTML = `<div class="card">
-    <div class="cluecard"><h3>${esc(C.title)}</h3><p>${esc(C.saw)}</p><p class="fact">${esc(fact)}</p><p class="bonus">${esc(bonus)}</p></div>
+    <div class="cluecard"><h3>${esc(C.title)}</h3><p>${esc(saw)}</p><p class="fact">${esc(fact)}</p><p class="bonus">${esc(bonus)}</p></div>
     <p class="digtip">Type the clue into your notebook.</p>
     <div class="typehost" id="typeHost"></div>
   </div>`;
   const saveClue = () => { if (!S.clues.includes(st.p)) S.clues.push(st.p); markPassed(); save(); paintHud(); };
   navKeys("arrows"); // letters are for typing here
   onForward(() => { saveClue(); next(); });
-  hintIfIdle("Type the glowing letter, then the next one. Spaces count too!", 10000);
-  flow.setCleanup(Kit.typing.line($("#typeHost"), {
+  hintIfIdle(tip("Type the glowing letter, then the next one. Spaces count too!", "Tap Open keyboard, then type the glowing letter, then the next one. Spaces count too!"), 10000);
+  let keys = null; // the phone's keyboard, on touch screens
+  const stopTyping = Kit.typing.line($("#typeHost"), {
     text,
     onDone: (r, doneEl) => {
-      flow.setCleanup(null); clearHints(); onForward(null);
+      keys.stop(); flow.setCleanup(null); clearHints(); onForward(null);
       const t = S.stats.typing; t.hits += r.hits; t.misses += r.misses; t.ms += r.ms; t.chars += r.chars;
       const acc = r.hits / Math.max(1, r.hits + r.misses);
       skills.record("typing", acc >= .96 ? "clean" : acc >= .88 ? "ok" : "struggle");
-      saveClue(); express("happy", 2000); hop();
+      saveClue(); express("happy", 2000); hop(); dinoNoise("trexy", "happy", .25);
       doneEl.innerHTML = `<p class="feedback good cheer">Clue saved!</p>`;
       const tk = flow.token();
       setTimeout(() => { if (flow.alive(tk)) next(); }, 1600);
     }
-  }));
+  });
+  keys = phoneKeyboard($("#typeHost"));
+  flow.setCleanup(() => { stopTyping(); keys.stop(); });
 }
 
 /* Ship parts and paint */
@@ -491,7 +501,7 @@ function optionKeys(sel, pickFn) {
 // Forward on a pick-one screen picks the first choice; a hint shows the number keys if nobody picks for a while.
 function pickHints(opts) {
   onForward(() => { if (opts[0]) opts[0].click(); });
-  hintIfIdle(`Press [1]${opts.length > 2 ? ", [2]," : ""} or [${opts.length}] to pick one, or click it.`, 12000);
+  hintIfIdle(tip(`Press [1]${opts.length > 2 ? ", [2]," : ""} or [${opts.length}] to pick one, or click it.`, "Tap the one you like best."), 12000);
 }
 function renderPart(st) {
   const P = PORTALS[st.p], key = P.part, def = SHIP.PARTS[key];
@@ -504,7 +514,7 @@ function renderPart(st) {
   pickHints(optionKeys(".opt[data-opt]", b => {
     S.parts[key] = b.dataset.opt;
     if (!S.done.includes(st.p)) S.done.push(st.p);
-    markPassed(); save(); paintHud(); sfx.found(); toast(`${def.name} added to your ship!`);
+    markPassed(); save(); paintHud(); sfx.found(); dinoNoise("trexy", "excited", .3); toast(`${def.name} added to your ship!`);
     next();
   }));
 }
@@ -515,7 +525,7 @@ function renderPaint() {
     <h2 class="big">Pick a <span class="hot">paint job</span></h2>
     <div class="options">${SHIP.PAINT_ORDER.map((id, i) => `<button type="button" class="opt" data-paint="${id}">${SHIP.box(SHIP.svg({ ...S.parts, paint: id }, {}))}<span>${esc(SHIP.PAINTS[id].label)}</span><span class="k">${i + 1}</span></button>`).join("")}</div>
   </div>`;
-  pickHints(optionKeys(".opt[data-paint]", b => { S.paint = b.dataset.paint; markPassed(); save(); sfx.join(); toast(`${SHIP.PAINTS[S.paint].label}! Looking sharp.`); next(); }));
+  pickHints(optionKeys(".opt[data-paint]", b => { S.paint = b.dataset.paint; markPassed(); save(); sfx.join(); dinoNoise("trexy", "happy", .3); toast(`${SHIP.PAINTS[S.paint].label}! Looking sharp.`); next(); }));
 }
 
 /* New songs */
@@ -529,7 +539,7 @@ function renderSong(st) {
     <div class="actions">${nextBtn("Next", '<span class="kbd">Enter</span>')}</div>
   </div>`;
   playSong(st.id); sfx.song(); toast(`New song: ${title}`); express("happy", 2000);
-  hintIfIdle("Press [Enter] to keep going. [L] goes back a line.", 15000);
+  hintIfIdle(tip("Press [Enter] to keep going. [L] goes back a line.", "Tap Next to keep going. The \u25C0 button goes back a line."), 15000);
   bindPrimary(next);
 }
 
@@ -562,7 +572,7 @@ function renderDeduce(st) {
     if (Number(b.dataset.i) === D.a) {
       done = true; b.classList.add("yes"); panel.querySelectorAll(".choice").forEach(x => { x.disabled = true; });
       S.stats.pts += 150; markPassed(); save(); clearHints(); onForward(null);
-      sfx.right(); express("happy", 2000); hop();
+      sfx.right(); express("happy", 2000); hop(); dinoNoise("trexy", "happy", .25);
       fb.className = "feedback good cheer"; fb.textContent = pick(CHEERS);
       const t = flow.token(); setTimeout(() => { if (flow.alive(t)) next(); }, 1700);
     } else {
@@ -581,7 +591,7 @@ function renderDeduce(st) {
     const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Here's the answer. Think about why it fits the clues!";
     const t = flow.token(); setTimeout(() => { if (flow.alive(t)) next(); }, 2600);
   });
-  hintIfIdle("Think about your clues! Press [1], [2], or [3] to answer. Wrong answers are okay.", 20000);
+  hintIfIdle(tip("Think about your clues! Press [1], [2], or [3] to answer. Wrong answers are okay.", "Think about your clues! Tap an answer. Wrong answers are okay."), 20000);
 }
 function renderShrink() {
   startStage();
@@ -591,7 +601,7 @@ function renderShrink() {
   const t = flow.token();
   setTimeout(() => {
     if (!flow.alive(t)) return;
-    applyStage({ nova: true, novaFace: "surprised", shadow: 0, lantern: false }); sfx.found();
+    applyStage({ nova: true, novaFace: "surprised", shadow: 0, lantern: false }); sfx.found(); dinoNoise("nova", "huh", .35);
     setTimeout(() => { if (flow.alive(t)) next(); }, 900);
   }, 2800);
 }
@@ -612,7 +622,7 @@ function computeScore() {
 const fullRuns = () => Object.values(S.stats.runs).filter(r => r.full).length;
 function renderEnd() {
   store.del(KEYS.save); active = false;
-  startStage(); playSong("homeStomp"); express("happy", 4000); hop();
+  startStage(); playSong("homeStomp"); express("happy", 4000); hop(); familyCheer(.4);
   const sc = computeScore();
   panel.innerHTML = `<div class="card end">
     <h2 class="big">T-Rexy is <span class="hot">home!</span></h2>
@@ -643,7 +653,7 @@ function renderEnd() {
     $("#hsForm").querySelectorAll("input,button").forEach(x => { x.disabled = true; });
     const rank = await board.save({ name: nm, score: sc.total, mode: S.mode, pages: S.pages.length, wpm: sc.wpm, acc: sc.acc, levels: skills.snapshot(), at: new Date().toISOString() });
     $("#rankMsg").textContent = rank && rank <= 10 ? `#${rank}!` : "Saved!";
-    sfx.join(); express("happy", 2500); hop();
+    sfx.join(); express("happy", 2500); hop(); dinoNoise("trexy", "excited", .3);
     const ab = $("#againBtn"); ab.className = "btn"; focusSoon(ab);
   });
   focusSoon($("#hsName"));
@@ -654,5 +664,5 @@ cv.addEventListener("click", e => {
   if (mode !== "stage") return;
   const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
   const hx = ST.ship ? .22 : .26;
-  if (Math.abs(x - hx) < .12 && y > .4 && y < .9) { if (heroTap) heroTap(); else { hop(); express("happy", 1200); sfx.key(); } }
+  if (Math.abs(x - hx) < .12 && y > .4 && y < .9) { if (heroTap) heroTap(); else { hop(); express("happy", 1200); dinoNoise("trexy", pick(["chirp", "coo", "hum", "huh"])); } }
 });
