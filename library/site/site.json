@@ -38,7 +38,8 @@
     "assets/music/whirlpool.js",
     "assets/music/shadow-run.js",
     "assets/music/nova-lullaby.js",
-    "assets/music/home-stomp.js"
+    "assets/music/home-stomp.js",
+    "assets/music/wave-rider.js"
   ],
   "parts": [
     "site/page.js"

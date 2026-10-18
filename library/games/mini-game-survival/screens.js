@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/screens.js
- * @about Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs (with a keep-going or run-it-again choice when memory pieces got away, and a bonus for catching them all), memory jigsaws (with glitchy holes for missing pieces), glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves. Each screen also says what the R key (forward) does there and which keys L and R leave alone, and shows a hint with the keys to press only when the player seems stuck.
+ * @about Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs (with a keep-going or run-it-again choice when memory pieces got away, and a bonus for catching them all), memory jigsaws (with glitchy holes for missing pieces), glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry, and the Wave Rider bonus level from the title screen (a 60-second ride with its own best score). Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves. Each screen also says what the R key (forward) does there and which keys L and R leave alone, and shows a hint with the keys to press only when the player seems stuck.
  * @requires games/mini-game-survival/questions.js, kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js
  */
 const board = Kit.scoreboard.create({ storeKey: KEYS.scores });
@@ -51,6 +51,7 @@ function renderTitle() {
       <button class="btn big" type="button" data-primary id="playBtn">Play ${ICON.go}</button>
       ${saved ? `<button type="button" class="btn ghost" id="resumeBtn">${ICON.retry} Keep going <small>(${esc((MODES[saved.mode] || MODES.easy).label)})</small></button>` : ""}
     </div>
+    <button type="button" class="btn ghost bonusbtn" id="bonusBtn">${WAVE_ICON} Bonus level: Wave Rider <span class="kbd">B</span></button>
     <div class="board panel-board" data-scoreboard></div>
     <section class="jukebox" aria-label="Jukebox"><p class="eyebrow">${ICON.note.replace('class="note-ic" ', "")} Jukebox</p><div class="jlist" id="jukeList"></div></section>
   </div>`;
@@ -67,6 +68,7 @@ function renderTitle() {
     if (e.target && e.target.matches && e.target.matches("input, textarea")) return;
     const k = e.key.toLowerCase();
     if (k === "e" || k === "h") { e.preventDefault(); showMode(k === "e" ? "easy" : "hard", true); }
+    else if (k === "b" && !e.repeat) { e.preventDefault(); renderBonus(); }
     else if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && document.activeElement && document.activeElement.classList.contains("modebtn")) {
       e.preventDefault(); showMode(pickMode === "easy" ? "hard" : "easy", true); focusSoon($("#mode-" + pickMode));
     }
@@ -79,8 +81,67 @@ function renderTitle() {
     S = fresh(); setMode(pickMode); active = true; store.del(KEYS.save); scene.classList.remove("attract");
     resetStage(); paintHud(); go(0);
   });
+  $("#bonusBtn").addEventListener("click", () => renderBonus());
   const rb = $("#resumeBtn");
   if (rb) rb.addEventListener("click", () => { document.removeEventListener("keydown", modeKey); Kit.audio.ctx(); music.unlock(); S = Object.assign(fresh(), saved); setMode(S.mode); active = true; scene.classList.remove("attract"); restore(); go(S.step); });
+}
+/* The Wave Rider bonus level: a 60-second ride over neon hills, from the title screen, outside the story (nothing is saved but the
+   best score and the hill level). Hold to dive down the hills, let go to fly off the tops. Esc pauses; T on the pause screen
+   goes back to the title. */
+const WAVE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c2.5 0 2.5-4 5-4s2.5 4 5 4 2.5-4 5-4 2.5 4 5 4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const WAVE_CHEERS = ["Totally tubular, T-Rexy!", "Surf's up, tiny arms!", "Wave-o-saurus REX!", "Rad-ical ride!", "Hang ten... claws!", "You out-waved the waves!", "Gnarly, dude-osaur!"];
+function renderBonus() {
+  active = false; flow.bump(); clearHints(); hideMemory();
+  scene.classList.remove("attract"); $("#place").textContent = ""; // the ride's own top bar says Wave Rider, and its hills fill the bottom
+  Kit.audio.ctx(); music.unlock(); collectSong("waveRider");
+  const tok = flow.token(), plan = Kit.waveRider.plan({ level: bonusSkill.level("waves"), secs: BONUS_SECS });
+  startStage(); applyStage({ theme: "surf", face: "smile", acc: "none", shadow: 0, nova: false, ship: false, family: false, lantern: false, shipFace: "", ride: false });
+  stageEl.classList.add("wide"); panel.innerHTML = ""; blurActive();
+  music.hush(); // quiet for the countdown; the song starts on GO
+  const leave = e => { if ((e.key === "t" || e.key === "T") && waveCtl && waveCtl.state.paused) { e.preventDefault(); renderTitle(); } };
+  document.addEventListener("keydown", leave);
+  flow.setCleanup(() => document.removeEventListener("keydown", leave));
+  countdown(() => flow.alive(tok), 60 / Kit.songs.waveRider.bpm).then(ok => {
+    if (!ok) return;
+    startWave({
+      plan, secs: BONUS_SECS, song: "waveRider",
+      tip: touchMode ? "Hold your finger down to dive down the hills. Let go to fly off the tops!" : "Hold Space to dive down the hills. Let go to fly off the tops!",
+      pauseTip: touchMode ? "Tap to keep going" : "Space to keep going. T for the title.",
+      onEvent: ev => { if (ev.kind === "smooth" || ev.air >= 1) express("excited", 900); else if (ev.kind === "bonk") express("dizzy", 700); },
+      onFinish: res => { if (flow.alive(tok)) bonusResults(res); }
+    });
+    blurActive();
+  });
+}
+function bonusResults(res) {
+  const prev = bonusBest(), best = Math.max(prev.best, res.score), newBest = res.score > prev.best && res.score > 0;
+  store.set(KEYS.bonus, { best, stars: Math.max(prev.stars || 0, res.stars) });
+  // The hill level: lots of smooth landings make the hills taller next time; very few make them gentler. Only rides with presses count.
+  if (res.pressed) bonusSkill.record("waves", res.smooth >= 8 && res.bonks <= 2 ? "clean" : res.smooth <= 2 ? "struggle" : "ok");
+  startStage(); applyStage({ theme: "surf", face: newBest ? "excited" : "happy" });
+  express(newBest ? "excited" : "happy", 2600); hop(); dinoNoise("trexy", newBest ? "excited" : "happy", .2);
+  if (newBest) { sfx.levelup(); toast(`New best: ${best} points!`); }
+  panel.innerHTML = `<div class="card">
+    <p class="eyebrow">Bonus level</p>
+    <h2 class="big">Wave <span class="hot">Rider</span></h2>
+    <p class="line" style="font-size:1.05rem">${esc(pick(WAVE_CHEERS))}</p>
+    <div class="statrow"><span class="stat"><b>${res.score}</b> points</span><span class="stat"><b>${res.stars}</b> stars</span><span class="stat">Biggest air <b>${res.bestAir}s</b></span><span class="stat"><b>${res.smooth}</b> smooth landing${res.smooth === 1 ? "" : "s"}</span>${res.maxCombo > 1 ? `<span class="stat">Best combo <b>x${res.maxCombo}</b></span>` : ""}</div>
+    <p class="bonusline">${newBest ? `New best! <b>${best}</b> points` : `Your best: <b>${best}</b> points`}</p>
+    <div class="actions choicebtns">
+      <button type="button" class="btn" data-primary id="rideAgain" disabled>${ICON.retry} Ride again <span class="kbd">Enter</span></button>
+      <button type="button" class="btn ghost" id="bonusBack" disabled>${ICON.back} Title <span class="kbd">T</span></button>
+    </div>
+  </div>`;
+  const t = flow.token();
+  let ready = false;
+  // a short pause first, so a dive held as the ride ends doesn't pick for you
+  setTimeout(() => { if (!flow.alive(t)) return; ready = true; panel.querySelectorAll(".choicebtns .btn").forEach(b => { b.disabled = false; }); focusSoon($("#rideAgain")); }, 700);
+  bindPrimary(() => { if (ready) renderBonus(); });
+  $("#bonusBack").addEventListener("click", () => { if (ready) renderTitle(); });
+  const k = e => { if (ready && (e.key === "t" || e.key === "T" || e.key === "Escape") && !e.repeat) { e.preventDefault(); renderTitle(); } };
+  document.addEventListener("keydown", k);
+  flow.setCleanup(() => document.removeEventListener("keydown", k));
+  hintIfIdle(tip("Press [Enter] to ride again, or [T] to go back to the title.", "Tap Ride again, or Title to go back."), 14000);
 }
 function resetStage() { applyStage({ theme: "night", face: "smile", acc: "none", nova: false, novaFace: "surprised", shadow: 0, lantern: false, ship: false, family: false, shipFace: "", ride: false }); }
 

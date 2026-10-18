@@ -442,7 +442,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 8185,
+   "bytes": 8245,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -798,6 +798,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": ""
   },
   {
+   "path": "assets/music/wave-rider.js",
+   "layer": "Assets",
+   "bytes": 1663,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "\"Wave Rider\": the bonus level's song, a bouncy surf-rock chiptune with a twangy echo lead that swoops up and down like the hills. 152 bpm, A major. Song format is described in kit/groove.js.",
+   "provides": "Kit.songs.waveRider",
+   "requires": "nothing",
+   "notes": ""
+  },
+  {
    "path": "assets/music/whirlpool.js",
    "layer": "Assets",
    "bytes": 1587,
@@ -912,11 +925,11 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "assets/worlds/glitch-nebula.js",
    "layer": "Assets",
-   "bytes": 32575,
+   "bytes": 32923,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Canvas backgrounds for the Glitch Nebula, each world a neon take on a famous NASA space picture: the Cosmic Cliffs of the Carina Nebula (the crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation (Fern Moon), a blazing Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its little companion (Whirlpool Galaxy), and the Horsehead Nebula (the Shadow Gate), plus the Milky Way and the Andromeda Galaxy over Fern Valley at night. Every sky also gets glowing gas made from noise, dark dust lanes, stars with Webb-style eight-point spikes, tiny far-away galaxies like a deep field, and a mix of drifting galaxies (spirals, tilted spirals, and edge-on ones like the Sombrero). Gentle glitches nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
+   "about": "Canvas backgrounds for the Glitch Nebula, each world a neon take on a famous NASA space picture: the Cosmic Cliffs of the Carina Nebula (the crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation (Fern Moon), a blazing Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its little companion (Whirlpool Galaxy), and the Horsehead Nebula (the Shadow Gate), plus the Milky Way and the Andromeda Galaxy over Fern Valley at night, and a neon sunset for the Wave Rider bonus level. Every sky also gets glowing gas made from noise, dark dust lanes, stars with Webb-style eight-point spikes, tiny far-away galaxies like a deep field, and a mix of drifting galaxies (spirals, tilted spirals, and edge-on ones like the Sombrero). Gentle glitches nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
    "provides": "Kit.art.nebula { THEMES, create() -> { draw(ctx, view, options) } }",
    "requires": "assets/characters/nova.js, assets/memories/memories.js",
    "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false, jaw (degrees open), shake (0 to 1) } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off,\n            sky: a function (ctx, view) that draws things crossing the far sky, in front of the landmark and behind the shadow (like Kit.skyEvents) }\nEach theme: sky (top and bottom colors), blobs (three glow colors), scene (how its gas is shaped), land (its big landmark),\nplus the colors runs use (edge, block, spike, pad, piece, spark, portals). Skies and landmarks are painted once and reused,\nso drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves: every noise layer uses a whole number of\nrepeats across the strip, so its two ends always match.\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins.\nInspired by NASA, ESA, CSA, and STScI pictures from the Hubble and Webb space telescopes; everything here is drawn by code."
@@ -1006,12 +1019,12 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 84852,
+   "bytes": 91882,
    "usedBy": [],
    "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, measures that Mini Game Survival's looks fit T-Rexy and T-Rexy fits his cockpit, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
    "requires": "build/build.py",
-   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival art (runs in --quick too): the space helmet holds T-Rexy's whole head in every face and pose; every\n     head portrait box holds his head and hat, and every picture of him holds all of him in every look, pose, and direction;\n     in every cockpit and every hat a pilot can wear, at least 92% of his head is inside the glass and none of it is above it.\n     Every kind of sky event (shooting star, meteor shower, comet, satellite, rocket, twinkle) draws, and none appears with\n     reduce motion on.\n  6. Mini Game Survival, with fresh browsers:\n     - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named\n       before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no\n       repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never\n       twice in a row, and a half-used deck carries over to the next game.\n     - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret\n       routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle\n       of every chunk one hop can clear. The recorded villain laughs and dino noises must decode, and the dino noises must\n       cover every mood and make sound at every voice pitch.\n     - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,\n       pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).\n     - The full playthrough is in Hard mode. No screen may show a count of attempts.\n     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine\n       (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.\n     - Hints never cover the play area: on the crash pad they stay above T-Rexy and the portals, in a run they stay in the\n       floor under the track, and in a jigsaw they stay off the board.\n     - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes\n       twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,\n       and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes\n       every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.\n       Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.\n       Every run must end with every piece caught.\n     - Looks: every finished run, jigsaw, and clue word unlocks one of T-Rexy's 15 looks, with a New look card, so the\n       playthrough ends with 13 (one per mini game, plus the Shadow Gate). The closet on every crash pad visit shows\n       exactly 13 slots (nothing was skipped). From saved games: a new player sees 13 slots, with three runs skipped it\n       shows only the 4 empty slots still reachable this game, with 3 looks from an earlier game it shows all 15, and\n       with every look found it shows no empty slots. Every outfit, hat, and back item fits in every pose.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret\n       ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival art (runs in --quick too): the space helmet holds T-Rexy's whole head in every face and pose; every\n     head portrait box holds his head and hat, and every picture of him holds all of him in every look, pose, and direction;\n     in every cockpit and every hat a pilot can wear, at least 92% of his head is inside the glass and none of it is above it.\n     Every kind of sky event (shooting star, meteor shower, comet, satellite, rocket, twinkle) draws, and none appears with\n     reduce motion on.\n  6. Mini Game Survival, with fresh browsers:\n     - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named\n       before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no\n       repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never\n       twice in a row, and a half-used deck carries over to the next game.\n     - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret\n       routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle\n       of every chunk one hop can clear. The recorded villain laughs and dino noises must decode, and the dino noises must\n       cover every mood and make sound at every voice pitch.\n     - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,\n       pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).\n     - The full playthrough is in Hard mode. No screen may show a count of attempts.\n     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine\n       (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.\n     - Hints never cover the play area: on the crash pad they stay above T-Rexy and the portals, in a run they stay in the\n       floor under the track, and in a jigsaw they stay off the board.\n     - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes\n       twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,\n       and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes\n       every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.\n       Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.\n       Every run must end with every piece caught.\n     - Looks: every finished run, jigsaw, and clue word unlocks one of T-Rexy's 15 looks, with a New look card, so the\n       playthrough ends with 13 (one per mini game, plus the Shadow Gate). The closet on every crash pad visit shows\n       exactly 13 slots (nothing was skipped). From saved games: a new player sees 13 slots, with three runs skipped it\n       shows only the 4 empty slots still reachable this game, with 3 looks from an earlier game it shows all 15, and\n       with every look found it shows no empty slots. Every outfit, hat, and back item fits in every pose.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - Wave Rider bonus level (from the title, B): its physics (every planned star catchable, no sinking into the floor,\n       smooth landings beat bonks, flights stay on screen, diving speeds him up, the same seed gives the same ride), then a\n       ride with a pause, a sped-up finish on autopilot, the results card and the best score, ride again, and T back to the\n       title, with no story save written.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret\n       ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
    "path": "build/qr.py",
@@ -1182,7 +1195,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/boot.js",
    "layer": "Games",
-   "bytes": 5908,
+   "bytes": 6021,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1194,7 +1207,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/game.css",
    "layer": "Games",
-   "bytes": 13893,
+   "bytes": 14048,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1206,11 +1219,11 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/game.json",
    "layer": "Games",
-   "bytes": 7678,
+   "bytes": 8399,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker).",
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker). On the title screen, the Wave Rider bonus level: ride a board over rolling neon hills, hold to dive and let go to fly, and catch stars for a best score.",
    "provides": "",
    "requires": "",
    "notes": ""
@@ -1242,23 +1255,23 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/scene.js",
    "layer": "Games",
-   "bytes": 33727,
+   "bytes": 35883,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.",
+   "about": "Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the Wave Rider bonus level (T-Rexy on a neon board over the hills, under a neon sunset), the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.",
    "provides": "",
-   "requires": "kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
+   "requires": "kit/runner.js, kit/wave-rider.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
    "notes": ""
   },
   {
    "path": "games/mini-game-survival/screens.js",
    "layer": "Games",
-   "bytes": 47040,
+   "bytes": 52371,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs (with a keep-going or run-it-again choice when memory pieces got away, and a bonus for catching them all), memory jigsaws (with glitchy holes for missing pieces), glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry. Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves. Each screen also says what the R key (forward) does there and which keys L and R leave alone, and shows a hint with the keys to press only when the player seems stuck.",
+   "about": "Mini Game Survival's screens: title (Easy or Hard, high scores, jukebox), story lines, the crash pad with the clue notebook, obstacle runs (with a keep-going or run-it-again choice when memory pieces got away, and a bonus for catching them all), memory jigsaws (with glitchy holes for missing pieces), glitch-locked clue words, typing clues into the notebook, picking ship parts and paint, new songs, the mystery questions, the big shrink, and the ending with the score and name entry, and the Wave Rider bonus level from the title screen (a 60-second ride with its own best score). Results feed the adaptive levels here, but no screen shows or saves how many tries anything took, and mistakes never cost points. Right answers cheer and move on by themselves. Each screen also says what the R key (forward) does there and which keys L and R leave alone, and shows a hint with the keys to press only when the player seems stuck.",
    "provides": "",
    "requires": "games/mini-game-survival/questions.js, kit/typing-challenges.js, kit/jigsaw.js, kit/fuel-word.js, kit/jukebox.js, kit/scoreboard.js, assets/memories/memories.js, games/mini-game-survival/scene.js",
    "notes": ""
@@ -1266,11 +1279,11 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/state.js",
    "layer": "Games",
-   "bytes": 15572,
+   "bytes": 16216,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (hats, back items, colors, and whole outfits; one for each mini game finished, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.",
+   "about": "Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, the Wave Rider bonus level's length, hill level, and best score, T-Rexy's unlockable looks (hats, back items, colors, and whole outfits; one for each mini game finished, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.",
    "provides": "",
    "requires": "kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js",
    "notes": ""
@@ -1784,6 +1797,18 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "evilLaugh({ clip (which recorded laugh, default: take turns), volume (0 to 1, default .85), synth (true = the made-in-code laugh),\n            pitch (Hz, default 120), has (how many HAs, default 4), squeak (true to end with a tiny voice crack; default: now and then) })\n  Recorded laughs come from Kit.sounds.villainLaughs: [{ id, seconds, src (data: URL) }]. A new laugh cuts off the one still playing.\nmutter(seconds, { pitch })\nchirp({ mood (happy | excited | curious, default happy), pitch (1 = as recorded, 2 = an octave higher, .8 = lower; default 1),\n        volume (0 to 1, default .7), clip (an id, to pick one), at (seconds from now, default 0) })\n  Plays one recorded noise from Kit.sounds.dinoChirps: [{ id, mood, seconds, src (data: URL) }], never the same one twice in a row\n  when there's a choice. Pitch also changes speed, like a record player, so a bigger character gets a lower, slower voice.\n  Returns 0 when the game has no recorded noises.\nAll three return how long they last, so a game can animate along with them. They stay silent when sound is off (Kit.audio.setEnabled),\nbut still return their length. Pass { ctx: someAudioContext, at: seconds } to draw into another context (the play-test uses this)."
   },
   {
+   "path": "kit/wave-rider.js",
+   "layer": "Kit",
+   "bytes": 24305,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "A ride over rolling neon hills, like sledding on waves: the hero slides along a wavy floor by himself. Holding the button makes him heavy, so he sticks to the hills and dives down the slopes to pick up speed; letting go makes him light, so a fast climb launches him off the top of a wave. Landing along a downhill slope is a smooth landing and keeps his speed (smooth landings in a row make a combo); landing nose-first into an uphill is a bonk that slows him down. Stars float along the best flying path, big air and smooth landings score bonus points, and the ride lasts a set time. There is nothing to crash into. A built-in rider plans the stars so every one can be caught, and the physics runs in fixed steps, so a list of presses always replays the same way.",
+   "provides": "Kit.waveRider { sim: { DT, PHYS, hills(options), ground(hills, x), start(hills), step(state, hold, hills), coach(state, hills), clone(state) }, plan(options), play(canvas, options) -> { stop, pause(on), state } }",
+   "requires": "kit/util.js, kit/audio.js",
+   "notes": "Units are tiles and seconds, and y goes up. The physics runs in fixed 1/120 s steps.\nhills({ rng, level, length }) -> the floor: a row of hilltops and valleys joined by smooth curves (a cosine between each\n  top and the valley after it), starting with a flat stretch on a hilltop. level 1 to 3 makes the hills taller and closer\n  together, and they grow a little the farther he goes. ground(hills, x) -> { y, s (slope), c (how it curves) }.\nstep(state, hold, hills): on the floor, the slope speeds him up going down and slows him going up (holding pulls harder\n  both ways); he leaves the floor where it curves away faster than he can be pulled along it (over a hilltop, going fast,\n  not holding). In the air he falls (faster while holding). state.ev is set on a takeoff or a landing:\n  { kind: takeoff | smooth | land | bonk, air (seconds up), height (tiles above the floor at the top), combo }.\ncoach(state, hills) -> the press a good rider would make now: hold on the way down, let go on the way up, and in the air\n  hold or not, whichever lands closer to the slope's angle.\nplan({ rng, level, secs }) -> { hills, inputs (one press per step), stars: [{ x, y }], dist }: rides the coach for the whole\n  ride and puts stars along its flights (and a few in the valleys), so the coach's ride catches every one.\n\nplay(canvas, { plan, secs, theme, label, tip, pauseTip, drawBackground(ctx, view), drawHero(ctx, x, y, size, hero),\n              onEvent(ev), onClock(seconds, running), onFinish(result), autopilot(), speedup() })\n  hero (for drawHero) = { grounded, vx, vy, angle (radians, nose up is positive), diving, t, air }. The view passed to\n  drawBackground is { w, h, T, camX, camY, t }, like kit/runner.js. Hold Space, Down, S, a click, or a touch to dive;\n  Esc or P pauses. Points: 10 a star, 25 times the combo for each smooth landing (up to 5 times), and 30 a second for big air\n  (a flight of 0.8 seconds or more). result = { score, stars, starsTotal, bestAir, bestHeight, smooth, bonks, maxCombo, dist, pressed, ms }.\n  state = { x, y, vx, grounded, t, secsLeft, score, stars, combo, smooth, bonks, paused, finished, tile }."
+  },
+  {
    "path": "site/page.css",
    "layer": "Library page",
    "bytes": 10935,
@@ -1822,7 +1847,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/site.json",
    "layer": "Library page",
-   "bytes": 1436,
+   "bytes": 1470,
    "usedBy": [
     "Child I's Game Library"
    ],
@@ -1877,10 +1902,10 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   },
   {
    "id": "mini-game-survival",
-   "title": "Mini Game Survival v9",
-   "version": 9,
-   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker).",
-   "output": "dist/mini-game-survival-v9.html",
+   "title": "Mini Game Survival v10",
+   "version": 10,
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker). On the title screen, the Wave Rider bonus level: ride a board over rolling neon hills, hold to dive and let go to fly, and catch stars for a best score.",
+   "output": "dist/mini-game-survival-v10.html",
    "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
    "qr": {
     "colors": {
@@ -1961,10 +1986,16 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
      "date": "2026-10-18",
      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
      "notes": "Three new outfits for T-Rexy's closet, 15 looks in all: the Mad Scientist (lab coat, goggles, a bubbling potion), the Surfer Dino (board shorts, a flower lei, sunscreen on his snout, a surfboard), and the Punk Rock Biker (studded leather jacket, chain, pink mohawk). Outfits mix with every hat, color, and back item, and he wears them in the cockpit too. A new player finds 13 looks in the first game and the last 2 in the next."
+    },
+    {
+     "version": 10,
+     "date": "2026-10-18",
+     "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+     "notes": "The Wave Rider bonus level, on the title screen and open from the start: T-Rexy rides a neon board over rolling hills under a neon sunset. Hold to dive down the hills, let go to fly off the tops, land smooth for combos, catch stars, 60 seconds with nothing to crash into, and a best score kept on that computer. Its own song, \"Wave Rider\", joins the jukebox."
     }
    ],
    "source": "games/mini-game-survival",
-   "fileCount": 51
+   "fileCount": 53
   },
   {
    "id": "starward",
@@ -3543,6 +3574,31 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
       B: { chords: [[0, 4, 7], [7, 11, 14], [9, 12, 16], [7, 11, 14]], arp: true,
         lead: "19 - - - 16 - - - 17 - 19 - 21 - - - | 19 - - - 16 - - - 14 - - - 12 - - - | 16 - 17 - 19 - - - 24 - - - 23 - 21 - | 19 - - - 24 - - - 19 - - - 24 - - -",
         bass: "1.8.1.8.1.8.1.8.", kick: "x...x...x...x...x...x...x...x...x...x...x...x...x...x...x.x.xxxx", clap: "....x.......x.......x.......x.......x.......x.......x.......x.xx", hat: "x.x.x.x.x.x.x.x.", open: "..x...x...x...x." }
+    }
+  };
+})(window.Kit = window.Kit || {});
+/* ==== assets/music/wave-rider.js ==== */
+/**
+ * @file assets/music/wave-rider.js
+ * @about "Wave Rider": the bonus level's song, a bouncy surf-rock chiptune with a twangy echo lead that swoops up and down like the hills. 152 bpm, A major. Song format is described in kit/groove.js.
+ * @provides Kit.songs.waveRider
+ * @requires nothing
+ */
+(function (Kit) {
+  "use strict";
+  (Kit.songs = Kit.songs || {}).waveRider = {
+    title: "Wave Rider", bpm: 152, root: 57, form: ["A", "A", "B", "A", "B"],
+    lead: { wave: "pulse25", vol: 0.042, oct: 0, echo: 0.3, vib: true },
+    arp: { wave: "pulse12", vol: 0.015, oct: 12 },
+    bass: { wave: "pulse25", vol: 0.042, oct: -12, gate: 0.75 },
+    drums: { kick: 0.3, clap: 0.11, hat: 0.02, open: 0.022 },
+    sections: {
+      A: { chords: [[0, 4, 7], [5, 9, 12], [7, 11, 14], [5, 9, 12]], arp: true,
+        lead: "12 . 14 . 16 - 19 . 16 . 14 . 12 - 9 . | 14 . 17 . 21 - 17 . 14 . 12 . 14 - - . | 16 . 19 . 23 - 19 . 16 . 14 . 11 - 14 . | 12 . 14 . 16 . 17 . 19 - - - 16 - - -",
+        bass: "1.1.8.1.1.1.8.5.", kick: "x...x...x...x...", clap: "....x.......x...", hat: "x.x.x.x.x.x.x.x.", open: "..x...x...x...x." },
+      B: { chords: [[9, 12, 16], [5, 9, 12], [0, 4, 7], [7, 11, 14]], arp: true,
+        lead: "21 - - . 19 . 21 . 24 - 21 . 19 . 16 . | 17 - - . 16 . 17 . 21 - 17 . 16 . 14 . | 16 . 19 . 24 . 19 . 16 . 19 . 24 - - . | 23 - 21 - 19 - 16 - 14 - 11 - 12 - 14 -",
+        bass: "1.1.8.1.1.1.8.5.", kick: "x...x...x...x...x...x...x...x...x...x...x...x...x...x...x.x.xxxx", clap: "....x.......x.......x.......x.......x.......x.......x.......x.xx", hat: "x.x.x.x.x.x.x.x.", open: "..x...x...x...x." }
     }
   };
 })(window.Kit = window.Kit || {});

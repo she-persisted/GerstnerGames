@@ -140,6 +140,8 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 .modebtn[data-mode="hard"].on{border-color:var(--ember);box-shadow:0 0 18px -4px var(--ember);color:var(--ember)}
 .modebtn:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
 .modeabout{margin:0;color:var(--dust);min-height:1.4em}
+.bonusbtn{align-self:flex-start;border:2px solid var(--cyan);color:var(--cyan);box-shadow:0 0 16px -6px var(--cyan)}
+.bonusbtn svg{width:22px;height:22px}
 .nb-mode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;color:var(--dust);font-weight:600}
 .cpchip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(10,6,32,.78);
   border:2px solid var(--good);color:var(--good);font-weight:700;font-size:.95rem}

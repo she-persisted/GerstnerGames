@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (hats, back items, colors, and whole outfits; one for each mini game finished, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, the Wave Rider bonus level's length, hill level, and best score, T-Rexy's unlockable looks (hats, back items, colors, and whole outfits; one for each mini game finished, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -9,7 +9,7 @@ const ICON = Kit.art.icons;
 const SHIP = Kit.art.ship;
 const sfx = Kit.audio.sfx;
 
-const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", decks: "mgs.decks", looks: "mgs.looks" };
+const KEYS = { save: "mgs.save.v3", sound: "mgs.sound", music: "mgs.music", songs: "mgs.songs", scores: "mgs.scores", seen: "mgs.seen", mode: "mgs.mode", skill: "mgs.skill.", decks: "mgs.decks", looks: "mgs.looks", bonus: "mgs.bonus" };
 const panel = $("#panel"), scene = $("#scene"), stageEl = $("#stage"), cv = $("#cv");
 
 // The crash pad: portals in the order T-Rexy visits them. x = where it stands on the pad (in tiles).
@@ -97,10 +97,15 @@ const modeOf = () => MODES[S.mode] || MODES.easy;
 // The run level for the nth run (0 to 3 = the portals, 4 = the Shadow Gate).
 const runLevel = n => clamp(modeOf().ramp[n] + skills.level("run") - 2, 1, 6);
 const JIG_GRID = { 1: [3, 3], 2: [3, 4], 3: [4, 4] };   // rows, columns
+// The Wave Rider bonus level (from the title screen, outside the story): a 60-second ride. Its hills get taller as a player's
+// landings get smoother (waves 1 to 3, kept on this computer), and the best score is kept on this computer too.
+const BONUS_SECS = 60;
+const bonusSkill = Kit.adaptive.create({ key: KEYS.skill + "bonus", skills: { waves: { min: 1, max: 3, start: 1 } } });
+const bonusBest = () => { const b = store.get(KEYS.bonus, null); return b && Number.isFinite(b.best) ? b : { best: 0, stars: 0 }; };
 const FUEL = { 1: 7, 2: 6, 3: 6 };
 
-const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "lullaby", "homeStomp"];
-const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home" };
+const JUKEBOX = ["glitchHub", "echo", "fern", "lantern", "whirl", "shadowRun", "lullaby", "homeStomp", "waveRider"];
+const SONG_WHERE = { glitchHub: "Yours from the start", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "Whirlpool Galaxy", shadowRun: "The Shadow Gate", lullaby: "Solve the mystery", homeStomp: "Get home", waveRider: "The bonus level" };
 
 const fresh = () => ({
   v: 3, mode: savedMode(), step: 0, picks: {}, seed: Math.floor(Math.random() * 1e9), passed: [], parts: {}, paint: "", done: [], clues: [], pages: [], words: {}, looks: [], hubX: HERO_START, moved: false, pokes: 0, roared: false,

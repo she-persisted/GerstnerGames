@@ -1,9 +1,9 @@
 {
   "id": "mini-game-survival",
-  "title": "Mini Game Survival v9",
-  "version": 9,
-  "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker).",
-  "output": "dist/mini-game-survival-v9.html",
+  "title": "Mini Game Survival v10",
+  "version": 10,
+  "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker). On the title screen, the Wave Rider bonus level: ride a board over rolling neon hills, hold to dive and let go to fly, and catch stars for a best score.",
+  "output": "dist/mini-game-survival-v10.html",
   "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
@@ -51,6 +51,7 @@
     "kit/adaptive.js",
     "kit/typing-challenges.js",
     "kit/runner.js",
+    "kit/wave-rider.js",
     "kit/jigsaw.js",
     "kit/fuel-word.js",
     "kit/side-hub.js",
@@ -72,6 +73,7 @@
     "assets/music/shadow-run.js",
     "assets/music/nova-lullaby.js",
     "assets/music/home-stomp.js",
+    "assets/music/wave-rider.js",
     "assets/sounds/villain-laughs.js",
     "assets/sounds/dino-chirps.js",
     "content/levels/runner-chunks.js",
@@ -140,6 +142,12 @@
       "date": "2026-10-18",
       "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
       "notes": "Three new outfits for T-Rexy's closet, 15 looks in all: the Mad Scientist (lab coat, goggles, a bubbling potion), the Surfer Dino (board shorts, a flower lei, sunscreen on his snout, a surfboard), and the Punk Rock Biker (studded leather jacket, chain, pink mohawk). Outfits mix with every hat, color, and back item, and he wears them in the cockpit too. A new player finds 13 looks in the first game and the last 2 in the next."
+    },
+    {
+      "version": 10,
+      "date": "2026-10-18",
+      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+      "notes": "The Wave Rider bonus level, on the title screen and open from the start: T-Rexy rides a neon board over rolling hills under a neon sunset. Hold to dive down the hills, let go to fly off the tops, land smooth for combos, catch stars, 60 seconds with nothing to crash into, and a best score kept on that computer. Its own song, \"Wave Rider\", joins the jukebox."
     }
   ]
 }

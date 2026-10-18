@@ -68,6 +68,10 @@ Checks:
      - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.
      - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
      - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
+     - Wave Rider bonus level (from the title, B): its physics (every planned star catchable, no sinking into the floor,
+       smooth landings beat bonks, flights stay on screen, diving speeds him up, the same seed gives the same ride), then a
+       ride with a pause, a sped-up finish on autopilot, the results card and the best score, ride again, and T back to the
+       title, with no story save written.
      - After the first portal the page is reloaded, and "Keep going" must resume on the crash pad with the clue saved.
      - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret
        ending shows (all four pages).
@@ -946,6 +950,110 @@ def mgs_closet_check(browser, base, rel):
     ctx.close()
 
 
+# Wave Rider physics: the coach's planned ride catches every star, never sinks into the floor, and lands smoothly far more often
+# than it bonks; flights stay a few tiles up; holding on a downhill speeds him up more than letting go; and a seeded plan repeats.
+WAVE_CHECK_JS = r"""() => {
+  const W = Kit.waveRider, S = W.sim, bad = [], out = [];
+  const rngOf = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  for (const level of [1, 2, 3]) for (const seed of [5, 17, 41]) {
+    const P = W.plan({ rng: rngOf(seed * 31 + level), level, secs: 60 }), H = P.hills, st = S.start(H), got = new Set();
+    let flights = 0, smooth = 0, bonks = 0, below = 0, maxRise = 0;
+    for (let t = 0; t < P.inputs.length; t++) {
+      S.step(st, !!P.inputs[t], H);
+      if (st.ev && st.ev.kind === "takeoff") { flights++; maxRise = Math.max(maxRise, st.vy); }
+      if (st.ev && st.ev.kind === "smooth") smooth++;
+      if (st.ev && st.ev.kind === "bonk") bonks++;
+      if (st.y < S.ground(H, st.x).y - 1e-6) below++;
+      const my = st.y + S.PHYS.mid;
+      P.stars.forEach((q, i) => { if ((q.x - st.x) ** 2 + (q.y - my) ** 2 <= S.PHYS.catchR ** 2) got.add(i); });
+    }
+    const tag = `level ${level}, seed ${seed}`;
+    if (got.size !== P.stars.length) bad.push(`${tag}: the planned ride catches only ${got.size} of ${P.stars.length} stars`);
+    if (P.stars.length < 15) bad.push(`${tag}: only ${P.stars.length} stars`);
+    if (below) bad.push(`${tag}: he sank into the floor ${below} times`);
+    if (flights < 12 || smooth < 6 || smooth < bonks * 2 || bonks > flights * .2) bad.push(`${tag}: ${flights} flights, ${smooth} smooth landings, ${bonks} bonks`);
+    if (st.bestHeight > 12) bad.push(`${tag}: a flight went ${st.bestHeight.toFixed(1)} tiles up (too high to see)`);
+    if (maxRise > S.PHYS.lift + 1e-9) bad.push(`${tag}: took off rising at ${maxRise.toFixed(1)} tiles a second`);
+    if (st.x < 500) bad.push(`${tag}: rode only ${Math.round(st.x)} tiles in a minute`);
+    const again = W.plan({ rng: rngOf(seed * 31 + level), level, secs: 60 });
+    if (again.stars.length !== P.stars.length || again.inputs.some((v, i) => v !== P.inputs[i])) bad.push(`${tag}: the same seed planned a different ride`);
+    out.push({ level, flights, smooth, bonks, stars: P.stars.length, dist: Math.round(st.x), height: +st.bestHeight.toFixed(1) });
+  }
+  // Holding on a downhill speeds him up more than letting go.
+  const H = S.hills({ rng: rngOf(3), level: 1 }), down = (() => { for (let x = 1; x < 200; x += .25) if (S.ground(H, x).s < -.5) return x; return 10; })();
+  const a = S.start(H), b = S.start(H); a.x = b.x = down; a.y = b.y = S.ground(H, down).y; a.vx = b.vx = 10;
+  for (let i = 0; i < 30; i++) { S.step(a, true, H); S.step(b, false, H); }
+  if (!(a.vx > b.vx + .5)) bad.push(`holding on a downhill didn't speed him up more (${a.vx.toFixed(1)} vs ${b.vx.toFixed(1)})`);
+  return { bad, out };
+}"""
+
+
+def mgs_bonus_check(browser, base, rel):
+    """The Wave Rider bonus level from the title screen: physics checks, then a full ride (sped up on autopilot) with a pause,
+    the results card, the best score kept, ride again, and back to the title. The story's save is never touched."""
+    ctx, pg = new_page(browser, "mgs bonus level")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    r = pg.evaluate(WAVE_CHECK_JS)
+    for b in r["bad"][:6]:
+        fail(f"wave rider: {b}")
+    if not pg.locator("#bonusBtn").count():
+        fail("the title screen has no Bonus level button")
+        ctx.close()
+        return
+    pg.keyboard.press("b")
+    try:
+        pg.wait_for_function("window.__mgs.wave() !== null", timeout=8000)
+    except Exception:
+        fail("pressing B on the title screen did not start the Wave Rider ride")
+        ctx.close()
+        return
+    pg.wait_for_timeout(600)
+    pg.keyboard.down("Space"); pg.wait_for_timeout(700); pg.keyboard.up("Space")
+    w0 = pg.evaluate("window.__mgs.wave()")
+    if not w0["pressed"] or w0["t"] < 60:
+        fail(f"the ride didn't move or didn't feel the Space key ({w0})")
+    pg.keyboard.press("Escape"); pg.wait_for_timeout(250)
+    t1 = pg.evaluate("window.__mgs.wave()")["t"]; pg.wait_for_timeout(400); w1 = pg.evaluate("window.__mgs.wave()")
+    if not w1["paused"] or w1["t"] != t1:
+        fail(f"Esc didn't pause the ride ({w1})")
+    pg.keyboard.press("Space"); pg.wait_for_timeout(250)
+    if pg.evaluate("window.__mgs.wave()")["paused"]:
+        fail("Space didn't unpause the ride")
+    pg.evaluate("window.__mgsAutopilot = true; window.__mgsSpeedup = 14")
+    try:
+        pg.wait_for_selector("#rideAgain:not([disabled])", timeout=25000)
+    except Exception:
+        fail(f"the ride never ended with a results card ({pg.evaluate('window.__mgs.wave()')})")
+        ctx.close()
+        return
+    pg.evaluate("window.__mgsAutopilot = false; window.__mgsSpeedup = 1")
+    text = pg.inner_text("#panel")
+    best = pg.evaluate("window.__mgs.bonus()")
+    nums = [int(x) for x in __import__("re").findall(r"(\d+) points", text)]
+    if not nums or nums[0] <= 0 or best["best"] != nums[0] or "stars" not in text or "best" not in text.lower():
+        fail(f"the results card or the best score is wrong: {text[:200]!r}, saved {best}")
+    if pg.evaluate("localStorage.getItem('mgs.save.v3')") is not None:
+        fail("the bonus level wrote a story save")
+    if "waveRider" not in (pg.evaluate("JSON.parse(localStorage.getItem('mgs.songs') || '[]')") or []):
+        fail("playing the bonus level didn't add its song to the jukebox")
+    pg.keyboard.press("Enter")
+    try:
+        pg.wait_for_function("window.__mgs.wave() !== null && window.__mgs.wave().t > 30", timeout=8000)
+    except Exception:
+        fail("Ride again (Enter) did not start a new ride")
+    pg.keyboard.press("Escape"); pg.wait_for_timeout(250); pg.keyboard.press("t")
+    try:
+        pg.wait_for_selector("#playBtn", timeout=5000)
+    except Exception:
+        fail("T on the pause screen did not go back to the title")
+    if pg.evaluate("window.__mgs.wave()") is not None:
+        fail("the ride kept running after going back to the title")
+    lv = ", ".join(f"L{o['level']} {o['flights']} flights {o['smooth']} smooth {o['bonks']} bonks {o['stars']} stars {o['height']} up" for o in r["out"][::3])
+    print(f"  wave rider: {lv}; ride, pause, results ({nums[0] if nums else '?'} points, best kept), ride again, back to the title")
+    ctx.close()
+
+
 MGS_RESUME_JS = r"""step => { localStorage.setItem('mgs.save.v3', JSON.stringify({ v: 3, mode: 'easy', step, seed: 12345, moved: true })); }"""
 
 
@@ -1467,6 +1575,7 @@ def main():
                 mgs_pieces_check(browser, base, out)
                 mgs_easy_check(browser, base, out)
                 mgs_closet_check(browser, base, out)
+                mgs_bonus_check(browser, base, out)
                 mgs_touch_check(browser, base, out)
                 mgs_playthrough(browser, base, out)
             browser.close()

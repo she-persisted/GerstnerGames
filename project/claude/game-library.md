@@ -16,7 +16,7 @@ What's in `library/`:
 - `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists, science clue words, obstacle-run chunks
 - `games/<id>/`: each game's own parts and its `game.json` (build list plus every release link); single-file legacy versions in `legacy/`
 - `build/build.py`: joins a game's files into one page, checks load order, writes `catalog.json`
-- `build/playtest.py`: the automated play-test (headers, build, every page loading, Mini Game Survival's art fit and sky surprises, a check that every memory piece in Mini Game Survival's runs can be caught, and full Starward and Mini Game Survival playthroughs)
+- `build/playtest.py`: the automated play-test (headers, build, every page loading, Mini Game Survival's art fit and sky surprises, a check that every memory piece in Mini Game Survival's runs can be caught, the Wave Rider bonus level, and full Starward and Mini Game Survival playthroughs)
 - `dist/`: built games, committed so they can be downloaded and played
 - `README.md`: full architecture, file header rules, and conventions
 - `catalog.json`: one entry per file with what it does, what it provides and needs, and which games use it
@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Mini Game Survival | **Home page, always the newest version** (now v9, 2026-10-18: Mad Scientist, Surfer Dino, and Punk Rock Biker outfits, 15 looks in all) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v9.html` |
+| Mini Game Survival | **Home page, always the newest version** (now v10, 2026-10-18: the Wave Rider bonus level on the title screen) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v10.html` |
+| Mini Game Survival | v9 (2026-10-18), Mad Scientist, Surfer Dino, and Punk Rock Biker outfits, 15 looks in all | V9ARCHIVE (archive) | `library/dist/mini-game-survival-v9.html` |
 | Mini Game Survival | v8 (2026-10-18), a new look for every mini game finished, a closet that only shows slots reachable this game | https://claude.ai/artifact/NXZgUCv8hqzvAenwzgbH2k (archive) | `library/dist/mini-game-survival-v8.html` |
 | Mini Game Survival | v7 (2026-10-18), hints off the play area, a helmet that fits, T-Rexy in the cockpit, one drawing style, shooting stars on the story screens | https://claude.ai/artifact/SXRFA56G3LR1pbmY3usGYs (archive) | `library/dist/mini-game-survival-v7.html` |
 | Mini Game Survival | v6 (2026-10-17), cute dino noises, phone play, a crashed ship fixed part by part, new questions every game | https://claude.ai/artifact/9hyKGAdHeH6CQKJo1t5Tay (archive) | `library/dist/mini-game-survival-v6.html` |

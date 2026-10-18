@@ -1,7 +1,7 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
- * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
+ * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the Wave Rider bonus level (T-Rexy on a neon board over the hills, under a neon sunset), the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
+ * @requires kit/runner.js, kit/wave-rider.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
 const sky = Kit.skyEvents.create(); // shooting stars and friends on the story screens
@@ -155,7 +155,7 @@ const shadowK = (now, base = ST.shadow) => {
   return k;
 };
 
-let mode = "stage", stageRaf = 0, hubCtl = null, runCtl = null, ctx2d = cv.getContext("2d");
+let mode = "stage", stageRaf = 0, hubCtl = null, runCtl = null, waveCtl = null, ctx2d = cv.getContext("2d");
 function sizeCanvas() {
   const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
   cv.width = Math.max(1, Math.round(r.width * d)); cv.height = Math.max(1, Math.round(r.height * d));
@@ -169,6 +169,7 @@ function stopMode() {
   cancelAnimationFrame(stageRaf); stageRaf = 0;
   if (hubCtl) { hubCtl.stop(); hubCtl = null; }
   if (runCtl) { runCtl.stop(); runCtl = null; }
+  if (waveCtl) { waveCtl.stop(); waveCtl = null; }
   stageEl.classList.remove("wide"); scene.classList.remove("jigmode");
   $("#runUi").innerHTML = ""; $("#boardHost").innerHTML = "";
 }
@@ -445,6 +446,35 @@ function heroDraw(ctx, x, y, T, hero) {
   else if (!hero.grounded) ctx.rotate(Math.max(-.3, Math.min(.3, -hero.vy * .018)));
   drawTrexy(ctx, { pose, face: heroFace(now, hero.grounded ? "smile" : "determined") }, 0, 0, T * 1.2);
   ctx.restore();
+}
+// The Wave Rider bonus level: T-Rexy rides a little neon board over the hills, tipped with the slope (or his flight). On the
+// ground he stands on it, leaning forward and looking determined while he dives; in the air he tucks up and grins.
+function waveHeroDraw(ctx, x, y, T, hero) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-hero.angle + (hero.grounded && hero.diving ? .16 : 0));
+  const bw = T * 1.3, bh = T * .17, bx = -bw * .42, lw = Math.max(1.5, T * .05);
+  ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx, -bh, bw, bh, bh / 2); else ctx.rect(bx, -bh, bw, bh);
+  ctx.fillStyle = "#ffe94a"; ctx.fill(); ctx.lineWidth = lw; ctx.strokeStyle = Kit.art.ink.INK; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx + bh, -bh / 2); ctx.lineTo(bx + bw - bh, -bh / 2); ctx.strokeStyle = "#ff3ec8"; ctx.lineWidth = Math.max(1.2, bh * .3); ctx.stroke();
+  const pose = hero.grounded ? "stand" : "hop";
+  const face = hero.grounded ? (hero.diving ? "determined" : "smile") : (hero.air > .5 ? "excited" : "happy");
+  drawTrexy(ctx, { pose, face: heroFace(hero.t, face) }, T * .08, -bh * .7, T * 1.2);
+  ctx.restore();
+}
+function startWave(opts) {
+  stopMode(); mode = "wave";
+  stageEl.classList.add("wide");
+  const th = THEMES.surf;
+  waveCtl = Kit.waveRider.play(cv, {
+    plan: opts.plan, secs: opts.secs, theme: th, tip: opts.tip, label: "Wave Rider", pauseTip: opts.pauseTip,
+    drawBackground: (ctx, v) => nebula.draw(ctx, { ...v, dpr: Math.min(2, window.devicePixelRatio || 1) }, { theme: "surf", sky: (c, vv) => sky.draw(c, vv, th.blobs) }),
+    drawHero: waveHeroDraw,
+    autopilot: () => window.__mgsAutopilot || false,
+    speedup: () => window.__mgsSpeedup || 1,
+    // the music plays while he rides, stops on a pause, and picks up where the ride picks up
+    onClock: (sec, running) => { if (!opts.song) return; if (running) music.restart(opts.song, { at: sec }); else music.hush(); },
+    onEvent: opts.onEvent, onFinish: opts.onFinish
+  });
+  return waveCtl;
 }
 function startRun(opts) {
   stopMode(); mode = "run";
