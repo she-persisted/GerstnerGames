@@ -52,12 +52,13 @@ function drawImg(ctx, im, x, y, h, anchor = "bottom") {
 }
 // Loads the pictures of T-Rexy in his current looks ahead of time, so they're ready when he first moves.
 function warmLook() {
-  ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => heroImg({ face: f, ...lookOpts() }));
-  [false, true].forEach(fl => ["run1", "run2", "hop", "stand"].forEach(p => heroImg({ pose: p, face: "smile", flip: fl, ...lookOpts() })));
+  ["smile", "blink", "happy", "excited", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => heroImg({ face: f, ...lookOpts() }));
+  [false, true].forEach(fl => ["run1", "run2", "stand"].forEach(p => ["smile", "blink", "excited"].forEach(f => heroImg({ pose: p, face: f, flip: fl, ...lookOpts() }))));
+  ["run1", "run2", "hop"].forEach(p => ["happy", "excited", "determined", "blink"].forEach(f => heroImg({ pose: p, face: f, ...lookOpts() })));
 }
 function warmImages() {
   warmLook();
-  ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => { heroImg({ face: f }); heroImg({ face: f, acc: "cap" }); });
+  ["smile", "blink", "happy", "worried", "surprised", "think", "dizzy", "sleepy"].forEach(f => { heroImg({ face: f }); heroImg({ face: f, acc: "cap" }); });
   ["run1", "run2", "hop"].forEach(p => heroImg({ pose: p, face: "smile" }));
   [false, true].forEach(fl => ["run1", "run2", "stand"].forEach(p => heroImg({ pose: p, face: "smile", flip: fl })));
   novaImg({ face: "surprised", flip: true }); novaImg({ face: "happy", flip: true });
@@ -174,7 +175,13 @@ function drawShadowSay(ctx, w, h, now) {
   ctx.lineWidth = 5; ctx.strokeStyle = "#1a0420"; ctx.strokeText(shadowSay.text, w * .62, h * .12);
   ctx.fillStyle = "#ffd1e6"; ctx.fillText(shadowSay.text, w * .62, h * .12); ctx.restore();
 }
-function heroFace(now) { return faceUntil > now && faceOverride ? faceOverride : ST.face; }
+// T-Rexy's face right now: a reaction (express) wins; otherwise the scene's face, with a quick blink every few seconds.
+const BLINKS = new Set(["smile", "think", "worried", "surprised", "determined"]);
+const blinkAt = now => !reduced && now % 3700 < 130;
+function heroFace(now, base = ST.face) {
+  if (faceUntil > now && faceOverride) return faceOverride;
+  return BLINKS.has(base) && blinkAt(now) ? "blink" : base;
+}
 function hopY(now, h) {
   if (hopKind === 2) { // a hop, then a second hop from up in the air
     const p = (now - hopAt) / 900; if (p < 0 || p >= 1) return 0;
@@ -294,7 +301,7 @@ function drawHub(ctx, v, hero, bubble) {
   // T-Rexy
   const pose = hero.walking ? (Math.floor(now / 140) % 2 ? "run1" : "run2") : "stand";
   const hx = (hero.x - v.camX) * v.T;
-  drawTrexy(ctx, { pose, face: heroFace(now) === "worried" ? "worried" : "smile", flip: hero.facing < 0 }, hx, v.ground + hopY(now, v.h), v.T * 1.35);
+  drawTrexy(ctx, { pose, face: heroFace(now, "smile"), flip: hero.facing < 0 }, hx, v.ground + hopY(now, v.h), v.T * 1.35);
   if (bubble) drawBubble(ctx, hx, v.ground - v.T * 1.5, bubble.text);
   drawShadowSay(ctx, v.w, v.h, now);
 }
@@ -316,7 +323,7 @@ function startHub(onEnter, onFirstMove) {
     },
     onType: typed => {
       if (!typed.endsWith("roar")) return;
-      hubCtl.say("Rawr!", 1600); hop(); flinch(); roar();
+      hubCtl.say("Rawr!", 1600); hop(); flinch(); roar(); express("excited", 1600);
       setTimeout(() => sayShadow("EEP! ...I mean, ha ha. Not scared. At ALL."), 500);
       if (!S.roared) { S.roared = true; save(); }
     }
@@ -326,7 +333,13 @@ function startHub(onEnter, onFirstMove) {
 const roar = () => { Kit.audio.tone(210, .35, "sawtooth", .05, 0, 120); Kit.audio.tone(300, .25, "square", .02, .05, 160); };
 
 /* Obstacle runs */
+// In a run, T-Rexy looks determined in the air, beams when he catches a piece (express), and squashes and stretches:
+// a little taller while he rises, a little squished for a moment when he lands.
+let runLanded = 0, runWasUp = false;
 function heroDraw(ctx, x, y, T, hero) {
+  const now = hero.t;
+  if (hero.grounded && runWasUp) runLanded = now;
+  runWasUp = !hero.grounded;
   if (hero.mode === "ship") {
     ctx.save(); ctx.translate(x, y - T * .3); ctx.rotate(Math.max(-.5, Math.min(.5, -hero.vy * .05)));
     drawImg(ctx, shipImg(true), 0, 0, T * 1.15, "center"); ctx.restore();
@@ -334,9 +347,13 @@ function heroDraw(ctx, x, y, T, hero) {
   }
   const pose = !hero.grounded ? "hop" : (Math.floor(hero.t / 110) % 2 ? "run1" : "run2");
   ctx.save(); ctx.translate(x, y);
+  if (!reduced) {
+    const land = now - runLanded < 120 ? 1 - (now - runLanded) / 120 : 0, rise = !hero.grounded && hero.vy > 3 ? Math.min(1, hero.vy / 14) : 0;
+    ctx.scale(1 + .12 * land - .06 * rise, 1 - .12 * land + .08 * rise);
+  }
   if (hero.spin >= 0 && !reduced) { const c = T * .55; ctx.translate(0, -c); ctx.rotate(hero.spin * Math.PI * 2); ctx.translate(0, c); } // double hop: a flip
   else if (!hero.grounded) ctx.rotate(Math.max(-.3, Math.min(.3, -hero.vy * .018)));
-  drawTrexy(ctx, { pose, face: "smile" }, 0, 0, T * 1.2);
+  drawTrexy(ctx, { pose, face: heroFace(now, hero.grounded ? "smile" : "determined") }, 0, 0, T * 1.2);
   ctx.restore();
 }
 function startRun(opts) {

@@ -92,6 +92,7 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 
 ## Art
 - The hero should stand out: cute and cartoony against the world. Mini Game Survival puts a cute green T-Rex in a glitchy, bright, flashing neon nebula, and the villain is a solid black silhouette. [asked]
+- Make the hero cute and expressive. [asked] In Mini Game Survival v5, T-Rexy has big shiny eyes (two highlights), a little brow that shows his mood, rosier blush, and a soft shine on his head. He has ten faces (smile, blink, happy, excited with star-sparkle eyes, determined, worried with a sweat drop, surprised, thinking, dizzy, sleepy), blinks every few seconds, looks determined in the air during runs, beams when he catches a piece or hops on the beat, and squashes and stretches as he hops and lands (not with reduced motion). [built]
 - Keep flashing gentle: no more than about one glitch a second, never more than three flashes a second, and none at all when the computer asks for reduced motion. [limit]
 - Draw a silhouette villain as one solid, cohesive animal shape, not separate blobs, and give it a small animation (breathing, sway, a jaw that opens when it laughs or talks). [asked]
 - Puzzle pictures should be detailed: lots of little things to spot, which also makes jigsaw pieces easier to tell apart. [asked]

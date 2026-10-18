@@ -1,10 +1,11 @@
 /**
  * @file assets/characters/trexy.js
- * @about T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting, and faces for happy, worried, surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).
+ * @about T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).
  * @provides Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options) }
  * @requires nothing
  *
- * options = { pose: stand | run1 | run2 | hop | sit, face: smile | happy | worried | surprised | think | dizzy | sleepy,
+ * options = { pose: stand | run1 | run2 | hop | sit,
+ *             face: smile | happy | excited | determined | blink | worried | surprised | think | dizzy | sleepy,
  *             who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,
  *             back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }
  * Drawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).
@@ -45,24 +46,45 @@
     return `<g transform="translate(${x},-15) rotate(${angle})"><path d="M-5 0 h10 v11 q0 2 3 2 h4 q3 0 3 3 v1 h-20 z" fill="${fill}" stroke="${c.line}" stroke-width="2.4" stroke-linejoin="round"/></g>`;
   }
 
+  // Faces. Every open eye is big and shiny (two highlights), a little brow shows the mood, and the blush gets rosier when he's happy.
   function face(f, c) {
     const L = c.line;
-    const eyeOpen = (rx = 8, ry = 9, px = 22, py = -69, pr = 5) =>
-      `<ellipse cx="20" cy="-70" rx="${rx}" ry="${ry}" fill="#fff" stroke="${L}" stroke-width="2.2"/><circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/><circle cx="${px + 2}" cy="${py - 2.5}" r="1.9" fill="#fff"/>`;
+    const low = m => `<g transform="translate(0 1.8)">${m}</g>`; // the eye and brow sit a little low, leaving room for the brow to rise
+    const brow = d => low(`<path d="${d}" fill="none" stroke="${L}" stroke-width="2.6" stroke-linecap="round"/>`);
+    const cheek = (k = .88, marks = false) => `<ellipse cx="33.5" cy="-60" rx="5.8" ry="3.6" fill="${c.cheek}" opacity="${k}"/>` +
+      (marks ? `<path d="M30.6 -62.4 l-1.4 2.6 M33.8 -62.8 l-1.4 2.6 M37 -62.4 l-1.4 2.6" stroke="#d94f78" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>` : "");
+    const eye = ({ rx = 9.4, ry = 10.2, px = 22.4, py = -69.6, pr = 6.4, star = false } = {}) => low(
+      `<ellipse cx="20" cy="-70" rx="${rx}" ry="${ry}" fill="#fff" stroke="${L}" stroke-width="2.2"/>
+       <circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/>
+       <circle cx="${px}" cy="${(py + pr * .38).toFixed(1)}" r="${(pr * .58).toFixed(1)}" fill="#4b3a8a" opacity=".5"/>` +
+      (star ? `<path d="M${px + 2} ${py - 5.4} l1.1 2.6 l2.7 .9 l-2.7 .9 l-1.1 2.7 l-1.1 -2.7 l-2.7 -.9 l2.7 -.9 Z" fill="#fff"/><circle cx="${px - 2.6}" cy="${py + 2.8}" r="1.2" fill="#fff"/>`
+        : `<circle cx="${(px + pr * .38).toFixed(1)}" cy="${(py - pr * .42).toFixed(1)}" r="${(pr * .36).toFixed(1)}" fill="#fff"/><circle cx="${(px - pr * .42).toFixed(1)}" cy="${(py + pr * .42).toFixed(1)}" r="${(pr * .17).toFixed(1)}" fill="#fff"/>`));
+    const closed = (d = "M12 -70 Q20 -63.8 28 -70") => low(`<path d="${d}" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>`);
     const teeth = `<path d="M33 -53.5 l2.2 3.6 l2.2 -3.9 Z M40 -54.6 l2 3.4 l2 -3.7 Z" fill="#fff" stroke="${L}" stroke-width=".8"/>`;
-    const smile = `<path d="M27 -55 Q38 -50 49 -57" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
+    const smile = `<path d="M27 -55 Q38 -49.5 49 -57" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
+    const open = `<path d="M27 -56 Q38 -45 50 -58 Q38 -51 27 -56 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>`;
+    const sparkle = (x, y, r = 3.4) => `<path d="M${x} ${y - r} L${x + r * .28} ${y - r * .28} L${x + r} ${y} L${x + r * .28} ${y + r * .28} L${x} ${y + r} L${x - r * .28} ${y + r * .28} L${x - r} ${y} L${x - r * .28} ${y - r * .28} Z" fill="#ffe94a" stroke="#7a5a00" stroke-width=".8"/>`;
     switch (f) {
-      case "happy": return `<path d="M13 -69 Q20 -78 27 -69" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>
-        <path d="M27 -56 Q38 -45 50 -58 Q38 -51 27 -56 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>${teeth}`;
-      case "worried": return `${eyeOpen(8, 9, 19, -67, 4.6)}<path d="M11 -82 Q19 -84 27 -79" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M29 -54 q3.5 -3 7 0 t7 0 t6 -1" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>`;
-      case "surprised": return `${eyeOpen(9.5, 10.5, 21, -70, 3.6)}<path d="M12 -84 Q20 -88 28 -84" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
-        <ellipse cx="40" cy="-53" rx="3.6" ry="4.6" fill="#7a1f3d" stroke="${L}" stroke-width="1.8"/>`;
-      case "think": return `${eyeOpen(8, 9, 24, -74, 4.4)}<path d="M33 -55.5 L45 -56.5" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
-      case "dizzy": return `<path d="M20 -70 m-6 0 a6 6 0 1 1 6 6 a4 4 0 1 1 -4 -4 a2 2 0 1 1 2 2" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M28 -54 q3 -3 6 0 t6 0 t6 0" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>`;
-      case "sleepy": return `<path d="M13 -68 Q20 -64 27 -68" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>${smile}`;
-      default: return `${eyeOpen()}${smile}${teeth}`;
+      case "happy": return `${closed("M12.5 -69 Q20 -78 27.5 -69")}${brow("M13.5 -83.4 Q19.5 -86.8 25.5 -84.8")}${cheek(.95, true)}${open}${teeth}`;
+      case "excited": return `${eye({ rx: 9.8, ry: 10.6, pr: 6.6, star: true })}${brow("M14 -84 Q20 -87.6 26 -85.4")}${cheek(.95, true)}
+        <path d="M26.5 -57 Q38 -41 51.5 -59 Q38 -52.5 26.5 -57 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M34 -50.5 Q39.5 -46.2 45 -51 Q39.5 -52.8 34 -50.5 Z" fill="#ff7aa0"/>${teeth}${sparkle(1, -88)}${sparkle(-5, -76, 2.2)}`;
+      case "determined": return `${eye({ px: 24.4, py: -69, pr: 6 })}${low(`
+        <path d="M11.2 -73.6 Q20 -78 28.8 -73.6 A9.4 10.2 0 0 0 11.2 -73.6 Z" fill="${c.body}"/>
+        <path d="M28.8 -73.6 A9.4 10.2 0 0 0 11.2 -73.6" fill="none" stroke="${L}" stroke-width="2.2"/>
+        <path d="M11.2 -73.6 Q20 -78 28.8 -73.6" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`)}${brow("M11.5 -85.4 Q19 -84.8 27.5 -80.2")}${cheek(.6)}
+        <path d="M29 -55.5 Q38 -51 48 -57.5" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>${teeth}`;
+      case "blink": return `${closed()}${brow("M13 -82.6 Q19.5 -85.6 26 -83.2")}${cheek()}${smile}${teeth}`;
+      case "worried": return `${eye({ px: 19.4, py: -67.4, pr: 5.6 })}${brow("M12 -81.6 Q19 -83 27 -86.2")}${cheek(.6)}
+        <path d="M29 -54 q3.5 -3 7 0 t7 0 t6 -1" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M2.5 -88 Q-1.2 -81.6 2.5 -79.6 Q6.2 -81.6 2.5 -88 Z" fill="#8fe6ff" stroke="#1b4a6a" stroke-width="1"/>`;
+      case "surprised": return `${eye({ rx: 10.2, ry: 10.9, px: 21, py: -70, pr: 4.4 })}${brow("M14 -84.2 Q20 -87.8 26.5 -85.6")}${cheek(.7)}
+        <ellipse cx="40" cy="-53" rx="3.8" ry="4.8" fill="#7a1f3d" stroke="${L}" stroke-width="1.8"/>`;
+      case "think": return `${eye({ px: 24.2, py: -74, pr: 5.4 })}${brow("M14 -82.8 Q20.5 -86.8 26.5 -85.6")}${cheek(.6)}<path d="M33 -55.5 L45 -56.5" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
+      case "dizzy": return `<path d="M20 -70 m-6 0 a6 6 0 1 1 6 6 a4 4 0 1 1 -4 -4 a2 2 0 1 1 2 2" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>${cheek(.5)}
+        <path d="M28 -54 q3 -3 6 0 t6 0 t6 0" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>${sparkle(4, -90, 2.6)}${sparkle(-6, -80, 2)}`;
+      case "sleepy": return `${closed("M12.5 -68 Q20 -64 27.5 -68")}${brow("M13 -81.8 Q19 -83.2 26 -82.4")}${cheek(.7)}${smile}`;
+      default: return `${eye()}${brow("M13 -82.6 Q19.5 -85.6 26 -83.2")}${cheek()}${smile}${teeth}`;
     }
   }
 
@@ -144,7 +166,7 @@
       <circle cx="-15" cy="-42" r="3.2" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
       <path d="M-6 -58 C-8 -80 12 -91 30 -85 C46 -80 53 -71 51 -60 C50 -50 41 -46 25 -46 C9 -46 -4 -46 -6 -58 Z" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
       <ellipse cx="44" cy="-71" rx="1.8" ry="1.3" fill="${L}"/>
-      <ellipse cx="33" cy="-61" rx="4.6" ry="3" fill="${c.cheek}" opacity=".75"/>
+      <ellipse cx="7" cy="-81.5" rx="6.4" ry="2.6" transform="rotate(-26 7 -81.5)" fill="#fff" opacity=".3"/>
       ${face(o.face, c)}
       ${acc(o.acc)}
       ${arm}

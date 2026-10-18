@@ -115,15 +115,15 @@
   {
    "path": "assets/characters/trexy.js",
    "layer": "Assets",
-   "bytes": 14825,
+   "bytes": 18038,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting, and faces for happy, worried, surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).",
+   "about": "T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).",
    "provides": "Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options) }",
    "requires": "nothing",
-   "notes": "options = { pose: stand | run1 | run2 | hop | sit, face: smile | happy | worried | surprised | think | dizzy | sleepy,\n            who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,\n            back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).\nTall hats reach up to y = -124: for those, isTall(options) is true and svg() makes the picture 130 units tall instead of 100\n(same width, extra room on top), so draw it 1.3 times taller to keep T-Rexy the same size.\nsvg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL.\nLOOKS = { head: { id: name }, back: { id: name }, skin: { id: name } }, the names shown to players."
+   "notes": "options = { pose: stand | run1 | run2 | hop | sit,\n            face: smile | happy | excited | determined | blink | worried | surprised | think | dizzy | sleepy,\n            who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,\n            back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).\nTall hats reach up to y = -124: for those, isTall(options) is true and svg() makes the picture 130 units tall instead of 100\n(same width, extra room on top), so draw it 1.3 times taller to keep T-Rexy the same size.\nsvg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL.\nLOOKS = { head: { id: name }, back: { id: name }, skin: { id: name } }, the names shown to players."
   },
   {
    "path": "assets/fx/defs.svg",
@@ -542,7 +542,7 @@
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 57922,
+   "bytes": 57956,
    "usedBy": [],
    "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
@@ -778,7 +778,7 @@
   {
    "path": "games/mini-game-survival/scene.js",
    "layer": "Games",
-   "bytes": 25327,
+   "bytes": 26479,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -790,7 +790,7 @@
   {
    "path": "games/mini-game-survival/screens.js",
    "layer": "Games",
-   "bytes": 43041,
+   "bytes": 43149,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1364,10 +1364,10 @@
   },
   {
    "id": "mini-game-survival",
-   "title": "Mini Game Survival v4",
-   "version": 4,
+   "title": "Mini Game Survival v5",
+   "version": 5,
    "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
-   "output": "dist/mini-game-survival-v4.html",
+   "output": "dist/mini-game-survival-v5.html",
    "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
    "qr": {
     "colors": {

@@ -3,7 +3,7 @@
 **Spoiler warning:** this doc explains the mystery's twist. The kids asked to be surprised, so don't read the "Mystery" section out loud or reveal it in voice mode unless they ask for spoilers.
 
 Home page (always the newest version): https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ
-QR card: `library/dist/mini-game-survival-v4-qr.png`
+QR card: `library/dist/mini-game-survival-v5-qr.png`
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/` (see claude/game-library.md)
 
 ## Design (October 17, 2026, by voice, with Child I and two friends)
@@ -37,6 +37,9 @@ Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/
 - L and R should always go forward or back in the story.
 - Replace the "awful robot" laugh with a real recording of a silly villain laugh from the internet. (Mom downloaded the CC0 "Evil Laughs" pack from OpenGameArt and attached it.)
 - Hints that show the buttons to press ("Hint: ..."), only when a player has been stuck a while.
+
+## v5 changes Mom asked for (October 17, 2026)
+- Make T-Rexy cuter and a little more expressive: bigger shiny eyes and a moving brow, rosier blush, a head shine, new faces (blink, excited, determined, a sweat drop when worried), blinking, faces that react during runs, and a little squash and stretch when he hops and lands.
 
 ## v4 changes Mom asked for (October 17, 2026)
 - "Always run with checkpoints. It's not an option." Checkpoints are on in every mode, and the Checkpoints button is gone.
@@ -113,7 +116,8 @@ Mistakes never cost points. Runs 300 + 20 per memory piece (the Shadow Gate 500 
 | Version | Date | Page | What changed |
 |---|---|---|---|
 | v1 | 2026-10-17 | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | First version. |
-| v4 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | Checkpoints always on; Hard mode needs every memory piece; obstacles on the beat with music in time; PERFECT hops; sparkles, dust, and crash shake; 12 unlockable looks and T-Rexy's closet. |
+| v5 | 2026-10-17 | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ (home page) | A cuter, more expressive T-Rexy: big shiny eyes, a mood brow, new faces, blinking, reactions in runs, squash and stretch. |
+| v4 | 2026-10-17 | V4_ARCHIVE (archive) | Checkpoints always on; Hard mode needs every memory piece; obstacles on the beat with music in time; PERFECT hops; sparkles, dust, and crash shake; 12 unlockable looks and T-Rexy's closet. |
 | v3 | 2026-10-17 | https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD (archive) | Every memory piece catchable (checked in every play-test), missing pieces leave holes in the memory with a keep-going or run-again choice and a full-catch bonus, L and R through the story, hints only when stuck, and a real recorded villain laugh. |
 | v2 | 2026-10-17 | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | Easier runs that ramp up, double hop, Easy and Hard modes, no attempt counting, funnier opening with puns, upbeat music, NASA-inspired neon backgrounds, detailed memory pictures, a one-piece Shadowspine with an evil laugh, a question library, and the Zoomasaurus end clip. |
 

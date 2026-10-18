@@ -467,7 +467,7 @@ ART_CHECK_JS = r"""() => {
     if (doc.querySelector("parsererror")) bad.push(name);
   };
   for (const pose of ["stand", "run1", "run2", "hop", "sit"])
-    for (const face of ["smile", "happy", "worried", "surprised", "think", "dizzy", "sleepy"])
+    for (const face of ["smile", "blink", "happy", "excited", "determined", "worried", "surprised", "think", "dizzy", "sleepy"])
       for (const acc of ["none", "flower", "glasses", "bow", "cap"]) ok(`trexy ${pose} ${face} ${acc}`, A.trexy.svg({ pose, face, acc }));
   const LK = A.trexy.LOOKS;
   for (const acc of ["none", ...Object.keys(LK.head)]) for (const back of ["", ...Object.keys(LK.back)]) for (const skin of ["", ...Object.keys(LK.skin)])

@@ -225,7 +225,7 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
     if (!ok) return;
     startRun({
       gen, theme, shadow, label: name, have, song, beat,
-      onPerfect: () => { if (!S.perfTip) { S.perfTip = true; save(); toast("PERFECT! You hopped right on the beat!"); } },
+      onPerfect: () => { express("excited", 900); if (!S.perfTip) { S.perfTip = true; save(); toast("PERFECT! You hopped right on the beat!"); } },
       tip: firstRun ? "Space, Up, or click to hop. Press again in the air to DOUBLE hop!" : "",
       onCrash: (c, info = {}) => {
         if (c === 1 && firstRun) toast("Oops! Back to the last checkpoint.");
@@ -235,7 +235,7 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
         spotCrashes = here === spot ? spotCrashes + 1 : 1; spot = here;
         if (spotCrashes >= 2) showHint(runHint(info));
       },
-      onCollect: o => { if (o.k === "x" && onPiecePage) onPiecePage(); },
+      onCollect: o => { express(o.k === "x" ? "excited" : "happy", o.k === "x" ? 1200 : 450); if (o.k === "x" && onPiecePage) onPiecePage(); },
       onMode: m => { if (m === "ship" && !S.shipTip) { S.shipTip = true; save(); toast("Ship mode! Hold to fly up."); } },
       onDouble: () => { if (!S.dblTip) { S.dblTip = true; save(); toast("Double hop! Dino-MITE!"); } },
       onFinish: finishRun
@@ -287,10 +287,10 @@ const RUN_CHEERS = ["Tiny arms, mighty legs!", "Boing, boing, BOOM!", "Spikes? W
 function afterRun(P, res, level, { all, what, memory, needAll }) {
   clearHints();
   const missing = res.piecesTotal - res.pieces;
-  startStage(); applyStage({ theme: P.theme, face: all ? "happy" : "smile" }); express(all || !missing ? "happy" : "think", 2400); hop();
+  startStage(); applyStage({ theme: P.theme, face: all ? "happy" : "smile" }); express(all ? "excited" : !missing ? "happy" : "think", 2400); hop();
   const head = res.skipped ? `Run <span class="hot">skipped</span>` : `Portal <span class="hot">cleared!</span>`;
   const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.perfects ? `<span class="stat"><b>${res.perfects}</b> perfect hop${res.perfects > 1 ? "s" : ""}</span>` : ""}${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
-  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 116 130" aria-hidden="true">${Kit.art.trexy.g({ face: "happy", ...lookOpts() })}</svg>
+  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 116 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
     <div><p class="unlock-new">New look!</p><p class="unlock-name">${esc(res.look.name)}</p><p class="unlock-tip">T-Rexy put it on. Change looks in his closet on the crash pad.</p></div></div>` : "";
   const t = flow.token();
   if (all || missing <= 0) {
