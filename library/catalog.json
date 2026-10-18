@@ -3,7 +3,7 @@
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 6720,
+   "bytes": 7124,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -754,7 +754,7 @@
   {
    "path": "games/mini-game-survival/game.json",
    "layer": "Games",
-   "bytes": 4993,
+   "bytes": 5452,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1437,8 +1437,14 @@
     {
      "version": 5,
      "date": "2026-10-17",
-     "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+     "url": "https://claude.ai/artifact/SMosBkiXuSCP4u4ynQ9NGn",
      "notes": "A cuter, more expressive T-Rexy: big shiny eyes, a brow that shows his mood, rosier blush, new faces (blink, excited, determined, worried with a sweat drop), blinking, reactions during runs, and squash and stretch on hops."
+    },
+    {
+     "version": 6,
+     "date": "2026-10-17",
+     "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+     "notes": "Cute recorded dino noises (each dinosaur in its own voice), phone and tablet play (tap tips, back and forward buttons, the phone keyboard for clues, layouts for upright and sideways phones), T-Rexy beside his crashed ship that gets fixed part by part, and a much bigger question library dealt so every game is new."
     }
    ],
    "source": "games/mini-game-survival",
