@@ -1,6 +1,7 @@
 # Starward (Child I's game)
 
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/starward/` (see claude/game-library.md)
+QR card: `library/dist/starward-qr.png` (the Keeper with his chest flame lit; no version number, so it stays good for every version)
 
 ## Versions
 - **Home page, always the newest version:** https://claude.ai/artifact/Jq8tRWGkoLgdJZAMwcMYtw. Its link, QR card and high scores carry across updates; each version it replaces is saved as its own archive page first.

@@ -4,6 +4,14 @@
   "version": 1,
   "about": "The first game: a tall, scared robot types his way across four planets, solves riddles, and makes friends (a magic puppy, a penguin, and a mossy rock) on the way to the flame that relights his world. Kept as one legacy file; its characters, music style, and question ideas live on in the library as Starward's modules.",
   "legacy": "games/inner-flame/legacy/v1.html",
+  "qr": {
+    "colors": { "void": "#170a1e", "nebula": "#2a0f2c", "nebulaHi": "#5e2142", "starlight": "#fff4ec", "dust": "#e6b8c2",
+                "glow": "#ff8740", "accent": "#ffb86b", "gold": "#ffcb5e", "onGold": "#2a1100" },
+    "badge": "flame",
+    "hero": { "who": "robot", "face": "brave", "lit": true, "thrusters": true },
+    "tagline": ["One scared robot. Zero friends... so far!", "Solve riddles, meet a magic puppy, and find the flame to relight his world."],
+    "cta": "Scan to play!"
+  },
   "releases": [
     { "version": 1, "date": "2026-10-10", "url": "https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6", "notes": "Original game, designed by Child I by voice." }
   ]

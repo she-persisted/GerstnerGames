@@ -3,7 +3,7 @@
 **Spoiler warning:** this doc explains the mystery's twist. The kids asked to be surprised, so don't read the "Mystery" section out loud or reveal it in voice mode unless they ask for spoilers.
 
 Home page (always the newest version): https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ
-QR card: `library/dist/mini-game-survival-v6-qr.png`
+QR card: `library/dist/mini-game-survival-qr.png` (T-Rexy mid-hop saying "Scan to play!"; no version number, so it stays good for every version)
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/mini-game-survival/` (see claude/game-library.md)
 
 ## Design (October 17, 2026, by voice, with Child I and two friends)

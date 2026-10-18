@@ -25,6 +25,8 @@
       "onGold": "#1a0420"
     },
     "badge": "trexy",
+    "hero": { "who": "trexy", "pose": "hop", "face": "excited" },
+    "tagline": ["Weird music zapped T-Rexy into space!", "Dodge spikes. Crack the mystery. Get home!"],
     "cta": "Scan to play!"
   },
   "styles": [

@@ -112,6 +112,8 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 
 ## Sharing
 - Every new version ships with a QR card that opens it, styled with the game's own colors and icons (`library/build/qr.py`; a game sets its look with a "qr" block in its game.json), checked to scan before it's sent to Mom. [asked]
+- QR cards show the game's main character and a quick two-sentence teaser that gets kids curious, and no version number. [asked] The hero is drawn from the game's own art files (the Keeper, The Inner Flame's robot flying on his thrusters, T-Rexy mid-hop), so the card always matches the game. A tall hero stands beside the code; a wide one stands under it and says "Scan to play!" in a speech bubble. The teaser is a short hook line, then one line on what you get to do, with a joke where it fits ("Zero friends... so far!"). One card per game, `dist/<id>-qr.png`, since it points at the home page and stays good for every version. [built]
+- Keep the QR code itself plain enough to scan: square finder eyes, touching modules with barely rounded corners. Rounded eyes and gapped dots failed one reader in about one try in ten. The scan check reads every card with two readers at full, three-quarter and half size. [limit]
 
 ## Technical defaults that worked
 - Source lives in the Game Library as separate files: shared engines in kit/, art and music in assets/, questions and words in content/, game-only parts in games/<id>/. Every file starts with a header saying what it does, what it provides, and what it needs. [asked]

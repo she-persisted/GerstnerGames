@@ -10,6 +10,12 @@
     "https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@500;700&display=swap"
   ],
   "capabilities": { "db": {} },
+  "qr": {
+    "badge": "star",
+    "hero": { "who": "robot", "face": "happy", "lit": true },
+    "tagline": ["A starstorm blew out the Everlight!", "Build a rocket, find a space puppy, and fly the light home."],
+    "cta": "Scan to play!"
+  },
   "styles": [
     "kit/base.css",
     "kit/puzzle-ui.css",

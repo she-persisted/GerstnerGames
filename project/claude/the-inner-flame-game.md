@@ -2,6 +2,7 @@
 
 Live game: https://claude.ai/artifact/FAgoyVHV7dqGaY856XeSk6
 Source: GitHub `she-persisted/GerstnerGames`, `library/games/inner-flame/legacy/v1.html` (one file, kept unchanged; see claude/game-library.md)
+QR card: `library/dist/inner-flame-qr.png` (the robot flying on his thrusters with the flame in his chest; opens the live game page)
 
 Concept (designed by Child I, with Mom): a tall, scared robot who starts out alone travels through space to find the flame that can rebuild his dark home world, Ashlund. He solves riddles and brain teasers, and makes friends who help him along the way. Built for Child I's Chromebook, with typing practice throughout.
 
