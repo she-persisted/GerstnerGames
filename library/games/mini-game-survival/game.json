@@ -1,9 +1,9 @@
 {
   "id": "mini-game-survival",
-  "title": "Mini Game Survival v8",
-  "version": 8,
-  "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet, so all 12 can be found in one game.",
-  "output": "dist/mini-game-survival-v8.html",
+  "title": "Mini Game Survival v9",
+  "version": 9,
+  "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit. Every mini game finished unlocks a new look for his closet: hats, colors, things for his back, and whole outfits (a mad scientist, a surfer, and a punk rock biker).",
+  "output": "dist/mini-game-survival-v9.html",
   "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
   "fonts": [
     "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=Press+Start+2P&display=swap",
@@ -134,6 +134,12 @@
       "date": "2026-10-18",
       "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
       "notes": "Looks come much faster: every mini game finished (each portal's run, jigsaw, and clue word) unlocks the next look for T-Rexy, so all 12 can be found in one game, and the Shadow Gate run makes up for a skipped one. Full catches still earn the bonus points. The closet only shows the empty slots that can still be filled this game."
+    },
+    {
+      "version": 9,
+      "date": "2026-10-18",
+      "url": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
+      "notes": "Three new outfits for T-Rexy's closet, 15 looks in all: the Mad Scientist (lab coat, goggles, a bubbling potion), the Surfer Dino (board shorts, a flower lei, sunscreen on his snout, a surfboard), and the Punk Rock Biker (studded leather jacket, chain, pink mohawk). Outfits mix with every hat, color, and back item, and he wears them in the cockpit too. A new player finds 13 looks in the first game and the last 2 in the next."
     }
   ]
 }

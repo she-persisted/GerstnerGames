@@ -72,7 +72,7 @@ Mini Game Survival's skills, kept separately for Easy and Hard mode: runs (one l
 
 ## Drawing style
 
-`assets/style/ink.js` holds the cartoon style Mini Game Survival's characters and props share, as rules and helpers: living things outlined in their own darkest color, gear and machines in one shared ink, glowing things with no outline; one shadow tone and one shine; big shiny eyes with two highlights; soft blush; see-through glass with a shine and a glint; yellow four-point sparkles. Draw new characters and props with these helpers so they match. Things a character wears must fit in every pose and face, and a character in a vehicle sits inside it: `Kit.art.trexy.headBox()` and `pilot()` give the sizes, the ship fits its pilot to the canopy, and `build/playtest.py` measures it all.
+`assets/style/ink.js` holds the cartoon style Mini Game Survival's characters and props share, as rules and helpers: living things outlined in their own darkest color, gear and machines in one shared ink, glowing things with no outline; one shadow tone and one shine; big shiny eyes with two highlights; soft blush; see-through glass with a shine and a glint; yellow four-point sparkles. Draw new characters and props with these helpers so they match. Clothes follow the body's own outline, so an outfit stays on in every pose (T-Rexy's outfits are drawn this way). Things a character wears must fit in every pose and face, and a character in a vehicle sits inside it: `Kit.art.trexy.headBox()` and `pilot()` give the sizes, the ship fits its pilot to the canopy, and `build/playtest.py` measures it all.
 
 ## Music
 

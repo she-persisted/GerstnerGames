@@ -125,8 +125,8 @@ function notebookHTML() {
 // still unlock (one per mini game left), so it never shows empty slots nobody can fill this game.
 function closetHTML() {
   const icon = (slot, id) => {
-    const o = slot === "skin" ? { face: "happy", skin: id } : slot === "head" ? { face: "happy", acc: id } : { face: "happy", back: id, pose: "run1" };
-    const vb = slot === "back" ? "-60 -98 120 100" : Kit.art.trexy.headView(o);
+    const o = slot === "skin" ? { face: "happy", skin: id } : slot === "head" ? { face: "happy", acc: id } : slot === "outfit" ? { face: "happy", outfit: id } : { face: "happy", back: id, pose: "run1" };
+    const vb = slot === "back" ? "-60 -98 120 100" : slot === "outfit" ? "-58 -108 118 112" : Kit.art.trexy.headView(o);
     return `<svg viewBox="${vb}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`;
   };
   const have = LOOK_ORDER.filter(([, id]) => LOOK.have.includes(id)), open = looksReachable(), locked = LOOK_ORDER.length - have.length;

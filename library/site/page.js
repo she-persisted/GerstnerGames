@@ -1,6 +1,6 @@
 /**
  * @file site/page.js
- * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy, Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.
+ * @about Fills in the Game Library page from catalog.json: games and their versions, the flow map, the live robot, T-Rexy (with every face and look, outfits included), Nova, rocket, and ship previews, the song player, and the file browser that can show any file's source.
  * @requires kit/util.js, kit/audio.js, kit/music.js, kit/groove.js, assets/icons/icons.js, assets/characters/puppy.js, assets/rocket/rocket.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js
  */
 const { $, esc } = Kit.util;
@@ -80,9 +80,14 @@ drawRocket();
 const TX = Kit.art.trexy, NV = Kit.art.nova, SH = Kit.art.ship;
 const trexyFaces = [["smile", "Smile"], ["happy", "Happy"], ["worried", "Worried"], ["surprised", "Surprised"], ["think", "Thinking"], ["dizzy", "Dizzy"]];
 $("#trexyFaces").innerHTML = trexyFaces.map(([f, l], i) => `<button type="button" data-tface="${f}" aria-pressed="${i === 0}">${l}</button>`).join("");
-const drawTrexy = f => { $("#galleryTrexy").innerHTML = TX.g({ face: f }); };
-$("#trexyFaces").addEventListener("click", e => { const b = e.target.closest("[data-tface]"); if (!b) return; $("#trexyFaces").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); drawTrexy(b.dataset.tface); });
-drawTrexy("smile");
+// His looks: a hat, a back item, a color, and an outfit (a whole costume), the same ones he unlocks in Mini Game Survival.
+const trexyLook = { face: "smile", acc: "", back: "", skin: "", outfit: "" };
+const lookField = (key, label, names) => `<label>${esc(label)}<select data-look="${key}"><option value="">None</option>${Object.entries(names).map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("")}</select></label>`;
+$("#trexyLooks").innerHTML = lookField("acc", "Hat", TX.LOOKS.head) + lookField("back", "Back", TX.LOOKS.back) + lookField("skin", "Color", TX.LOOKS.skin) + lookField("outfit", "Outfit", TX.LOOKS.outfit);
+const drawTrexy = () => { const el = $("#galleryTrexy"); el.setAttribute("viewBox", TX.view(trexyLook)); el.innerHTML = TX.g(trexyLook); };
+$("#trexyFaces").addEventListener("click", e => { const b = e.target.closest("[data-tface]"); if (!b) return; $("#trexyFaces").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); trexyLook.face = b.dataset.tface; drawTrexy(); });
+$("#trexyLooks").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; trexyLook[s.dataset.look] = s.value; drawTrexy(); });
+drawTrexy();
 const drawNova = () => { $("#galleryNova").innerHTML = $("#shadowBox").checked ? NV.shadow("#000") : NV.g({ face: "happy" }); };
 $("#shadowBox").addEventListener("change", drawNova);
 drawNova();

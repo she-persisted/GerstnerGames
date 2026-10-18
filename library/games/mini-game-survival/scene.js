@@ -38,19 +38,23 @@ function img(key, url) {
   if (!im) { im = new Image(); im.src = url; IMG.set(key, im); }
   return im;
 }
-const heroImg = (o = {}) => img(`t|${o.pose || "stand"}|${o.face || "smile"}|${o.acc || "none"}|${o.who || "trexy"}|${o.flip ? 1 : 0}|${o.back || ""}|${o.skin || ""}`, Kit.art.trexy.url(o, 240));
+const heroImg = (o = {}) => img(`t|${o.pose || "stand"}|${o.face || "smile"}|${o.acc || "none"}|${o.who || "trexy"}|${o.flip ? 1 : 0}|${o.back || ""}|${o.skin || ""}|${o.outfit || ""}`, Kit.art.trexy.url(o, 240));
 const novaImg = (o = {}) => img(`n|${o.face || "smile"}|${o.flip ? 1 : 0}`, Kit.art.nova.url(o, 200));
 // T-Rexy wearing his looks (see LOOK in state.js). h = his height; a tall hat's picture has extra room on top, so it's drawn taller.
 function drawTrexy(ctx, o, x, y, h) {
   const opts = { ...o, ...lookOpts(o.acc) };
   drawImg(ctx, heroImg(opts), x, y, Kit.art.trexy.isTall(opts) ? h * 1.3 : h);
 }
-// T-Rexy in the cockpit, in his color and any hat that fits under the glass (tall pointy hats stay in his closet while he flies).
-const PILOT_HATS = new Set(["helmet", "shades", "crown", "headphones"]);
-const pilotOf = face => Kit.art.trexy.pilot({ face, skin: LOOK.skin, acc: PILOT_HATS.has(LOOK.head) ? LOOK.head : "none" });
+// T-Rexy in the cockpit, in his color, his outfit, and any hat that fits under the glass (tall pointy hats and the mohawk stay
+// in his closet while he flies; the outfit's surfboard and potion stay out of the cockpit too).
+const PILOT_HATS = new Set(["helmet", "shades", "crown", "headphones", "goggles"]);
+const pilotOf = face => {
+  const outfitHat = (Kit.art.trexy.OUTFITS[LOOK.outfit] || {}).hat || "";
+  return Kit.art.trexy.pilot({ face, skin: LOOK.skin, outfit: LOOK.outfit, acc: PILOT_HATS.has(LOOK.head) ? LOOK.head : "none", outfitHat: PILOT_HATS.has(outfitHat) });
+};
 // The ship picture. pilot = T-Rexy's face in the cockpit ("" for an empty cockpit); face = the ship's own face once it's alive.
 // scale = the largest the pilot may be (the end ride keeps him the same size as his family riding on the hull).
-const shipImg = (flame, pilot = "smile", face = "", scale = 0) => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? `${pilot}|${LOOK.skin}|${LOOK.head}|${scale}` : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotOf(pilot) : null, pilotScale: scale || 0, face }, 320));
+const shipImg = (flame, pilot = "smile", face = "", scale = 0) => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? `${pilot}|${LOOK.skin}|${LOOK.head}|${LOOK.outfit}|${scale}` : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotOf(pilot) : null, pilotScale: scale || 0, face }, 320));
 function drawImg(ctx, im, x, y, h, anchor = "bottom") {
   if (!im.complete || !im.naturalWidth) return;
   const w = h * im.naturalWidth / im.naturalHeight;

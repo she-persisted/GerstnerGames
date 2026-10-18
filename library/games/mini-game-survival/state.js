@@ -1,6 +1,6 @@
 /**
  * @file games/mini-game-survival/state.js
- * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (one for each mini game finished, so all of them fit in one game, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
+ * @about Mini Game Survival's settings and save data: storage keys, Easy and Hard mode, the portals and what each one gives, the clue cards, the mystery questions (from the question library), the secret diary pages, the cast, the adaptive skill levels (runs, jigsaws, words, typing), the run levels and how they ramp up portal by portal, the clue-word chooser, T-Rexy's unlockable looks (hats, back items, colors, and whole outfits; one for each mini game finished, kept on this computer across games, with a count of how many this game can still unlock), the deck dealer that picks versions from the question library (kept on this computer, so no version repeats until every one has come up), a seeded random maker (so a second try at a run is the same run), and which mini games are finished (so moving forward skips them). Saves keep progress only, never how many tries anything took.
  * @requires kit/util.js, kit/ui.js, kit/audio.js, kit/adaptive.js, assets/ship/glitch-ship.js, assets/icons/icons.js, content/words/clue-words.js, games/mini-game-survival/questions.js
  */
 const { $, shuffle, pick, esc, clamp, store } = Kit.util;
@@ -165,28 +165,34 @@ const FULL_BONUS = 200; // for catching every memory piece (or star shard) in a 
 const PERFECT_PTS = 10; // for each hop right on the beat over something dangerous (doubled in Hard mode, like all run points)
 
 // T-Rexy's looks: every mini game finished (each portal's run, jigsaw, and clue word, the first time in a game) unlocks the next
-// one in this order and puts it on, so all 12 can be found in one game. The Shadow Gate run unlocks one too, to make up for a
-// run that was skipped. Skipping a mini game with R unlocks nothing. Looks stay unlocked on this computer for every game after.
-// The closet on the crash pad changes what he wears, and only shows the empty slots that can still be filled this game.
-// slot = head (hats), back (rocket backpack, cape), or skin (his color). Drawings and names are in assets/characters/trexy.js.
-const LOOK_ORDER = [["head", "helmet"], ["skin", "galaxy"], ["back", "rocket"], ["head", "wizard"], ["skin", "gold"], ["head", "headphones"],
-  ["back", "cape"], ["skin", "ocean"], ["head", "crown"], ["head", "party"], ["skin", "bubblegum"], ["head", "shades"]];
+// one in this order and puts it on. That's 13 a game (the Shadow Gate run unlocks one too), so a new player finds 13 of the 15
+// looks in the first game and the last 2 in the next one. Skipping a mini game with R unlocks nothing. Looks stay unlocked on
+// this computer for every game after. The closet on the crash pad changes what he wears, and only shows the empty slots that
+// can still be filled this game. slot = head (hats), back (rocket backpack, cape), skin (his color), or outfit (a whole
+// costume: the Mad Scientist, the Surfer Dino, the Punk Rock Biker). Drawings and names are in assets/characters/trexy.js.
+const LOOK_SLOTS = ["head", "back", "skin", "outfit"];
+const LOOK_ORDER = [["head", "helmet"], ["skin", "galaxy"], ["back", "rocket"], ["outfit", "scientist"], ["head", "wizard"], ["skin", "gold"],
+  ["outfit", "surfer"], ["head", "headphones"], ["back", "cape"], ["skin", "ocean"], ["outfit", "punk"], ["head", "crown"], ["head", "party"],
+  ["skin", "bubblegum"], ["head", "shades"]];
 const lookName = (slot, id) => Kit.art.trexy.LOOKS[slot][id] || id;
 function loadLooks() {
   const d = store.get(KEYS.looks, null), ok = id => LOOK_ORDER.some(([, x]) => x === id);
-  const L = { have: [], head: "", back: "", skin: "" };
+  const L = { have: [], head: "", back: "", skin: "", outfit: "" };
   if (d && Array.isArray(d.have)) L.have = d.have.filter(ok);
-  for (const slot of ["head", "back", "skin"]) if (d && L.have.includes(d[slot])) L[slot] = d[slot];
+  for (const slot of LOOK_SLOTS) if (d && L.have.includes(d[slot])) L[slot] = d[slot];
   return L;
 }
 let LOOK = loadLooks();
 const saveLooks = () => store.set(KEYS.looks, LOOK);
-// Unlocks and puts on the next look. Returns { slot, id, name }, or null once every look is unlocked.
+// Unlocks and puts on the next look. Returns { slot, id, name }, or null once every look is unlocked. A new outfit comes off
+// the hanger whole: his hat and back item come off, so its own head piece and surfboard show (he can put them back on).
 function unlockLook() {
   const next = LOOK_ORDER.find(([, id]) => !LOOK.have.includes(id));
   if (!next) return null;
   const [slot, id] = next;
-  LOOK.have.push(id); LOOK[slot] = id; saveLooks();
+  LOOK.have.push(id); LOOK[slot] = id;
+  if (slot === "outfit") { LOOK.head = ""; LOOK.back = ""; }
+  saveLooks();
   return { slot, id, name: lookName(slot, id) };
 }
 // The mini games that unlock a look, as [story step, name] pairs: "run.echo", "jigsaw.echo", "word.echo", ..., "run.gate".
@@ -206,7 +212,7 @@ function looksReachable() {
 // Puts a look on, or takes it off if he's already wearing it.
 function toggleLook(slot, id) { LOOK[slot] = LOOK[slot] === id ? "" : id; saveLooks(); }
 // What T-Rexy is wearing, as drawing options. A story accessory (like his cap at the start) wins over a hat.
-const lookOpts = (acc = "none") => ({ acc: acc && acc !== "none" ? acc : (LOOK.head || "none"), back: LOOK.back || "", skin: LOOK.skin || "" });
+const lookOpts = (acc = "none") => ({ acc: acc && acc !== "none" ? acc : (LOOK.head || "none"), back: LOOK.back || "", skin: LOOK.skin || "", outfit: LOOK.outfit || "" });
 const shipCfg = () => ({ ...S.parts, paint: S.paint });
 const allParts = () => SHIP.PART_ORDER.every(p => S.parts[p]);
 const nextPortal = () => PORTAL_ORDER.find(id => !S.done.includes(id)) || "gate";

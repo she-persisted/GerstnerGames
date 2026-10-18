@@ -83,6 +83,7 @@ figcaption{padding:12px 14px 14px;display:flex;flex-direction:column;gap:9px;min
 .ctl{font-size:.85rem;color:#cfcbf3;display:flex;justify-content:space-between}
 input[type=range]{width:100%;accent-color:#ffcb5e}
 .faces{display:flex;flex-wrap:wrap;gap:6px}
+#trexyLooks{margin-top:10px}
 .faces button{font:600 .82rem var(--f-body);border-radius:999px;border:1px solid #3a3378;background:transparent;color:#f1efff;padding:.35em .8em;cursor:pointer}
 .faces button[aria-pressed="true"]{background:#ffcb5e;color:#2a1100;border-color:#ffcb5e}
 .check{font-size:.85rem;color:#cfcbf3;display:flex;gap:8px;align-items:center}

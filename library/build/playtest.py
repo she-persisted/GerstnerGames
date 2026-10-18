@@ -60,10 +60,11 @@ Checks:
        every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.
        Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.
        Every run must end with every piece caught.
-     - Looks: every finished run, jigsaw, and clue word unlocks one of T-Rexy's looks, with a New look card, so the
-       playthrough ends with all 12. The closet on every crash pad visit shows exactly 12 slots (nothing was skipped).
-       From saved games: with three runs skipped it shows only the 4 empty slots still reachable this game, with a
-       look already found in an earlier game it still shows 12, and with every look found it shows no empty slots.
+     - Looks: every finished run, jigsaw, and clue word unlocks one of T-Rexy's 15 looks, with a New look card, so the
+       playthrough ends with 13 (one per mini game, plus the Shadow Gate). The closet on every crash pad visit shows
+       exactly 13 slots (nothing was skipped). From saved games: a new player sees 13 slots, with three runs skipped it
+       shows only the 4 empty slots still reachable this game, with 3 looks from an earlier game it shows all 15, and
+       with every look found it shows no empty slots. Every outfit, hat, and back item fits in every pose.
      - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.
      - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.
      - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.
@@ -486,6 +487,8 @@ ART_CHECK_JS = r"""() => {
   const LK = A.trexy.LOOKS;
   for (const acc of ["none", ...Object.keys(LK.head)]) for (const back of ["", ...Object.keys(LK.back)]) for (const skin of ["", ...Object.keys(LK.skin)])
     for (const pose of ["stand", "run1", "hop"]) ok(`trexy look ${acc} ${back} ${skin} ${pose}`, A.trexy.svg({ pose, acc, back, skin, flip: pose === "run1" }));
+  for (const outfit of Object.keys(LK.outfit)) for (const acc of ["none", ...Object.keys(LK.head)]) for (const back of ["", ...Object.keys(LK.back)])
+    for (const pose of ["stand", "run1", "run2", "hop", "sit"]) ok(`trexy outfit ${outfit} ${acc} ${back} ${pose}`, A.trexy.svg({ pose, outfit, acc, back, flip: pose === "run2" }));
   for (const face of ["smile", "happy", "worried", "surprised"]) ok(`nova ${face}`, A.nova.svg({ face }));
   ok("shadowspine", `<svg xmlns="http://www.w3.org/2000/svg">${A.nova.shadow("#000", 12)}</svg>`);
   for (const face of ["awake", "blink", "happy"]) ok(`ship face ${face}`, decodeURIComponent(A.ship.url({ cockpit: "dino", wings: "bat", thrusters: "two", core: "pink", paint: "lime" }, { flame: true, face, pilot: "<g/>" }).split(",").slice(1).join(",")));
@@ -540,24 +543,35 @@ FIT_CHECK_JS = r"""() => {
     if (worst > 1) bad.push(`space helmet doesn't hold his head (${pose}, ${face}): ${worst.toFixed(2)}`);
   }
   // 2. headBox() and view() hold what they should.
-  const heads = ["none", "cap", "flower", "bow", "glasses", ...Object.keys(T.LOOKS.head)];
-  for (const acc of heads) for (const face of ["smile", "excited", "worried", "dizzy"]) {
-    put(T.g({ face, acc }));
-    const b = bbox('[data-part="head"],[data-part="hat"]'), hb = T.headBox({ acc });
+  const heads = ["none", "cap", "flower", "bow", "glasses", ...Object.keys(T.LOOKS.head)], outfits = Object.keys(T.LOOKS.outfit);
+  const headLooks = [...heads.map(acc => ({ acc })), ...outfits.map(outfit => ({ outfit }))]; // an outfit with no hat shows its own head piece
+  for (const look of headLooks) for (const face of ["smile", "excited", "worried", "dizzy"]) {
+    put(T.g({ face, ...look }));
+    const b = bbox('[data-part="head"],[data-part="hat"]'), hb = T.headBox(look);
     if (b.x0 < hb.x - .6 || b.y0 < hb.y - .6 || b.x1 > hb.x + hb.w + .6 || b.y1 > hb.y + hb.h + .6)
-      bad.push(`headBox for ${acc} (${face}) misses part of his head: ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
+      bad.push(`headBox for ${look.acc || look.outfit} (${face}) misses part of his head: ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
   }
-  for (const acc of heads) for (const back of ["", ...Object.keys(T.LOOKS.back)]) for (const pose of ["stand", "run1", "run2", "hop"]) for (const flip of [false, true]) {
-    if (["flower", "bow", "glasses"].includes(acc) && (pose !== "stand" || back)) continue; // his family only stands, and wears no looks
-    const o = { pose, acc, back, flip, face: "excited" }; put(T.g(o));
+  for (const outfit of ["", ...outfits]) for (const acc of heads) for (const back of ["", ...Object.keys(T.LOOKS.back)]) for (const pose of ["stand", "run1", "run2", "hop"]) for (const flip of [false, true]) {
+    if (["flower", "bow", "glasses"].includes(acc) && (pose !== "stand" || back || outfit)) continue; // his family only stands, and wears no looks
+    const o = { pose, acc, back, flip, outfit, face: "excited" }; put(T.g(o));
     const b = bbox("svg > g:not(#fitref)"), [vx, vy, vw, vh] = T.view(o).split(" ").map(Number);
     if (b.x0 < vx - .3 || b.y0 < vy - .3 || b.x1 > vx + vw + .3 || b.y1 > vy + vh + .3)
-      bad.push(`picture of T-Rexy cuts off part of him (${acc}, ${back || "no back"}, ${pose}${flip ? ", flipped" : ""}): ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
+      bad.push(`picture of T-Rexy cuts off part of him (${outfit ? outfit + ", " : ""}${acc}, ${back || "no back"}, ${pose}${flip ? ", flipped" : ""}): ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
+  }
+  // The closet button for an outfit shows all of him in it.
+  for (const outfit of outfits) {
+    put(T.g({ outfit, face: "happy" }));
+    const b = bbox("svg > g:not(#fitref)"), [vx, vy, vw, vh] = [-58, -108, 118, 112];
+    if (b.x0 < vx - .3 || b.y0 < vy - .3 || b.x1 > vx + vw + .3 || b.y1 > vy + vh + .3) bad.push(`the closet button for the ${outfit} outfit cuts off part of him`);
   }
   // 3. The pilot sits inside the cockpit.
   let fits = [];
-  for (const [cockpit] of S.PARTS.cockpit.options) for (const acc of ["none", "helmet", "shades", "crown", "headphones"]) for (const scale of [0, .3]) {
-    put(S.svg({ cockpit, wings: "fern", thrusters: "two", core: "pink", paint: "lime" }, { pilot: T.pilot({ acc, face: "excited" }), pilotScale: scale }));
+  // Pilots: every hat a pilot can wear, and every outfit (the goggles fit under the glass; the mohawk stays in the closet).
+  const pilots = [...["none", "helmet", "shades", "crown", "headphones"].map(acc => ({ acc })), { outfit: "scientist" }, { outfit: "surfer" },
+    { outfit: "punk", outfitHat: false }, { outfit: "scientist", acc: "crown" }];
+  for (const [cockpit] of S.PARTS.cockpit.options) for (const look of pilots) for (const scale of [0, .3]) {
+    const acc = [look.outfit, look.acc].filter(Boolean).join(" + ");
+    put(S.svg({ cockpit, wings: "fern", thrusters: "two", core: "pink", paint: "lime" }, { pilot: T.pilot({ ...look, face: "excited" }), pilotScale: scale }));
     const K = S.CANOPY[cockpit], canopy = host.querySelector('[data-part="canopy"]'), M = toRef(canopy).inverse();
     let inside = 0, above = 0, over = 0;
     for (const el of geo('[data-part="pilot"] [data-part="head"],[data-part="pilot"] [data-part="hat"]')) for (const p of pts(el)) {
@@ -892,8 +906,8 @@ def mgs_closet_check(browser, base, rel):
     plan = pg.evaluate("({ steps: window.__mgs.steps, events: window.__mgs.lookSteps(), order: window.__mgs.lookOrder })")
     hubs = [i for i, t in enumerate(plan["steps"]) if t == "hub"]
     events, order = plan["events"], plan["order"]
-    if len(events) != 13 or len(order) != 12:
-        fail(f"expected 13 mini games that unlock looks (12 plus the Shadow Gate) and 12 looks, got {len(events)} and {len(order)}")
+    if len(events) != 13 or len(order) != 15:
+        fail(f"expected 13 mini games that unlock looks (12 plus the Shadow Gate) and 15 looks, got {len(events)} and {len(order)}")
         ctx.close()
         return
 
@@ -915,16 +929,20 @@ def mgs_closet_check(browser, base, rel):
     c = closet_at(hub, list(range(hub)), got, order[:6])
     if not c or (c["have"], c["empty"], c["label"]) != (6, 4, "6 of 10") or "next game" not in c["tip"]:
         fail(f"with three runs skipped, the closet should show 6 looks and 4 empty slots ('6 of 10', more next game), found {c}")
-    # A new game with 3 looks from an earlier game: the other 9 can all come this game.
+    # A brand-new player: 13 empty slots (one per mini game), and the other 2 looks wait for the next game.
+    c0 = closet_at(hubs[0], list(range(hubs[0])), [], [])
+    if not c0 or (c0["have"], c0["empty"], c0["label"]) != (0, 13, "0 of 13") or "next game" not in c0["tip"]:
+        fail(f"a new player should see 13 empty slots ('0 of 13', more next game), found {c0}")
+    # A new game with 3 looks from an earlier game: the other 12 can all come this game.
     c2 = closet_at(hubs[0], list(range(hubs[0])), [], order[:3])
-    if not c2 or (c2["have"], c2["empty"], c2["label"]) != (3, 9, "3 of 12"):
-        fail(f"a new game with 3 looks found before should show 3 looks and 9 empty slots, found {c2}")
+    if not c2 or (c2["have"], c2["empty"], c2["label"]) != (3, 12, "3 of 15"):
+        fail(f"a new game with 3 looks found before should show 3 looks and 12 empty slots, found {c2}")
     # Every look found: no empty slots.
     c3 = closet_at(hubs[0], list(range(hubs[0])), [], order)
-    if not c3 or (c3["have"], c3["empty"]) != (12, 0) or "Every look found" not in c3["tip"]:
-        fail(f"with every look found the closet should show 12 looks and no empty slots, found {c3}")
-    if c and c2 and c3:
-        print(f"  closet: {c['label']} with three runs skipped, {c2['label']} with 3 found before, {c3['label']} with all found")
+    if not c3 or (c3["have"], c3["empty"]) != (15, 0) or "Every look found" not in c3["tip"]:
+        fail(f"with every look found the closet should show 15 looks and no empty slots, found {c3}")
+    if c and c0 and c2 and c3:
+        print(f"  closet: {c0['label']} for a new player, {c['label']} with three runs skipped, {c2['label']} with 3 found before, {c3['label']} with all found")
     ctx.close()
 
 
@@ -1058,6 +1076,8 @@ def mgs_playthrough(browser, base, rel):
             "hint": False, "rerun": False, "bonus": False, "noskip": False, "hardall": False, "closet": False, "musicsync": False,
             "lookcards": 0, "closetvisits": 0}
     closet_seen = set()
+    # how many looks a new player can find in one game: one per mini game, up to every look there is
+    per_game = pg.evaluate("Math.min(window.__mgs.lookOrder.length, window.__mgs.lookSteps().length)")
     reloaded = False
     last_sig, last_change, started = None, time.time(), time.time()
     run_seen, song_steps = None, set()
@@ -1126,8 +1146,8 @@ def mgs_playthrough(browser, base, rel):
             c = pg.evaluate(CLOSET_JS)
             if c and hub_step not in closet_seen:  # (the closet may not be drawn yet on the first look at a new screen)
                 closet_seen.add(hub_step)
-                if c["slots"] != 12 or c["label"] != f"{c['have']} of 12":
-                    fail(f"with no mini game skipped, the closet should show all 12 slots, found {c}")
+                if c["slots"] != per_game or c["label"] != f"{c['have']} of {per_game}":
+                    fail(f"with no mini game skipped, a new player's closet should show {per_game} slots, found {c}")
                 seen["closetvisits"] += 1
             if not seen["closet"] and pg.locator("#panel .lookbtn[data-look]").count():
                 before = pg.evaluate("window.__mgs.looks()")
@@ -1383,8 +1403,8 @@ def mgs_playthrough(browser, base, rel):
                 if r.get("pieces") != r.get("total"):
                     fail(f"the {key} run caught {r.get('pieces')} of {r.get('total')} pieces (Hard mode needs all of them)")
             looks = pg.evaluate("window.__mgs.looks()")
-            if len(looks.get("have", [])) != 12:
-                fail(f"finishing every run, jigsaw, and clue word should unlock all 12 looks, got {looks.get('have')}")
+            if len(looks.get("have", [])) != per_game:
+                fail(f"finishing every run, jigsaw, and clue word should unlock {per_game} looks, got {looks.get('have')}")
             seen["rerun"] = bool((runs.get("fern") or {}).get("full"))
             if not seen["rerun"]:
                 fail("running Fern Moon again did not end with every piece caught")
@@ -1423,7 +1443,7 @@ def mgs_playthrough(browser, base, rel):
         if not seen.get("hintclear_" + where):
             fail(f"Mini Game Survival never checked where a hint sits: {where}")
     print("  hints stay off the play area: above the crash pad, in the floor under a run, under the jigsaw board")
-    print(f"  looks: a New look card after every jigsaw and clue word, all 12 looks by the end, 12 closet slots on all {seen['closetvisits']} crash pad visits")
+    print(f"  looks: a New look card after every jigsaw and clue word, {per_game} looks by the end, {per_game} closet slots on all {seen['closetvisits']} crash pad visits")
     ctx.close()
 
 
