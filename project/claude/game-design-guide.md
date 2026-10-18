@@ -130,3 +130,4 @@ What Claude has learned about Child I himself (what he knows, how he plays, play
 5. What kinds of puzzles should there be? Then work in typing practice and the theme's STEM topics.
 6. What should each place sound like?
 7. Read the whole design back, confirm every name in text, then build from the Game Library, reusing its pieces where they fit.
+8. Write the QR card's two-sentence teaser from the design (a hook, then what you get to do, with a joke where it fits and no spoilers) and pick the hero's pose for the card. See Sharing.

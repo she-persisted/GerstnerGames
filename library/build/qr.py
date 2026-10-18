@@ -11,7 +11,7 @@ Writes dist/<id>-qr.png. Needs Pillow, opencv-python-headless, and Playwright wi
 in headless Chromium from the library's own art files). Uses the qrcode package when installed (pip install "qrcode[pil]");
 otherwise OpenCV's own QR encoder makes the code. Exits 1 if a card does not scan back to its link.
 
-"qr" block in game.json:
+"qr" block in game.json (every game needs one; the card stops with a message if the hero or either teaser sentence is missing):
   { "colors": { void, nebula, nebulaHi, starlight, dust, glow, accent, gold, onGold },   (Starward's night sky by default)
     "badge": "star" | "trexy" | "flame",            the icon in the middle of the code, and the card's corner decorations
     "hero": { "who": "robot", "face": "worried" | "brave" | "happy" | "surprised" | "think", "lit": true, "thrusters": true }
@@ -19,6 +19,8 @@ otherwise OpenCV's own QR encoder makes the code. Exits 1 if a card does not sca
     "tagline": ["A short hook.", "One sentence about what you get to do."],
     "cta": "Scan to play!" }
 A tall hero stands beside the code; a wide one stands under it and says the call to action in a speech bubble.
+The teaser is a short hook, then one sentence on what you get to do, with a joke where it fits and no spoilers.
+A new game's hero goes in HEROES and hero_markup below, drawn from that game's own art file, so the card always matches the game.
 Older cards with a version number on them are kept in dist/ as <id>-v<N>-qr.png.
 """
 import functools
@@ -110,13 +112,21 @@ def rocket(draw, x, y, s, body, window, flame):
 # A game's look: Starward's night sky by default, or the "qr" block in its game.json.
 STARWARD = {"void": VOID, "nebula": NEBULA, "nebulaHi": NEBULA_HI, "starlight": STARLIGHT, "dust": DUST,
             "glow": EMBER, "accent": EMBER, "gold": EMBER_GOLD, "onGold": ON_EMBER}
-DEFAULT_HERO = {"who": "robot", "face": "happy", "lit": True}
+HEROES = ("robot", "trexy")  # heroes hero_markup can draw
 
 
 def theme_for(spec):
-    q = spec.get("qr") or {}
-    return ({**STARWARD, **(q.get("colors") or {})}, q.get("badge", "star"), q.get("cta", "Scan to play!"),
-            q.get("tagline") or [], q.get("hero") or DEFAULT_HERO)
+    """The card's look from the game's "qr" block. Every card shows the game's hero and a two-sentence teaser, so both are required."""
+    q = spec.get("qr")
+    where = f"games/{spec['id']}/game.json"
+    if not q:
+        sys.exit(f"{where} has no \"qr\" block. Add one with its hero and a two-sentence tagline (see the notes at the top of build/qr.py).")
+    tagline, hero = q.get("tagline") or [], q.get("hero") or {}
+    if len(tagline) != 2 or not all(s.strip() for s in tagline):
+        sys.exit(f"{where}: \"tagline\" needs exactly two sentences: a short hook, then what you get to do.")
+    if hero.get("who") not in HEROES:
+        sys.exit(f"{where}: \"hero\" needs \"who\" set to one of {', '.join(HEROES)}. A new hero goes in HEROES and hero_markup in build/qr.py.")
+    return ({**STARWARD, **(q.get("colors") or {})}, q.get("badge", "star"), q.get("cta", "Scan to play!"), tagline, hero)
 
 
 def spike(cx, by, s):

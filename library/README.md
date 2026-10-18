@@ -38,7 +38,7 @@ Notes after the header explain options and formats. `build.py --catalog` reads t
 2. Code that more than one game could use goes in `kit/`; art and music in `assets/`; questions and words in `content/`. Code only one game needs goes in `games/<id>/`.
 3. Kit modules never reach into a game. Games pass in what a module needs (callbacks, colors, elements).
 4. A game's own parts share one scope and run in the order `game.json` lists them.
-5. Every published change to a game gets a new version number and a new output file name. Each game has one permanent home page (`home` in `game.json`) that always runs the newest version; the version it replaces is first saved as its own archive page, which then stays untouched. Add each release (version, date, link, notes) to `game.json`, and make its QR card with `build/qr.py`.
+5. Every published change to a game gets a new version number and a new output file name. Each game has one permanent home page (`home` in `game.json`) that always runs the newest version; the version it replaces is first saved as its own archive page, which then stays untouched. Add each release (version, date, link, notes) to `game.json`, and make its QR card with `build/qr.py` from the `qr` block in `game.json`: the game's hero, a two-sentence teaser, no version number, one card per game (`dist/<id>-qr.png`).
 6. After any change, run `python3 build/build.py --all` and `python3 build/playtest.py` (it must end with `PASS`), then commit and push.
 
 ## Where the source lives

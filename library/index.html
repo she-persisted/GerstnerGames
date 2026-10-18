@@ -440,7 +440,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 7124,
+   "bytes": 7258,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -1001,12 +1001,12 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/qr.py",
    "layer": "Build",
-   "bytes": 24238,
+   "bytes": 25281,
    "usedBy": [],
    "about": "Makes a game's shareable QR card in that game's own colors and icons: the title, a two-sentence teaser to get kids curious, the game's hero drawn from the game's own art, and a QR code that opens the game's permanent home page (\"home\" in game.json, or the newest release's link for a game without one). No version number, so one card stays good for every version. Checks that the finished card scans back to the right link.",
    "provides": "",
    "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/characters/trexy.js, assets/characters/robot-side.svg, assets/characters/characters.css (colors, icon shapes, and heroes come from these)",
-   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for that game\n  python3 build/qr.py --all                        a card for every game with a \"qr\" block\nWrites dist/<id>-qr.png. Needs Pillow, opencv-python-headless, and Playwright with Chromium (it draws the hero\nin headless Chromium from the library's own art files). Uses the qrcode package when installed (pip install \"qrcode[pil]\");\notherwise OpenCV's own QR encoder makes the code. Exits 1 if a card does not scan back to its link.\n\n\"qr\" block in game.json:\n  { \"colors\": { void, nebula, nebulaHi, starlight, dust, glow, accent, gold, onGold },   (Starward's night sky by default)\n    \"badge\": \"star\" | \"trexy\" | \"flame\",            the icon in the middle of the code, and the card's corner decorations\n    \"hero\": { \"who\": \"robot\", \"face\": \"worried\" | \"brave\" | \"happy\" | \"surprised\" | \"think\", \"lit\": true, \"thrusters\": true }\n          | { \"who\": \"trexy\", \"pose\": \"hop\", \"face\": \"excited\" },\n    \"tagline\": [\"A short hook.\", \"One sentence about what you get to do.\"],\n    \"cta\": \"Scan to play!\" }\nA tall hero stands beside the code; a wide one stands under it and says the call to action in a speech bubble.\nOlder cards with a version number on them are kept in dist/ as <id>-v<N>-qr.png."
+   "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for that game\n  python3 build/qr.py --all                        a card for every game with a \"qr\" block\nWrites dist/<id>-qr.png. Needs Pillow, opencv-python-headless, and Playwright with Chromium (it draws the hero\nin headless Chromium from the library's own art files). Uses the qrcode package when installed (pip install \"qrcode[pil]\");\notherwise OpenCV's own QR encoder makes the code. Exits 1 if a card does not scan back to its link.\n\n\"qr\" block in game.json (every game needs one; the card stops with a message if the hero or either teaser sentence is missing):\n  { \"colors\": { void, nebula, nebulaHi, starlight, dust, glow, accent, gold, onGold },   (Starward's night sky by default)\n    \"badge\": \"star\" | \"trexy\" | \"flame\",            the icon in the middle of the code, and the card's corner decorations\n    \"hero\": { \"who\": \"robot\", \"face\": \"worried\" | \"brave\" | \"happy\" | \"surprised\" | \"think\", \"lit\": true, \"thrusters\": true }\n          | { \"who\": \"trexy\", \"pose\": \"hop\", \"face\": \"excited\" },\n    \"tagline\": [\"A short hook.\", \"One sentence about what you get to do.\"],\n    \"cta\": \"Scan to play!\" }\nA tall hero stands beside the code; a wide one stands under it and says the call to action in a speech bubble.\nThe teaser is a short hook, then one sentence on what you get to do, with a joke where it fits and no spoilers.\nA new game's hero goes in HEROES and hero_markup below, drawn from that game's own art file, so the card always matches the game.\nOlder cards with a version number on them are kept in dist/ as <id>-v<N>-qr.png."
   },
   {
    "path": "content/levels/runner-chunks.js",

@@ -46,7 +46,7 @@ A clean checkout rebuilds byte-for-byte: `build.py --all` should leave `git stat
 ## Rules that carry over from the project
 
 - Each game has one permanent home page that always runs the newest version, so its link, QR card and high scores carry across updates. Each round of changes gets a new version number and a new `dist/` file; the version it replaces is saved as its own archive page first, so earlier versions stay playable.
-- Every new version ships with a scan-checked QR card made by `library/build/qr.py`.
+- Every game has a QR card in its own colors and icons, with its main character and a quick two-sentence teaser that gets kids interested, and no version number. It opens the game's home page, is checked to scan, and is sent to Mom with the link at every release. Made by `library/build/qr.py`.
 - Change source files, never a built page.
 - Original characters and music only. All music and sound effects are generated in code.
 - Read `project/claude/game-design-guide.md` before designing anything new.
