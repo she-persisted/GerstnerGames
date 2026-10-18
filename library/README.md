@@ -6,8 +6,8 @@ Every game in the Child I Fun project is built from the files in this library. E
 
 | Folder | What lives there | Reuse rule |
 |---|---|---|
-| `kit/` | Engines: story flow, puzzle screen, typing flights, digging, walkable map, music players (simple and dance-style), sound effects, cartoon voices, adaptive difficulty, high scores, jukebox, obstacle runs, jigsaw, letter-guessing, side-view hub, shared styles | Works in any game. Talks to games only through `window.Kit`. |
-| `assets/` | Art, music, and sounds: characters, rocket, side-view worlds, map art, icons, songs, recorded sounds (CC0 only, with the author credited, stored as small data URLs so a game stays one page) | Any game can include them. |
+| `kit/` | Engines: story flow, puzzle screen, typing flights, digging, walkable map, music players (simple and dance-style), sound effects, cartoon voices, adaptive difficulty, high scores, jukebox, obstacle runs, jigsaw, letter-guessing, side-view hub, sky surprises (shooting stars, comets, satellites), shared styles | Works in any game. Talks to games only through `window.Kit`. |
+| `assets/` | Art, music, and sounds: the shared cartoon drawing style (`style/ink.js`), characters, rocket, side-view worlds, map art, icons, songs, recorded sounds (CC0 only, with the author credited, stored as small data URLs so a game stays one page) | Any game can include them. |
 | `content/` | Question banks (tagged easy, medium, hard), question generators, word lists | Any game can draw from them. |
 | `games/<id>/` | One game's own parts: settings, story, screens, layout, `game.json`, and any legacy single-file versions | Only that game. |
 | `build/` | `build.py`, which assembles a game and writes `catalog.json`; `playtest.py`, the automated play-test | |
@@ -69,6 +69,10 @@ Mini Game Survival's skills, kept separately for Easy and Hard mode: runs (one l
 ## Obstacle runs
 
 `kit/runner.js` builds each run from chunks in `content/levels/runner-chunks.js` and plays every chunk with its built-in solver before using it, so every level can be beaten. The physics runs in fixed 1/120 s steps, so a list of button presses always replays the same way; the play-test uses each level's own solution to finish runs. The hero can double hop (press again in the air), and the generator can put extra flat ground before each chunk (`space`) so low levels have room to breathe. Add a chunk by adding a row to the chunk list; if no speed can beat it, the generator simply skips it. Give the generator the music's beat (`beat`, seconds per beat) and each chunk's first hop lands on a beat; `play()` then pulses the ground on the beat, pops "PERFECT!" for hops right on it, and reports its clock (`onClock`) so a game can keep the music in time (`kit/groove.js` has `restart` and `hush` for that). On a narrow screen (like a phone), tiles shrink so at least 15 fit across a run; `kit/side-hub.js` does the same with 11 tiles across a hub.
+
+## Drawing style
+
+`assets/style/ink.js` holds the cartoon style Mini Game Survival's characters and props share, as rules and helpers: living things outlined in their own darkest color, gear and machines in one shared ink, glowing things with no outline; one shadow tone and one shine; big shiny eyes with two highlights; soft blush; see-through glass with a shine and a glint; yellow four-point sparkles. Draw new characters and props with these helpers so they match. Things a character wears must fit in every pose and face, and a character in a vehicle sits inside it: `Kit.art.trexy.headBox()` and `pilot()` give the sizes, the ship fits its pilot to the canopy, and `build/playtest.py` measures it all.
 
 ## Music
 

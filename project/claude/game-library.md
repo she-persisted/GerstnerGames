@@ -11,12 +11,12 @@ Read this before changing, fixing, or reusing any game in this project.
 
 What's in `library/`:
 
-- `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles, obstacle runs with a level solver and double hop, picture jigsaw, letter-guessing with a fuel tank, walkable side-view hub, dance-style music player, cartoon voices)
-- `assets/`: characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs, recorded villain laughs and cute dino noises (CC0), T-Rexy's unlockable looks (hats, back items, colors)
+- `kit/`: engines any game can use (story flow, puzzle screen, typing flights, digging, walkable map, music, sound effects, adaptive difficulty, high scores, jukebox, shared styles, obstacle runs with a level solver and double hop, picture jigsaw, letter-guessing with a fuel tank, walkable side-view hub, dance-style music player, cartoon voices, sky surprises like shooting stars and comets)
+- `assets/`: the shared cartoon drawing style (`style/ink.js`: outlines, shading, eyes, glass, sparkles), characters (the Keeper, Sunny, Rigel, Professor Kepler, T-Rexy and his family, Nova), rocket, glitch ship, side-view worlds, Lumina map art, neon nebula backgrounds, memory pictures, icons, 15 songs, recorded villain laughs and cute dino noises (CC0), T-Rexy's unlockable looks (hats, back items, colors)
 - `content/`: question banks tagged easy, medium, or hard, question generators, typing word lists, science clue words, obstacle-run chunks
 - `games/<id>/`: each game's own parts and its `game.json` (build list plus every release link); single-file legacy versions in `legacy/`
 - `build/build.py`: joins a game's files into one page, checks load order, writes `catalog.json`
-- `build/playtest.py`: the automated play-test (headers, build, every page loading, a check that every memory piece in Mini Game Survival's runs can be caught, and full Starward and Mini Game Survival playthroughs)
+- `build/playtest.py`: the automated play-test (headers, build, every page loading, Mini Game Survival's art fit and sky surprises, a check that every memory piece in Mini Game Survival's runs can be caught, and full Starward and Mini Game Survival playthroughs)
 - `dist/`: built games, committed so they can be downloaded and played
 - `README.md`: full architecture, file header rules, and conventions
 - `catalog.json`: one entry per file with what it does, what it provides and needs, and which games use it
@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Mini Game Survival | **Home page, always the newest version** (now v6, 2026-10-17: cute dino noises, phone play, a crashed ship fixed part by part, new questions every game) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v6.html` |
+| Mini Game Survival | **Home page, always the newest version** (now v7, 2026-10-18: hints off the play area, a helmet that fits, T-Rexy in the cockpit, one drawing style, shooting stars on the story screens) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v7.html` |
+| Mini Game Survival | v6 (2026-10-17), cute dino noises, phone play, a crashed ship fixed part by part, new questions every game | ARCHIVE_V6 (archive) | `library/dist/mini-game-survival-v6.html` |
 | Mini Game Survival | v5 (2026-10-17), a cuter, more expressive T-Rexy | https://claude.ai/artifact/SMosBkiXuSCP4u4ynQ9NGn (archive) | `library/dist/mini-game-survival-v5.html` |
 | Mini Game Survival | v4 (2026-10-17), checkpoints always on, Hard needs every memory piece, obstacles on the beat, PERFECT hops, unlockable looks for T-Rexy | https://claude.ai/artifact/CqvjvxnbGtkFK8WTWmjDGj (archive) | `library/dist/mini-game-survival-v4.html` |
 | Mini Game Survival | v3 (2026-10-17), every memory piece catchable, holes for missing pieces with keep going or run it again, L and R through the story, hints only when stuck, a recorded villain laugh | https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD (archive) | `library/dist/mini-game-survival-v3.html` |

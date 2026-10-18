@@ -114,6 +114,9 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 @media (max-width:600px) and (orientation:portrait){
   .stage.wide .scene{height:max(260px,min(80vw,60vh))}
   .runui{top:auto;bottom:12px}
+  /* the floor under an upright phone's run is too thin for a hint, so it goes to the top, under the run's counters */
+  .hint{font-size:.85rem;padding:5px 10px}
+  .stage.wide .hint{top:34px;bottom:auto;max-width:min(92%,420px)}
 }
 @media (max-width:960px) and (max-height:520px) and (orientation:landscape){
   .app{height:100dvh;min-height:0;padding-block:6px;gap:6px}
@@ -143,11 +146,18 @@ body{background:radial-gradient(120% 80% at 70% -10%,#2a0d5e,var(--void) 60%)}
 .cpchip svg{width:18px;height:18px;flex:none}
 .cluecard .bonus{color:var(--cyan);font-size:.95rem;margin-top:6px}
 
-/* Hints: only shown when a player seems stuck */
-.hint{position:absolute;left:50%;bottom:16%;transform:translate(-50%,10px);z-index:5;margin:0;max-width:min(92%,560px);padding:10px 16px;border-radius:14px;
-  background:rgba(10,6,32,.88);border:2px solid var(--ember-gold);color:var(--starlight);font-weight:600;line-height:1.45;text-align:center;
-  box-shadow:0 0 22px -6px var(--ember-gold);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+/* Hints: only shown when a player seems stuck, and never over the play area. Story screens and the crash pad: a slim
+   banner across the top of the sky, above T-Rexy and the portals. Runs: down in the floor under the track (above any toast),
+   so obstacles and pieces stay in view. Jigsaws: a strip under the board, which leaves room for it. */
+.hint{position:absolute;left:50%;top:10px;bottom:auto;transform:translate(-50%,-6px);z-index:5;margin:0;max-width:min(86%,520px);padding:6px 14px;border-radius:12px;
+  background:rgba(10,6,32,.84);border:2px solid var(--ember-gold);color:var(--starlight);font-weight:600;font-size:.95rem;line-height:1.35;text-align:center;
+  box-shadow:0 0 16px -6px var(--ember-gold);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
 .hint.on{opacity:1;transform:translate(-50%,0)}
+.stage.wide .hint{top:auto;bottom:52px;transform:translate(-50%,6px)}
+.stage.wide .hint.on{transform:translate(-50%,0)}
+.scene.jigmode .boardhost{bottom:56px}
+.scene.jigmode .hint{top:auto;bottom:10px;transform:translate(-50%,6px)}
+.scene.jigmode .hint.on{transform:translate(-50%,0)}
 .hint b{color:var(--ember-gold)}
 .hint .kbd{margin:0 2px}
 .navhint{margin:6px 0 0;color:var(--dust);font-size:.85rem}

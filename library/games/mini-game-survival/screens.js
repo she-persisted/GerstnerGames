@@ -17,13 +17,13 @@ const navKeys = k => { NAV.keys = k; };      // "both", "letters" (L and R only)
 const onForward = fn => { NAV.forward = fn; };
 
 const PORTRAIT = {
-  trexy: () => { const o = { face: "smile", ...lookOpts() }; return `<svg class="portrait" viewBox="${Kit.art.trexy.isTall(o) ? "-16 -124 76 76" : "-12 -96 68 56"}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`; },
+  trexy: () => { const o = { face: "smile", ...lookOpts() }; return `<svg class="portrait" viewBox="${Kit.art.trexy.headView(o)}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`; },
   nova: () => `<svg class="portrait" viewBox="12 -53 42 37" aria-hidden="true">${Kit.art.nova.g({ lantern: false })}</svg>`,
   shadow: () => `<svg class="portrait" viewBox="-62 -64 116 68" aria-hidden="true">${Kit.art.nova.shadow("#000", 14)}</svg>`,
-  family: () => `<svg class="portrait" viewBox="-12 -100 68 58" aria-hidden="true">${Kit.art.trexy.g({ who: "mom", acc: "flower", face: "happy" })}</svg>`,
-  ship: () => `<svg class="portrait" viewBox="-6 -40 48 40" aria-hidden="true">${SHIP.svg(shipCfg(), { face: "happy" })}</svg>`
+  family: () => `<svg class="portrait" viewBox="${Kit.art.trexy.headView({ acc: "flower" })}" aria-hidden="true">${Kit.art.trexy.g({ who: "mom", acc: "flower", face: "happy" })}</svg>`,
+  ship: () => `<svg class="portrait" viewBox="-8 -43 52 43.4" aria-hidden="true">${SHIP.svg(shipCfg(), { face: "happy" })}</svg>`
 };
-const headIcon = `<svg viewBox="-10 -92 66 50" aria-hidden="true">${Kit.art.trexy.g({ face: "think" })}</svg>`;
+const headIcon = `<svg viewBox="${Kit.art.trexy.headView({}, 66 / 50)}" aria-hidden="true">${Kit.art.trexy.g({ face: "think" })}</svg>`;
 
 function renderJukebox() {
   Kit.jukebox.render($("#jukeList"), {
@@ -125,7 +125,7 @@ function notebookHTML() {
 function closetHTML() {
   const icon = (slot, id) => {
     const o = slot === "skin" ? { face: "happy", skin: id } : slot === "head" ? { face: "happy", acc: id } : { face: "happy", back: id, pose: "run1" };
-    const vb = slot === "back" ? "-58 -96 116 100" : Kit.art.trexy.isTall(o) ? "-16 -124 76 80" : "-12 -98 68 60";
+    const vb = slot === "back" ? "-60 -98 120 100" : Kit.art.trexy.headView(o);
     return `<svg viewBox="${vb}" aria-hidden="true">${Kit.art.trexy.g(o)}</svg>`;
   };
   const items = LOOK_ORDER.map(([slot, id]) => LOOK.have.includes(id)
@@ -235,10 +235,10 @@ function runPortal({ key, theme, name, n, pieces, secret, shadow, base, per, nee
       onCrash: (c, info = {}) => {
         if (c === 1 && firstRun) toast("Oops! Back to the last checkpoint.");
         // Hints only when needed: right away if no key has been pressed yet, or after two crashes at the same spot.
-        if (!info.pressed) { showHint(tip("Press [Space], [\u2191], or click to hop!", "Tap the screen to hop!")); return; }
+        if (!info.pressed) { showHint(tip("Press [Space], [\u2191], or click to hop!", "Tap the screen to hop!"), 4500); return; }
         const here = info.chunk ? info.chunk.id : "start";
         spotCrashes = here === spot ? spotCrashes + 1 : 1; spot = here;
-        if (spotCrashes >= 2) showHint(runHint(info));
+        if (spotCrashes >= 2) showHint(runHint(info), 4500);
       },
       onCollect: o => { express(o.k === "x" ? "excited" : "happy", o.k === "x" ? 1200 : 450); if (o.k === "x" && onPiecePage) onPiecePage(); },
       onMode: m => { if (m === "ship" && !S.shipTip) { S.shipTip = true; save(); toast("Ship mode! Hold to fly up."); } },
@@ -296,7 +296,7 @@ function afterRun(P, res, level, { all, what, memory, needAll }) {
   if (all || !missing) dinoNoise("trexy", all ? "excited" : "happy", .2);
   const head = res.skipped ? `Run <span class="hot">skipped</span>` : `Portal <span class="hot">cleared!</span>`;
   const stats = `<div class="statrow"><span class="stat"><b>${res.pieces} of ${res.piecesTotal}</b> ${what}</span><span class="stat">Level <b>${level}</b> run</span>${res.perfects ? `<span class="stat"><b>${res.perfects}</b> perfect hop${res.perfects > 1 ? "s" : ""}</span>` : ""}${res.secret ? `<span class="stat"><b>Secret page!</b></span>` : ""}</div>`;
-  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 116 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
+  const look = res.look ? `<div class="unlock"><svg viewBox="-62 -126 122 130" aria-hidden="true">${Kit.art.trexy.g({ face: "excited", ...lookOpts() })}</svg>
     <div><p class="unlock-new">New look!</p><p class="unlock-name">${esc(res.look.name)}</p><p class="unlock-tip">T-Rexy put it on. Change looks in his closet on the crash pad.</p></div></div>` : "";
   const t = flow.token();
   if (all || missing <= 0) {

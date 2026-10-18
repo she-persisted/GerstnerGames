@@ -1,9 +1,10 @@
 /**
  * @file games/mini-game-survival/scene.js
- * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
- * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
+ * @about Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.
+ * @requires kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js
  */
 const nebula = Kit.art.nebula.create();
+const sky = Kit.skyEvents.create(); // shooting stars and friends on the story screens
 const THEMES = Kit.art.nebula.THEMES;
 const music = Kit.groove.create(Kit.songs);
 const toastEl = $("#toast"), toast = Kit.ui.toaster(toastEl);
@@ -44,8 +45,12 @@ function drawTrexy(ctx, o, x, y, h) {
   const opts = { ...o, ...lookOpts(o.acc) };
   drawImg(ctx, heroImg(opts), x, y, Kit.art.trexy.isTall(opts) ? h * 1.3 : h);
 }
-const pilotHead = () => `<g transform="translate(13,-14) scale(.27)">${Kit.art.trexy.g({ face: "happy", skin: LOOK.skin, acc: LOOK.head === "helmet" || LOOK.head === "shades" || LOOK.head === "crown" ? LOOK.head : "none" })}</g>`;
-const shipImg = (flame, pilot = true, face = "") => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? `1${LOOK.skin}${LOOK.head}` : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotHead() : "", face }, 320));
+// T-Rexy in the cockpit, in his color and any hat that fits under the glass (tall pointy hats stay in his closet while he flies).
+const PILOT_HATS = new Set(["helmet", "shades", "crown", "headphones"]);
+const pilotOf = face => Kit.art.trexy.pilot({ face, skin: LOOK.skin, acc: PILOT_HATS.has(LOOK.head) ? LOOK.head : "none" });
+// The ship picture. pilot = T-Rexy's face in the cockpit ("" for an empty cockpit); face = the ship's own face once it's alive.
+// scale = the largest the pilot may be (the end ride keeps him the same size as his family riding on the hull).
+const shipImg = (flame, pilot = "smile", face = "", scale = 0) => img(`s|${JSON.stringify(shipCfg())}|${flame ? 1 : 0}|${pilot ? `${pilot}|${LOOK.skin}|${LOOK.head}|${scale}` : 0}|${face}`, SHIP.url(shipCfg(), { flame, ghost: !allParts(), pilot: pilot ? pilotOf(pilot) : null, pilotScale: scale || 0, face }, 320));
 function drawImg(ctx, im, x, y, h, anchor = "bottom") {
   if (!im.complete || !im.naturalWidth) return;
   const w = h * im.naturalWidth / im.naturalHeight;
@@ -98,9 +103,10 @@ function shipTalk() {
   [0, 1, 2, 3, 4].forEach(i => Kit.audio.tone(700 + ((i * 377) % 900), .07, i % 2 ? "square" : "sine", .035, i * .1, 900 + ((i * 523) % 1100)));
 }
 function shipFaceNow(now) { return ST.shipFace === "awake" && now % 3400 < 150 ? "blink" : ST.shipFace; }
+let themeShown = "";
 function applyStage(st) {
   for (const k of Object.keys(ST)) if (k in st) ST[k] = st[k];
-  if ("theme" in st) { scene.setAttribute("aria-label", sceneLabel()); playSong(THEME_SONG[st.theme]); }
+  if ("theme" in st) { scene.setAttribute("aria-label", sceneLabel()); playSong(THEME_SONG[st.theme]); if (st.theme !== themeShown) { themeShown = st.theme; sky.clear(); } } // a new place gets a shooting star soon
 }
 function sceneLabel() {
   const where = { night: "Fern Valley at night", hub: "the glitchy crash pad", echo: "Echo Rings", fern: "Fern Moon", lantern: "Lantern Lab", whirl: "the Whirlpool Galaxy", shadow: "the Shadow Gate", valley: "Fern Valley at sunrise" }[ST.theme] || "the Glitch Nebula";
@@ -212,7 +218,8 @@ function hopY(now, h) {
 function drawStage(ctx, now) {
   const { w, h, dpr } = stageSize || sizeCanvas();
   const k = shadowK(now), th = THEMES[ST.theme] || THEMES.hub;
-  nebula.draw(ctx, { w, h, T: h / 7.4, camX: now / 4000, camY: 0, t: now, dpr }, { theme: ST.theme, shadow: k > .01 ? { x: .74, k, lantern: ST.lantern, ...shadowAnim(now) } : null, whisper: ST.theme === "hub" });
+  nebula.draw(ctx, { w, h, T: h / 7.4, camX: now / 4000, camY: 0, t: now, dpr }, { theme: ST.theme, shadow: k > .01 ? { x: .74, k, lantern: ST.lantern, ...shadowAnim(now) } : null, whisper: ST.theme === "hub",
+    sky: (c, v) => sky.draw(c, v, th.blobs) });
   if (k <= .01 && ST.lantern && !ST.nova) { // the lantern stays where the shadow was
     const lx = w * .73, ly = h * .9, r = h * .05, g = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 3);
     g.addColorStop(0, "#fff6c2"); g.addColorStop(.4, "#ffd43b99"); g.addColorStop(1, "#ffd43b00"); ctx.fillStyle = g; ctx.fillRect(lx - r * 3, ly - r * 3, r * 6, r * 6);
@@ -227,7 +234,7 @@ function drawStage(ctx, now) {
   }
   if (ST.ride) { drawRide(ctx, w, h, now); drawShadowSay(ctx, w, h, now); return; }
   if (ST.ship) {
-    const im = shipImg(false, false, shipFaceNow(now)), bob = reduced ? 0 : Math.sin(now / 700) * h * .01;
+    const im = shipImg(false, "", shipFaceNow(now)), bob = reduced ? 0 : Math.sin(now / 700) * h * .01;
     const wig = !reduced && now < shipTalkUntil ? Math.sin(now / 60) * .08 : 0;
     ctx.save();
     if (ST.family) { ctx.translate(w * .56, h * (ST.shipFace ? .27 : .3) + bob); ctx.rotate(wig); drawImg(ctx, im, 0, 0, h * (ST.shipFace ? .34 : .16), "center"); } // parked up in the sky
@@ -257,11 +264,11 @@ function drawRide(ctx, w, h, now) {
   const dir = x2 >= x ? 1 : -1, tilt = Math.max(-.35, Math.min(.35, Math.atan2(y2 - y, Math.abs(x2 - x) + 1e-6)));
   const sh = h * .38, u = sh / 84; // ship picture height, and its drawing units in pixels
   ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1); ctx.rotate(tilt);
-  drawImg(ctx, shipImg(true, true, ST.shipFace || "happy"), 0, 0, sh, "center");
-  // riders sit along the top of the hull, back to front, and Nova rides on Dad's head
-  const riders = [[heroImg({ who: "sis", acc: "bow", face: "happy" }), -32, 20], [heroImg({ who: "mom", acc: "flower", face: "happy" }), -19, 25], [heroImg({ who: "dad", acc: "glasses", face: "happy" }), -5, 28]];
+  drawImg(ctx, shipImg(true, "excited", ST.shipFace || "happy", .3), 0, 0, sh, "center");
+  // T-Rexy flies from the cockpit; his family rides along the top of the hull behind him, back to front, and Nova rides on Dad's head
+  const riders = [[heroImg({ who: "sis", acc: "bow", face: "happy" }), -33, 19], [heroImg({ who: "mom", acc: "flower", face: "happy" }), -25.5, 24], [heroImg({ who: "dad", acc: "glasses", face: "happy" }), -16.5, 27]];
   riders.forEach(([im, rx, rh], i) => { const bounce = reduced ? 0 : Math.sin(now / 160 + i) * u * 1.2; drawImg(ctx, im, rx * u, -17 * u + bounce, rh * u); });
-  drawImg(ctx, novaImg({ face: "happy" }), -7 * u, (-17 - 28 * .74) * u + (reduced ? 0 : Math.sin(now / 160 + 2) * u * 1.2), 12 * u);
+  drawImg(ctx, novaImg({ face: "happy" }), -18 * u, (-17 - 27 * .74) * u + (reduced ? 0 : Math.sin(now / 160 + 2) * u * 1.2), 12 * u);
   ctx.restore();
 }
 
@@ -334,16 +341,21 @@ function drawWreck(ctx, v, now) {
     g.addColorStop(0, "rgba(92,255,176,.45)"); g.addColorStop(1, "rgba(92,255,176,0)");
     ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(wx, v.ground, T * 1.6, T * .3, 0, 0, Math.PI * 2); ctx.fill();
   }
-  // scrap metal on the ground, one less for every part fixed
+  // scrap metal on the ground, one less for every part fixed: cartoon metal bits with an ink outline, a shine, and a rivet, like the ship
   const scraps = Math.round(WRECK_SCRAP.length * Math.max(0, broken - .2) / .8);
   WRECK_SCRAP.slice(0, scraps).forEach(([dx, dy, r], i) => {
     const x = wx + dx * T, y = v.ground + dy * T * .4, k = r * T;
     ctx.save(); ctx.translate(x, y); ctx.rotate(i * 1.3);
     ctx.beginPath(); ctx.moveTo(-k, k * .3); ctx.lineTo(-k * .3, -k * .6); ctx.lineTo(k * .8, -k * .2); ctx.lineTo(k * .5, k * .5); ctx.closePath();
-    ctx.fillStyle = "#2a1660"; ctx.fill(); ctx.strokeStyle = i % 2 ? "#3ef2ff" : "#ff3ec8"; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
+    ctx.fillStyle = i % 2 ? "#8a83b8" : "#cfc8ff"; ctx.fill();
+    ctx.strokeStyle = Kit.art.ink.INK; ctx.lineWidth = Math.max(1.5, T * .03); ctx.lineJoin = "round"; ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = Math.max(1, T * .018); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-k * .62, k * .02); ctx.lineTo(-k * .26, -k * .38); ctx.stroke();
+    ctx.fillStyle = Kit.art.ink.INK; ctx.beginPath(); ctx.arc(k * .22, k * .08, Math.max(1, k * .09), 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   });
   ctx.save(); ctx.translate(wx, cy + sink - lift); ctx.rotate(tilt);
-  const sh = T * 1.7, im = shipImg(false, false);
+  const sh = T * 1.7, im = shipImg(false, "");
   drawImg(ctx, im, 0, 0, sh, "center");
   // cracks across the hull
   const cracks = Math.ceil(3 * Math.max(0, broken - .2) / .8);
@@ -367,9 +379,9 @@ function drawWreck(ctx, v, now) {
     ctx.strokeStyle = "#ffe94a"; ctx.lineWidth = 2;
     for (let i = 0; i < 4; i++) { const a = -Math.PI / 2 + (i - 1.5) * .5; ctx.beginPath(); ctx.moveTo(wx + T * .35, cy + sink - T * .1); ctx.lineTo(wx + T * .35 + Math.cos(a) * T * .3, cy + sink - T * .1 + Math.sin(a) * T * .3); ctx.stroke(); }
   }
-  if (fixed && !reduced) for (let i = 0; i < 3; i++) { // a few sparkles around the fixed ship
-    const a = now / 900 + i * 2.1, sx2 = wx + Math.cos(a) * T * 1.4, sy2 = cy - lift + Math.sin(a * 1.3) * T * .5, z = T * .07 * (1 + Math.sin(now / 200 + i));
-    ctx.fillStyle = "#ffe94a"; ctx.beginPath(); ctx.moveTo(sx2, sy2 - z * 2); ctx.lineTo(sx2 + z * .5, sy2); ctx.lineTo(sx2, sy2 + z * 2); ctx.lineTo(sx2 - z * .5, sy2); ctx.closePath(); ctx.fill();
+  if (fixed && !reduced) for (let i = 0; i < 3; i++) { // a few sparkles around the fixed ship, the same sparkle as everywhere else
+    const a = now / 900 + i * 2.1, sx2 = wx + Math.cos(a) * T * 1.4, sy2 = cy - lift + Math.sin(a * 1.3) * T * .5, z = T * .08 * (1 + Math.sin(now / 200 + i));
+    if (z > 1) Kit.art.ink.canvasSparkle(ctx, sx2, sy2, z * 1.6);
   }
   const label = fixed ? "Your ship: ready to fly!" : parts ? `Your ship: ${parts} of ${SHIP.PART_ORDER.length} parts fixed` : "Your ship (CRASHED!)";
   ctx.font = `700 ${Math.max(12, T * .2)}px "Baloo 2", system-ui, sans-serif`; ctx.textAlign = "center"; ctx.fillStyle = fixed ? "#5cffb0" : "#b7a9ea"; edgeText(ctx, label, wx, v.ground + T * .42, v.w);
@@ -416,7 +428,7 @@ function heroDraw(ctx, x, y, T, hero) {
   runWasUp = !hero.grounded;
   if (hero.mode === "ship") {
     ctx.save(); ctx.translate(x, y - T * .3); ctx.rotate(Math.max(-.5, Math.min(.5, -hero.vy * .05)));
-    drawImg(ctx, shipImg(true), 0, 0, T * 1.15, "center"); ctx.restore();
+    drawImg(ctx, shipImg(true, "determined"), 0, 0, T * 1.15, "center"); ctx.restore();
     return;
   }
   const pose = !hero.grounded ? "hop" : (Math.floor(hero.t / 110) % 2 ? "run1" : "run2");

@@ -2,7 +2,7 @@
 """
 @file build/qr.py
 @about Makes a game's shareable QR card in that game's own colors and icons: the title, a two-sentence teaser to get kids curious, the game's hero drawn from the game's own art, and a QR code that opens the game's permanent home page ("home" in game.json, or the newest release's link for a game without one). No version number, so one card stays good for every version. Checks that the finished card scans back to the right link.
-@requires kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/characters/trexy.js, assets/characters/robot-side.svg, assets/characters/characters.css (colors, icon shapes, and heroes come from these)
+@requires kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/robot-side.svg, assets/characters/characters.css (colors, icon shapes, and heroes come from these)
 
 Usage, from the library folder:
   python3 build/qr.py games/starward/game.json     card for that game
@@ -206,7 +206,7 @@ def hero_markup(hero):
     still = "*{animation:none!important;transition:none!important}html,body{margin:0;background:transparent!important}"
     if hero.get("who") == "trexy":
         opts = {k: v for k, v in hero.items() if k != "who"}
-        return (f"<style>{still}</style><script>{read('assets/characters/trexy.js')}</script><div id=hero></div>"
+        return (f"<style>{still}</style><script>{read('assets/style/ink.js')}</script><script>{read('assets/characters/trexy.js')}</script><div id=hero></div>"
                 f"<script>document.getElementById('hero').innerHTML = Kit.art.trexy.svg({json.dumps(opts)}, 1600)</script>",
                 "#hero svg")
     # The tall robot: Starward's Keeper, and the hero of The Inner Flame (same art, kept in the library).

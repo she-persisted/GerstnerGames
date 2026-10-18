@@ -90,7 +90,7 @@ const shipCfg = { cockpit: "dino", wings: "fern", thrusters: "two", core: "pink"
 const shipField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${shipCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
 $("#shipControls").innerHTML = SH.PART_ORDER.map(k => shipField(k, SH.PARTS[k].name, [["", "Not found yet"], ...SH.PARTS[k].options])).join("")
   + shipField("paint", "Paint", SH.PAINT_ORDER.map(p => [p, SH.PAINTS[p].label]));
-const pilot = `<g transform="translate(13,-14) scale(.27)">${TX.g({ face: "happy" })}</g>`;
+const pilot = TX.pilot({ face: "smile" });
 function drawShip() { $("#shipArt").innerHTML = SH.svg(shipCfg, { flame: true, ghost: true, pilot }); }
 $("#shipControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; shipCfg[s.dataset.k] = s.value || undefined; drawShip(); });
 drawShip();

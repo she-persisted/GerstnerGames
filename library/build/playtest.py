@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 @file build/playtest.py
-@about Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.
+@about Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, measures that Mini Game Survival's looks fit T-Rexy and T-Rexy fits his cockpit, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.
 @requires build/build.py
 
 Usage, from anywhere:
@@ -33,7 +33,12 @@ Checks:
        "Fly again"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.
      - All planet puzzles answered, the brave words typed, and the ending reached.
      - High score: a name saves, gets a rank, and shows on the board as a score on this computer.
-  5. Mini Game Survival, with fresh browsers:
+  5. Mini Game Survival art (runs in --quick too): the space helmet holds T-Rexy's whole head in every face and pose; every
+     head portrait box holds his head and hat, and every picture of him holds all of him in every look, pose, and direction;
+     in every cockpit and every hat a pilot can wear, at least 92% of his head is inside the glass and none of it is above it.
+     Every kind of sky event (shooting star, meteor shower, comet, satellite, rocket, twinkle) draws, and none appears with
+     reduce motion on.
+  6. Mini Game Survival, with fresh browsers:
      - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named
        before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no
        repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never
@@ -47,6 +52,8 @@ Checks:
      - The full playthrough is in Hard mode. No screen may show a count of attempts.
      - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine
        (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.
+     - Hints never cover the play area: on the crash pad they stay above T-Rexy and the portals, in a run they stay in the
+       floor under the track, and in a jigsaw they stay off the board.
      - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes
        twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,
        and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes
@@ -490,6 +497,127 @@ ART_CHECK_JS = r"""() => {
 }"""
 
 
+# Every look must fit T-Rexy, and T-Rexy must fit the ship. Draws each combination in a hidden SVG and measures it:
+# - the space helmet holds his whole head, snout, face, and any sweat drop or sparkle, in every face and pose;
+# - headBox() (portraits and closet buttons) holds his head and hat for every hat, and view() (every picture of him)
+#   holds all of him, in every look, pose, and direction;
+# - in every cockpit, in every hat a pilot can wear, his head sits on the seat inside the glass: at least 92% of his head and
+#   hat above the cockpit floor is inside the canopy, and none of it is above the canopy's top.
+FIT_CHECK_JS = r"""() => {
+  const A = Kit.art, T = A.trexy, S = A.ship, bad = [], NS = "http://www.w3.org/2000/svg";
+  const host = document.createElementNS(NS, "svg");
+  host.setAttribute("width", "1000"); host.setAttribute("height", "1000"); host.setAttribute("viewBox", "-500 -500 1000 1000");
+  host.style.cssText = "position:absolute;left:-2000px;top:0;visibility:hidden";
+  document.body.appendChild(host);
+  const put = m => { host.innerHTML = `<g id="fitref"></g>${m}`; return host; };
+  const toRef = el => host.querySelector("#fitref").getCTM().inverse().multiply(el.getCTM());
+  const pts = (el, n = 40) => {
+    const M = toRef(el), len = el.getTotalLength ? el.getTotalLength() : 0, out = [];
+    for (let i = 0; i <= n && len; i++) { const p = el.getPointAtLength(len * i / n); out.push(new DOMPoint(p.x, p.y).matrixTransform(M)); }
+    return out;
+  };
+  const geo = sel => [...host.querySelectorAll(sel)].flatMap(g => [g, ...g.querySelectorAll("path,ellipse,circle,polygon,rect,line")]).filter(e => e.getTotalLength);
+  const bbox = sel => {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const el of geo(sel)) for (const p of pts(el, 24)) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); }
+    return { x0, y0, x1, y1 };
+  };
+  const FACES = ["smile", "blink", "happy", "excited", "determined", "worried", "surprised", "think", "dizzy", "sleepy"];
+  const H = T.HELMET;
+  // 1. The helmet holds the whole head.
+  for (const pose of ["stand", "hop", "sit"]) for (const face of FACES) {
+    put(T.g({ pose, face, acc: "helmet" }));
+    const glass = host.querySelector('[data-part="helmet"]'), M = toRef(glass).inverse();
+    let worst = 0;
+    for (const el of geo('[data-part="head"]')) for (const p of pts(el)) {
+      const q = p.matrixTransform(M), k = ((q.x - H.cx) / (H.rx - 1.4)) ** 2 + ((q.y - H.cy) / (H.ry - 1.4)) ** 2;
+      if (q.y > H.collar + 2.5) worst = Math.max(worst, 2); else worst = Math.max(worst, k);
+    }
+    if (worst > 1) bad.push(`space helmet doesn't hold his head (${pose}, ${face}): ${worst.toFixed(2)}`);
+  }
+  // 2. headBox() and view() hold what they should.
+  const heads = ["none", "cap", "flower", "bow", "glasses", ...Object.keys(T.LOOKS.head)];
+  for (const acc of heads) for (const face of ["smile", "excited", "worried", "dizzy"]) {
+    put(T.g({ face, acc }));
+    const b = bbox('[data-part="head"],[data-part="hat"]'), hb = T.headBox({ acc });
+    if (b.x0 < hb.x - .6 || b.y0 < hb.y - .6 || b.x1 > hb.x + hb.w + .6 || b.y1 > hb.y + hb.h + .6)
+      bad.push(`headBox for ${acc} (${face}) misses part of his head: ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
+  }
+  for (const acc of heads) for (const back of ["", ...Object.keys(T.LOOKS.back)]) for (const pose of ["stand", "run1", "run2", "hop"]) for (const flip of [false, true]) {
+    if (["flower", "bow", "glasses"].includes(acc) && (pose !== "stand" || back)) continue; // his family only stands, and wears no looks
+    const o = { pose, acc, back, flip, face: "excited" }; put(T.g(o));
+    const b = bbox("svg > g:not(#fitref)"), [vx, vy, vw, vh] = T.view(o).split(" ").map(Number);
+    if (b.x0 < vx - .3 || b.y0 < vy - .3 || b.x1 > vx + vw + .3 || b.y1 > vy + vh + .3)
+      bad.push(`picture of T-Rexy cuts off part of him (${acc}, ${back || "no back"}, ${pose}${flip ? ", flipped" : ""}): ${[b.x0, b.y0, b.x1, b.y1].map(n => n.toFixed(1))}`);
+  }
+  // 3. The pilot sits inside the cockpit.
+  let fits = [];
+  for (const [cockpit] of S.PARTS.cockpit.options) for (const acc of ["none", "helmet", "shades", "crown", "headphones"]) for (const scale of [0, .3]) {
+    put(S.svg({ cockpit, wings: "fern", thrusters: "two", core: "pink", paint: "lime" }, { pilot: T.pilot({ acc, face: "excited" }), pilotScale: scale }));
+    const K = S.CANOPY[cockpit], canopy = host.querySelector('[data-part="canopy"]'), M = toRef(canopy).inverse();
+    let inside = 0, above = 0, over = 0;
+    for (const el of geo('[data-part="pilot"] [data-part="head"],[data-part="pilot"] [data-part="hat"]')) for (const p of pts(el)) {
+      const q = p.matrixTransform(M); if (q.y > K.floor) continue;
+      above++; if (canopy.isPointInFill(new DOMPoint(q.x, q.y))) inside++; if (q.y < K.top - .5) over++;
+    }
+    const f = above ? inside / above : 0; fits.push(f);
+    if (f < .92 || over) bad.push(`pilot in the ${cockpit} cockpit (${acc}${scale ? ", ride size" : ""}): only ${Math.round(f * 100)}% inside the glass${over ? `, ${over} points above the canopy` : ""}`);
+  }
+  host.remove();
+  return { bad, minFit: Math.min(...fits) };
+}"""
+
+
+# Shooting stars and friends: every kind of sky event must draw something on a canvas, and nothing at all with reduce motion on.
+SKY_CHECK_JS = r"""() => {
+  const out = {};
+  for (const kind of ["meteor", "shower", "comet", "satellite", "rocket", "twinkle"]) {
+    const sky = Kit.skyEvents.create({ first: 9999, every: [9999, 9999] }), c = document.createElement("canvas"); c.width = 400; c.height = 240;
+    const ctx = c.getContext("2d"); let most = 0;
+    sky.next(kind);
+    for (let t = 0; t <= 6000; t += 300) {
+      ctx.clearRect(0, 0, 400, 240); sky.draw(ctx, { w: 400, h: 240, t: 1000 + t }, ["#21d9ff", "#ff6be0", "#ffe94a"]);
+      const d = ctx.getImageData(0, 0, 400, 240).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 20) n++;
+      most = Math.max(most, n);
+    }
+    out[kind] = most;
+  }
+  return out;
+}"""
+
+
+# A hint must never cover the play area: on the crash pad it stays above T-Rexy and the portals, in a run it stays in the
+# floor under the track, and in a jigsaw it stays off the board. Returns null if that place isn't on screen right now.
+HINT_CLEAR_JS = r"""(where) => {
+  const h = document.querySelector("#hint.on"), cv = document.querySelector("#cv");
+  if (!h) return { ok: false, why: "no hint showing" };
+  const hr = h.getBoundingClientRect(), cr = cv.getBoundingClientRect();
+  if (where === "hub") { const v = window.__mgs.hub(); if (!v) return null;
+    const room = v.ground - 2.9 * v.T; return { ok: hr.bottom - cr.top <= room + .5, why: `hint bottom ${Math.round(hr.bottom - cr.top)}px, portals and T-Rexy start at ${Math.round(room)}px` }; }
+  if (where === "run") { const r = window.__mgs.run(); if (!r) return null;
+    const floor = cr.height - 1.7 * r.tile; return { ok: hr.top - cr.top >= floor - .5, why: `hint top ${Math.round(hr.top - cr.top)}px, the track is at ${Math.round(floor)}px` }; }
+  if (where === "jig") { const b = document.querySelector("#boardHost .jig"); if (!b) return null; const br = b.getBoundingClientRect();
+    const hit = !(hr.bottom <= br.top || hr.top >= br.bottom || hr.right <= br.left || hr.left >= br.right);
+    return { ok: !hit, why: `hint ${Math.round(hr.top)} to ${Math.round(hr.bottom)}px, board ${Math.round(br.top)} to ${Math.round(br.bottom)}px` }; }
+  return null;
+}"""
+
+
+def hint_clear(pg, where, seen):
+    """Shows a test hint (unless one is already up) and checks it stays off the play area."""
+    if seen.get("hintclear_" + where):
+        return
+    if not pg.evaluate("!!document.querySelector('#hint.on')"):
+        pg.evaluate("window.__mgs.hint('Hint: just checking where hints go')")
+        pg.wait_for_timeout(300)
+    r = pg.evaluate(HINT_CLEAR_JS, where)
+    if r is None:
+        return
+    seen["hintclear_" + where] = True
+    if not r["ok"]:
+        fail(f"a hint covers the play area ({where}): {r['why']}")
+
+
 def mgs_save(pg):
     return pg.evaluate("() => { try { return JSON.parse(localStorage.getItem('mgs.save.v3')); } catch (e) { return null; } }") or {}
 
@@ -555,6 +683,32 @@ RUN_CHECK_JS = r"""() => {
   if (offBeat) bad.push(`${offBeat} chunks don't start on the beat`);
   return { made, short, beatHops, bad: bad.slice(0, 12), count: bad.length, ms: Math.round(performance.now() - t0) };
 }"""
+
+
+def mgs_art_check(browser, base, rel):
+    ctx, pg = new_page(browser, "mgs art fit")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    r = pg.evaluate(FIT_CHECK_JS)
+    for b in r["bad"][:8]:
+        fail(f"art fit: {b}")
+    if len(r["bad"]) > 8:
+        fail(f"art fit: {len(r['bad']) - 8} more problems")
+    sky = pg.evaluate(SKY_CHECK_JS)
+    for kind, n in sky.items():
+        if n < 20:
+            fail(f"sky events: a {kind} drew nothing")
+    ctx.close()
+    ctx, pg = new_page(browser, "mgs sky reduced", reduced_motion="reduce")
+    pg.goto(base + rel)
+    pg.wait_for_selector("#playBtn")
+    calm = pg.evaluate(SKY_CHECK_JS)
+    for kind, n in calm.items():
+        if n:
+            fail(f"sky events: a {kind} appeared with reduce motion on")
+    ctx.close()
+    print(f"  art fit: helmet holds his head in every face and pose, every look fits its picture, the pilot sits inside every cockpit ({round(r['minFit'] * 100)}%+ inside the glass); "
+          f"sky events: {', '.join(k for k, n in sky.items() if n >= 20)} all draw, none with reduce motion")
 
 
 def mgs_pieces_check(browser, base, rel):
@@ -904,6 +1058,7 @@ def mgs_playthrough(browser, base, rel):
                 seen["songs"] = len(song_steps)
 
         elif k == "hub":
+            hint_clear(pg, "hub", seen)
             s = mgs_save(pg)
             done = s.get("done") or []
             if len(done) == 1 and not reloaded:
@@ -964,6 +1119,8 @@ def mgs_playthrough(browser, base, rel):
                 if not seen["hint"]:
                     fail("crashing without pressing anything did not show a Hint with the keys to press")
                     seen["hint"] = True
+                else:
+                    hint_clear(pg, "run", seen)
             if seen["runs"] == 2 and not seen["noskip"]:  # Hard mode: R can't skip a portal run
                 pg.keyboard.press("r"); pg.wait_for_timeout(350)
                 seen["noskip"] = pg.evaluate("window.__mgs.mode") == "run" and "hard mode" in (pg.text_content("#hint") or "").lower()
@@ -1020,6 +1177,7 @@ def mgs_playthrough(browser, base, rel):
 
         elif k == "jigsaw":
             pg.evaluate("window.__mgsAutopilot = false; window.__mgsSpeedup = 1")
+            hint_clear(pg, "jig", seen)
             if pg.locator(".jig .jt.gone").count():
                 fail("a Hard mode memory has holes, but Hard mode needs every piece before the jigsaw")
             first = seen["jigsaws"] == 0
@@ -1185,6 +1343,10 @@ def mgs_playthrough(browser, base, rel):
                  "hint", "rerun", "bonus", "noskip", "hardall", "closet", "musicsync"):
         if not seen[name]:
             fail(f"Mini Game Survival never exercised: {name}")
+    for where in ("hub", "run", "jig"):
+        if not seen.get("hintclear_" + where):
+            fail(f"Mini Game Survival never checked where a hint sits: {where}")
+    print("  hints stay off the play area: above the crash pad, in the floor under a run, under the jigsaw board")
     ctx.close()
 
 
@@ -1198,10 +1360,13 @@ def main():
         with sync_playwright() as p:
             browser = p.chromium.launch()
             load_check(browser, base)
+            mgs_out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
+            print("Mini Game Survival art")
+            mgs_art_check(browser, base, mgs_out)
             if not quick:
                 out = json.loads((LIB / "games/starward/game.json").read_text(encoding="utf-8"))["output"]
                 playthrough(browser, base, out)
-                out = json.loads((LIB / "games/mini-game-survival/game.json").read_text(encoding="utf-8"))["output"]
+                out = mgs_out
                 mgs_pieces_check(browser, base, out)
                 mgs_easy_check(browser, base, out)
                 mgs_touch_check(browser, base, out)

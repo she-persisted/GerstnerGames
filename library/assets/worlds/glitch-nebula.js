@@ -6,10 +6,12 @@
  *
  * view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }
  * options = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false, jaw (degrees open), shake (0 to 1) } | null, whisper: true (rarely
- *             shows a tiny hidden message inside a glitch), glitch: false to turn glitches off }
+ *             shows a tiny hidden message inside a glitch), glitch: false to turn glitches off,
+ *             sky: a function (ctx, view) that draws things crossing the far sky, in front of the landmark and behind the shadow (like Kit.skyEvents) }
  * Each theme: sky (top and bottom colors), blobs (three glow colors), scene (how its gas is shaped), land (its big landmark),
  * plus the colors runs use (edge, block, spike, pad, piece, spark, portals). Skies and landmarks are painted once and reused,
- * so drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves.
+ * so drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves: every noise layer uses a whole number of
+ * repeats across the strip, so its two ends always match.
  * Gentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.
  * Nothing flashes more than three times a second. With "reduce motion" turned on there are no glitches and nothing spins.
  * Inspired by NASA, ESA, CSA, and STScI pictures from the Hubble and Webb space telescopes; everything here is drawn by code.
@@ -83,8 +85,8 @@
     const ridgeY = new Float32Array(tw);
     for (let i = 0; i < tw; i++) {
       const X = i / tw * P;
-      ridgeY[i] = sc === "cliffs" ? .6 + .78 * (N.fbm(X * 1.1, 3.3, P, 5) - .5) - .07 * N.ridged(X * 3, 1.7, P, 3)
-        : sc === "streaks" ? .8 + .16 * (N.fbm(X * 1.6, 9.1, P, 4) - .5) : 2;
+      ridgeY[i] = sc === "cliffs" ? .6 + .78 * (N.fbm(X * 7 / 6, 3.3, 7, 5) - .5) - .07 * N.ridged(X * 3, 1.7, P, 3)
+        : sc === "streaks" ? .8 + .16 * (N.fbm(X * 5 / 3, 9.1, 10, 4) - .5) : 2;
     }
     let k = 0;
     for (let j = 0; j < tH; j++) {
@@ -92,7 +94,7 @@
       for (let i = 0; i < tw; i++, k += 4) {
         const X = i / tw * P, Y = j / tw * P;
         let r = s0[0] + (s1[0] - s0[0]) * vy, gg = s0[1] + (s1[1] - s0[1]) * vy, b = s0[2] + (s1[2] - s0[2]) * vy;
-        const cl = N.fbm(X, Y, P), wi = N.ridged(X * 1.7 + 5, Y * 1.7 + 2, P), du = N.fbm(X * 1.4 + 20, Y * 1.4 + 7, P, 4);
+        const cl = N.fbm(X, Y, P), wi = N.ridged(X * 5 / 3 + 5, Y * 5 / 3 + 2, 10), du = N.fbm(X * 4 / 3 + 20, Y * 4 / 3 + 7, 8, 4);
         let glowA = sstep(.42, .82, cl), glowB = Math.pow(wi, 3) * sstep(.3, .7, cl + .2), dark = sstep(.55, .78, du);
         let kA = .55, kB = .45, kC = .5;
         if (sc === "milkyway") { // a band of stars and glow with a dark dust lane down the middle
@@ -115,7 +117,7 @@
             const base = sc === "cliffs" ? [58, 12, 78] : [6, 2, 12], hot = sc === "cliffs" ? A : B;
             r = base[0] * tex + hot[0] * rim * .9 + 255 * lit * .55; gg = base[1] * tex + hot[1] * rim * .9 + 150 * lit * .55; b = base[2] * tex + hot[2] * rim * .9 + 90 * lit * .55;
           } else if (sc === "cliffs") {
-            const mist = N.ridged(X * 2.2 + 1, Y * 1.1 - vy * 2, P) * Math.exp(below / .16);
+            const mist = N.ridged(X * 13 / 6 + 1, Y * 1.1 - vy * 2, 13) * Math.exp(below / .16);
             r += C[0] * mist * .55 + 255 * mist * .12; gg += C[1] * mist * .55 + 255 * mist * .12; b += C[2] * mist * .55 + 255 * mist * .12;
           }
         }
@@ -381,6 +383,7 @@
         ctx.restore();
       }
       feature(ctx, sp.th.land, sp.th, v.w, v.h, px, v.t);
+      if (opts.sky) opts.sky(ctx, v);
       if (opts.shadow) drawShadow(ctx, opts.shadow, v.w, v.h, v.t);
       glitch(ctx, v, opts);
     }

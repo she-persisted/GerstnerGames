@@ -440,7 +440,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "README.md",
    "layer": "Docs",
-   "bytes": 7258,
+   "bytes": 8071,
    "usedBy": [],
    "about": "Every game in the Child I Fun project is built from the files in this library. Each file does one job, starts with a short header that says what it does, and can be reused in any new game.",
    "provides": "",
@@ -476,14 +476,14 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "assets/characters/nova.js",
    "layer": "Assets",
-   "bytes": 7934,
+   "bytes": 8081,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all.",
+   "about": "Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all. Drawn in the shared Glitch Nebula style (assets/style/ink.js): the same shiny eyes, blush, shadow tone, and shine as T-Rexy, with lines a little thicker for her size so the two match on screen.",
    "provides": "Kit.art.nova { SHAPES, HINGE, COLORS, g(options), shadow(fill, jawDegrees), svg(options, size), url(options, size), path2d() }",
-   "requires": "nothing",
+   "requires": "assets/style/ink.js",
    "notes": "options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 62 units tall (x from -60 to 52, y from -62 to 1).\nSHAPES: body (one outline: tail, body, sail, neck, head and upper teeth, both legs), jaw (lower jaw with teeth), arm.\nHINGE is where the jaw turns. shadow() draws the three shapes in one color (the jaw a little open for a grin), and path2d()\ngives the same shapes for canvas drawing, so a game can make the shadow laugh by turning the jaw around HINGE."
   },
   {
@@ -552,15 +552,15 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "assets/characters/trexy.js",
    "layer": "Assets",
-   "bytes": 18038,
+   "bytes": 23119,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).",
-   "provides": "Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options) }",
-   "requires": "nothing",
-   "notes": "options = { pose: stand | run1 | run2 | hop | sit,\n            face: smile | happy | excited | determined | blink | worried | surprised | think | dizzy | sleepy,\n            who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,\n            back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).\nTall hats reach up to y = -124: for those, isTall(options) is true and svg() makes the picture 130 units tall instead of 100\n(same width, extra room on top), so draw it 1.3 times taller to keep T-Rexy the same size.\nsvg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL.\nLOOKS = { head: { id: name }, back: { id: name }, skin: { id: name } }, the names shown to players."
+   "about": "T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks, each fitted to his head and body: hats (a space helmet that holds his whole head, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack with a strap, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink). Drawn in the shared Glitch Nebula style (assets/style/ink.js), and he can sit in a cockpit as a pilot.",
+   "provides": "Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options), view(options), headBox(options), headView(options, aspect), pilot(options) }",
+   "requires": "assets/style/ink.js",
+   "notes": "options = { pose: stand | run1 | run2 | hop | sit,\n            face: smile | happy | excited | determined | blink | worried | surprised | think | dizzy | sleepy,\n            who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,\n            back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }\nDrawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 60, y from -94 to 4). The sit pose reaches y = 9, so it's\nfor scenes drawn with g() (the memory pictures), not for svg() pictures.\nTall hats reach up to y = -124: for those, isTall(options) is true and svg() makes the picture 130 units tall instead of 100\n(same width, extra room on top), so draw it 1.3 times taller to keep T-Rexy the same size.\nsvg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL; view() is its viewBox.\nThe picture is 122 units wide and centered on his body, so he doesn't jump sideways when he turns around (flip).\nheadBox() is the box around his head and whatever he wears on it ({ x, y, w, h }, in drawing units); headView() turns it into a\nviewBox for a head portrait (aspect = width / height, 1.2 by default). pilot() gives { g, box } for a ship's cockpit:\nhis markup and the head box the ship fits into its canopy (assets/ship/glitch-ship.js).\nLOOKS = { head: { id: name }, back: { id: name }, skin: { id: name } }, the names shown to players."
   },
   {
    "path": "assets/fx/defs.svg",
@@ -836,15 +836,15 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "assets/ship/glitch-ship.js",
    "layer": "Assets",
-   "bytes": 8683,
+   "bytes": 12051,
    "usedBy": [
     "Mini Game Survival",
     "Child I's Game Library"
    ],
-   "about": "A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, a pilot can peek out of the cockpit, and the ship can wake up with a face on its nose.",
-   "provides": "Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }",
-   "requires": "nothing",
-   "notes": "config  = { cockpit, wings, thrusters, core, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit,\n            face: awake | blink | happy (eyes and a smile on the nose, for a ship that has come alive) }\nDrawing space: facing right, centered on 0,0, viewBox -64 -42 128 84."
+   "about": "A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines. The cockpit is a real little cabin (a seat, a glowing dashboard, see-through glass), and a pilot sits inside it, sized to fit the canopy and never poking out. The ship can wake up with a face on its nose. Drawn in the shared Glitch Nebula style (assets/style/ink.js).",
+   "provides": "Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, CANOPY, svg(config, options), box(inner, cls), url(config, options, size), partIcons }",
+   "requires": "assets/style/ink.js",
+   "notes": "config  = { cockpit, wings, thrusters, core, paint } (any can be missing)\noptions = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames,\n            pilot: { g, box } (a character's markup and the box around its head, like Kit.art.trexy.pilot(): the ship scales the\n                   head to fill its canopy, sits it on the seat, and clips it to the glass), or plain markup drawn as is,\n            pilotScale: the largest the pilot may be drawn (in ship units per pilot unit), so a pilot can match riders drawn beside the ship,\n            face: awake | blink | happy (eyes and a smile on the nose, for a ship that has come alive) }\nDrawing space: facing right, centered on 0,0, viewBox -64 -42 128 84. CANOPY gives each cockpit's glass outline and the\nroom inside it ({ d, x0, x1, floor, top })."
   },
   {
    "path": "assets/sounds/dino-chirps.js",
@@ -869,6 +869,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "provides": "Kit.sounds.villainLaughs: [{ id, seconds, from (the name in the original pack), src (a data: URL of the MP3) }], Kit.sounds.credits",
    "requires": "nothing",
    "notes": "Source: https://opengameart.org/content/evil-laughs-pack (\"Laugh 4\" and \"Laugh 7\"), license: https://creativecommons.org/publicdomain/zero/1.0/\nKit.voices.evilLaugh plays these when they're in the game (taking turns), and falls back to its made-in-code laugh when they aren't.\nTo swap in a different laugh: trim it, make it mono, encode it as a small MP3 (about 64 kbps), and replace a src. Keep seconds accurate."
+  },
+  {
+   "path": "assets/style/ink.js",
+   "layer": "Assets",
+   "bytes": 7817,
+   "usedBy": [
+    "Mini Game Survival",
+    "Child I's Game Library"
+   ],
+   "about": "The Glitch Nebula cartoon style in one place, so every character and prop is drawn the same way: dark ink outlines, flat colors with one shadow tone and one shine, big shiny eyes with two highlights, rosy blush, see-through glass with a rim and a shine, and yellow sparkles and stars with ink edges. T-Rexy and his family, Nova, the ship, and T-Rexy's looks all draw with these, and scene code can draw the same sparkle on a canvas.",
+   "provides": "Kit.art.ink { INK, LINE, FINE, GLASS, mix(a, b, t), shadeOf(color, t), eye(o), blush(o), sparkle(x, y, r), star(x, y, r, fill, line, w), glass(d, o), shine(d, w, opacity), glint(x, y, r), gloss(cx, cy, rx, ry, rotate), crescent(o), canvasSparkle(ctx, x, y, r) }",
+   "requires": "nothing",
+   "notes": "The style rules (the game design guide has the same list):\n1. Living things are outlined in their own darkest color (T-Rexy dark green, Nova dark teal). Gear and machines (hats, the ship,\n   the scrap on the crash pad) are outlined in the shared INK. Glow things (portals, pieces, pads, galaxies) have no outline: they're light.\n2. Line weights are for a character about 100 units tall: LINE (2.4) around shapes, FINE (1.4) for details inside them.\n   A small character drawn next to a big one gets thicker lines in its own units, so the two match on screen.\n3. Flat colors with exactly one shadow tone (on the bottom and the back, away from the light) and one shine (white, on the top front).\n4. Open eyes are big and white with a dark pupil, a soft purple iris, and two white highlights (a big one up and forward, a small one low and back).\n5. Blush is a soft pink oval under the eye. Sparkles are four-point, yellow, with a thin ink edge. Stars are five-point.\n6. Glass is a pale cyan wash you can see through, an ink outline, and a white shine arc with a little glint."
   },
   {
    "path": "assets/worlds/corona.svg",
@@ -897,14 +910,14 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "assets/worlds/glitch-nebula.js",
    "layer": "Assets",
-   "bytes": 32267,
+   "bytes": 32575,
    "usedBy": [
     "Mini Game Survival"
    ],
    "about": "Canvas backgrounds for the Glitch Nebula, each world a neon take on a famous NASA space picture: the Cosmic Cliffs of the Carina Nebula (the crash pad), the Southern Ring Nebula (Echo Rings), the Pillars of Creation (Fern Moon), a blazing Wolf-Rayet star in its clumpy shell (Lantern Lab), the Whirlpool Galaxy and its little companion (Whirlpool Galaxy), and the Horsehead Nebula (the Shadow Gate), plus the Milky Way and the Andromeda Galaxy over Fern Valley at night. Every sky also gets glowing gas made from noise, dark dust lanes, stars with Webb-style eight-point spikes, tiny far-away galaxies like a deep field, and a mix of drifting galaxies (spirals, tilted spirals, and edge-on ones like the Sombrero). Gentle glitches nudge a stripe of the sky sideways now and then. Can also draw the giant black Shadowspine on the clouds, with an optional tiny lantern glow at its feet. Each world has its own colors for runs, too.",
    "provides": "Kit.art.nebula { THEMES, create() -> { draw(ctx, view, options) } }",
    "requires": "assets/characters/nova.js, assets/memories/memories.js",
-   "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false, jaw (degrees open), shake (0 to 1) } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off }\nEach theme: sky (top and bottom colors), blobs (three glow colors), scene (how its gas is shaped), land (its big landmark),\nplus the colors runs use (edge, block, spike, pad, piece, spark, portals). Skies and landmarks are painted once and reused,\nso drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves.\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins.\nInspired by NASA, ESA, CSA, and STScI pictures from the Hubble and Webb space telescopes; everything here is drawn by code."
+   "notes": "view = { w, h, T (pixels per tile), camX, camY, t (ms), dpr }\noptions = { theme, shadow: { x (screen fraction 0 to 1), k (size, 1 = normal), lantern: true | false, jaw (degrees open), shake (0 to 1) } | null, whisper: true (rarely\n            shows a tiny hidden message inside a glitch), glitch: false to turn glitches off,\n            sky: a function (ctx, view) that draws things crossing the far sky, in front of the landmark and behind the shadow (like Kit.skyEvents) }\nEach theme: sky (top and bottom colors), blobs (three glow colors), scene (how its gas is shaped), land (its big landmark),\nplus the colors runs use (edge, block, spike, pad, piece, spark, portals). Skies and landmarks are painted once and reused,\nso drawing a frame is just a few pictures. The sky strip repeats seamlessly as the camera moves: every noise layer uses a whole number of\nrepeats across the strip, so its two ends always match.\nGentle on purpose: glitches happen at most about once a second, last a tenth of a second, and only shift a thin stripe.\nNothing flashes more than three times a second. With \"reduce motion\" turned on there are no glitches and nothing spins.\nInspired by NASA, ESA, CSA, and STScI pictures from the Hubble and Webb space telescopes; everything here is drawn by code."
   },
   {
    "path": "assets/worlds/gradients.svg",
@@ -991,21 +1004,21 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "build/playtest.py",
    "layer": "Build",
-   "bytes": 66977,
+   "bytes": 77517,
    "usedBy": [],
-   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
+   "about": "Automated play-test for the library: checks file headers, checks the built pages match the source, loads every page in headless Chromium at Chromebook size, measures that Mini Game Survival's looks fit T-Rexy and T-Rexy fits his cockpit, and plays Starward and Mini Game Survival start to finish (every run, puzzle, flight, and secret, the ending, and the high score). Must pass before every commit that changes library/.",
    "provides": "",
    "requires": "build/build.py",
-   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival, with fresh browsers:\n     - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named\n       before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no\n       repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never\n       twice in a row, and a half-used deck carries over to the next game.\n     - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret\n       routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle\n       of every chunk one hop can clear. The recorded villain laughs and dino noises must decode, and the dino noises must\n       cover every mood and make sound at every voice pitch.\n     - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,\n       pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).\n     - The full playthrough is in Hard mode. No screen may show a count of attempts.\n     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine\n       (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.\n     - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes\n       twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,\n       and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes\n       every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.\n       Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.\n       Every run must end with every piece caught, which unlocks 5 of T-Rexy's looks.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret\n       ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
+   "notes": "Usage, from anywhere:\n  python3 library/build/playtest.py            everything (about 4 minutes)\n  python3 library/build/playtest.py --quick    skip the full playthroughs\n  add -v to print every screen, or --shots=DIR to save a screenshot of each Mini Game Survival screen\n\nNeeds Python 3 and Playwright. If missing:\n  pip install playwright            (add --break-system-packages on Claude's workspace)\n  python3 -m playwright install chromium\n\nChecks:\n  1. Headers: every source file starts with @file (its own path) and @about.\n  2. Build: build.py --all, run on a copy, reproduces dist/, catalog.json, and index.html byte for byte.\n  3. Pages: every built game, legacy game, and the library page load at 1366x768 with no page\n     errors and no sideways scroll. Built games and the library page also allow no console errors.\n     Pages are served inside the same wrapper claude.ai adds when it publishes (its base styles\n     hide [hidden] elements, for example), so the test sees what Child I sees. Google Fonts is\n     blocked so the run doesn't depend on outside network.\n  4. Starward playthrough, with a fresh browser (so adaptive levels start at their defaults):\n     - Title: name the robot and start.\n     - Lumina map: walk to each place by clicking the map. The first puzzle takes three wrong\n       answers; \"Show me\" must stay hidden until the third, then appear and reveal the answer. The second uses the Scan helper.\n       Every dig must show its one-line tip, every dig is typed, every part style picked, then back to the launch pad to paint the ship.\n     - Right answers: every puzzle must cheer, show no Next button, and move on by itself within 5 seconds.\n     - Tapping friends: the first puzzle with Sunny on the crew is solved after tapping Sunny on the stage (her clue must\n       appear), and the first with Rigel after tapping Rigel in the friends bar (a letter must appear).\n     - Flights: the first try of the first flight is typed badly on purpose and must offer\n       \"Fly again\"; every other flight is typed cleanly and must land, and the landing screen must move on by itself.\n     - All planet puzzles answered, the brave words typed, and the ending reached.\n     - High score: a name saves, gets a rank, and shows on the board as a score on this computer.\n  5. Mini Game Survival art (runs in --quick too): the space helmet holds T-Rexy's whole head in every face and pose; every\n     head portrait box holds his head and hat, and every picture of him holds all of him in every look, pose, and direction;\n     in every cockpit and every hat a pilot can wear, at least 92% of his head is inside the glass and none of it is above it.\n     Every kind of sky event (shooting star, meteor shower, comet, satellite, rocket, twinkle) draws, and none appears with\n     reduce motion on.\n  6. Mini Game Survival, with fresh browsers:\n     - The question library is checked (8 versions of every mystery question, each answer one of its options, Nova never named\n       before the reveal; 6 clue lines at each typing level; 8 science facts, 14 bonus facts, and 4 memory texts per portal; no\n       repeats; plenty of clue words at each level), and so is the dealer: every version comes up once before any repeats, never\n       twice in a row, and a half-used deck carries over to the next game.\n     - Memory pieces and beats: 90 runs are built at levels 1 to 6. Every piece must be catchable on the winning and secret\n       routes, every chunk must start on the music's beat, and a hop pressed right on the beat must clear the first obstacle\n       of every chunk one hop can clear. The recorded villain laughs and dino noises must decode, and the dino noises must\n       cover every mood and make sound at every voice pitch.\n     - Easy mode: L and R move through story lines; the first run must be level 1 (the slowest) with checkpoints on,\n       pressing again in the air must double hop, R must skip the run, and the memory must then have holes (clues kept).\n     - The full playthrough is in Hard mode. No screen may show a count of attempts.\n     - Title, then the story lines (Enter), then the crash pad: switch modes there and back, type ROAR and poke Shadowspine\n       (Easter eggs), take a look off and on in T-Rexy's closet, click each portal.\n     - Hints never cover the play area: on the crash pad they stay above T-Rexy and the portals, in a run they stay in the\n       floor under the track, and in a jigsaw they stay off the board.\n     - Runs: checkpoints are on from the start (no Checkpoints button). The first run is left alone until T-Rexy crashes\n       twice: a crash with no key pressed must show a Hint with the keys, the first crash must send him back to the start,\n       and the music must be in time with the run. Then the built-in autopilot (the level's own solution, sped up) finishes\n       every run and takes the secret route, so all four hidden diary pages must be found. R must not skip a Hard run.\n       Fern Moon misses 3 pieces on purpose and is run again with A; Lantern Lab misses 2 and must offer only Run it again.\n       Every run must end with every piece caught, which unlocks 5 of T-Rexy's looks.\n     - Jigsaws: Peek and Fix one are used on the first; every jigsaw is solved by clicking tiles; none may have holes.\n     - Clue words: the first uses Scan after wrong letters, the second runs out of fuel and is typed to refuel.\n     - Clue typing, part styles, paint, songs, the four mystery questions (one wrong answer must show a clue), the shrink, the ending.\n     - After the first portal the page is reloaded, and \"Keep going\" must resume on the crash pad with the clue saved.\n     - Right answers move on by themselves; the ship comes alive in the end clip; the high score saves and the secret\n       ending shows (all four pages).\nPrints PASS or FAIL with the reasons, and exits 1 on FAIL."
   },
   {
    "path": "build/qr.py",
    "layer": "Build",
-   "bytes": 25281,
+   "bytes": 25348,
    "usedBy": [],
    "about": "Makes a game's shareable QR card in that game's own colors and icons: the title, a two-sentence teaser to get kids curious, the game's hero drawn from the game's own art, and a QR code that opens the game's permanent home page (\"home\" in game.json, or the newest release's link for a game without one). No version number, so one card stays good for every version. Checks that the finished card scans back to the right link.",
    "provides": "",
-   "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/characters/trexy.js, assets/characters/robot-side.svg, assets/characters/characters.css (colors, icon shapes, and heroes come from these)",
+   "requires": "kit/base.css, assets/fx/defs.svg, assets/icons/icons.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/robot-side.svg, assets/characters/characters.css (colors, icon shapes, and heroes come from these)",
    "notes": "Usage, from the library folder:\n  python3 build/qr.py games/starward/game.json     card for that game\n  python3 build/qr.py --all                        a card for every game with a \"qr\" block\nWrites dist/<id>-qr.png. Needs Pillow, opencv-python-headless, and Playwright with Chromium (it draws the hero\nin headless Chromium from the library's own art files). Uses the qrcode package when installed (pip install \"qrcode[pil]\");\notherwise OpenCV's own QR encoder makes the code. Exits 1 if a card does not scan back to its link.\n\n\"qr\" block in game.json (every game needs one; the card stops with a message if the hero or either teaser sentence is missing):\n  { \"colors\": { void, nebula, nebulaHi, starlight, dust, glow, accent, gold, onGold },   (Starward's night sky by default)\n    \"badge\": \"star\" | \"trexy\" | \"flame\",            the icon in the middle of the code, and the card's corner decorations\n    \"hero\": { \"who\": \"robot\", \"face\": \"worried\" | \"brave\" | \"happy\" | \"surprised\" | \"think\", \"lit\": true, \"thrusters\": true }\n          | { \"who\": \"trexy\", \"pose\": \"hop\", \"face\": \"excited\" },\n    \"tagline\": [\"A short hook.\", \"One sentence about what you get to do.\"],\n    \"cta\": \"Scan to play!\" }\nA tall hero stands beside the code; a wide one stands under it and says the call to action in a speech bubble.\nThe teaser is a short hook, then one sentence on what you get to do, with a joke where it fits and no spoilers.\nA new game's hero goes in HEROES and hero_markup below, drawn from that game's own art file, so the card always matches the game.\nOlder cards with a version number on them are kept in dist/ as <id>-v<N>-qr.png."
   },
   {
@@ -1167,7 +1180,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/boot.js",
    "layer": "Games",
-   "bytes": 5402,
+   "bytes": 5759,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1179,7 +1192,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/game.css",
    "layer": "Games",
-   "bytes": 13055,
+   "bytes": 13893,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1191,11 +1204,11 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/game.json",
    "layer": "Games",
-   "bytes": 5622,
+   "bytes": 5855,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit.",
    "provides": "",
    "requires": "",
    "notes": ""
@@ -1227,19 +1240,19 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "games/mini-game-survival/scene.js",
    "layer": "Games",
-   "bytes": 32114,
+   "bytes": 33442,
    "usedBy": [
     "Mini Game Survival"
    ],
-   "about": "Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.",
+   "about": "Everything Mini Game Survival draws in the scene window (plus the hint bubble that appears when a player seems stuck): story scenes (T-Rexy's faces, hops, and double hops, Shadowspine on the clouds with his evil laugh and moving jaw, Nova, the ship, the family, and the dinosaurs' cute recorded noises, each in its own voice), shooting stars, comets, satellites, and tiny rockets crossing the sky now and then, T-Rexy sitting in the ship's cockpit in whatever he's wearing, the walkable crash pad with its portals, the ship wreck (smoking and cracked at first, with cartoon scrap all around, fixed a little more with every part, floating and glowing once it's done), and Easter eggs (poke Shadowspine, type ROAR, tiny footprints, a hidden glitch message), and the obstacle runs (with a flip on every double hop, and the music kept in time with the run). T-Rexy is drawn in whatever looks he has on (hats, back items, colors). Also the music, the toggles, the top bar, and toasts.",
    "provides": "",
-   "requires": "kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
+   "requires": "kit/runner.js, kit/side-hub.js, kit/groove.js, kit/voices.js, kit/sky-events.js, assets/style/ink.js, assets/characters/trexy.js, assets/characters/nova.js, assets/ship/glitch-ship.js, assets/worlds/glitch-nebula.js, games/mini-game-survival/state.js",
    "notes": ""
   },
   {
    "path": "games/mini-game-survival/screens.js",
    "layer": "Games",
-   "bytes": 45485,
+   "bytes": 45484,
    "usedBy": [
     "Mini Game Survival"
    ],
@@ -1668,6 +1681,18 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
    "notes": "options = { width (tiles), start (tile x), speed (tiles per second), stops: [{ id, x, open }],\n            draw(ctx, view, hero, bubble), onEnter(stop), onNear(stop or null), onTap(worldX, worldY, view) -> true if handled,\n            onFirstMove(), onType(lastLetters) }\nview = { w, h, T, camX, camY: 0, t, dpr, ground (pixel y of the floor) }; hero = { x, facing (1 right, -1 left), walking, near }\nbubble = { text, until } for a speech bubble over the hero, set with say()."
   },
   {
+   "path": "kit/sky-events.js",
+   "layer": "Kit",
+   "bytes": 11230,
+   "usedBy": [
+    "Mini Game Survival"
+   ],
+   "about": "Little surprises that cross a canvas sky every few seconds, to keep eyes on the story: shooting stars (the most common), now and then a short meteor shower, a slow comet with a glowing two-color tail, a satellite drifting by with a gently pulsing light, a tiny rocket zooming past, and a star that swells into a sparkle and fades. Calm on purpose: nothing flashes, the satellite's light fades in and out about once a second, and with \"reduce motion\" turned on nothing appears at all.",
+   "provides": "Kit.skyEvents.create(options) -> { draw(ctx, view, colors), clear(), next(kind) }",
+   "requires": "nothing",
+   "notes": "options = { every: [min, max] seconds between events (default [3.5, 7]), first: seconds until the first one (default 1.2),\n            area: [top, bottom] as fractions of the height where events may cross (default [.04, .42]),\n            kinds: { meteor, shower, comet, satellite, rocket, twinkle } weights (missing kinds don't appear) }\ndraw(ctx, view, colors): call once per frame after drawing the sky and before the characters. view = { w, h, t (ms) };\ncolors = up to three accent colors from the scene (meteor trails and comet tails use them). clear() empties the sky,\nfor example when a new story scene starts. next(kind) starts one event of that kind right now (for tests and screenshots)."
+  },
+  {
    "path": "kit/starfield.js",
    "layer": "Kit",
    "bytes": 2271,
@@ -1783,7 +1808,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/page.js",
    "layer": "Library page",
-   "bytes": 11951,
+   "bytes": 11902,
    "usedBy": [
     "Child I's Game Library"
    ],
@@ -1795,7 +1820,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   {
    "path": "site/site.json",
    "layer": "Library page",
-   "bytes": 1409,
+   "bytes": 1436,
    "usedBy": [
     "Child I's Game Library"
    ],
@@ -1850,10 +1875,10 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   },
   {
    "id": "mini-game-survival",
-   "title": "Mini Game Survival v6",
-   "version": 6,
-   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, hardcore music, adaptive difficulty, and an arcade high score board.",
-   "output": "dist/mini-game-survival-v6.html",
+   "title": "Mini Game Survival v7",
+   "version": 7,
+   "about": "T-Rexy, a cute little T-Rex with a tiny jump, wakes up alone in the glitchy neon Glitch Nebula after weird music swoops him away from home. He runs four obstacle portals (bounce pads, ship tunnels, spikes), rebuilds his memories in jigsaw puzzles, spells science clue words before the glitch drains his fuel, types each clue into his notebook, and builds a spaceship to get home. Then he solves the mystery of Shadowspine, the giant all-black Spinosaurus. Hidden diary pages and other secrets, shooting stars and comets crossing the story sky, hardcore music, adaptive difficulty, and an arcade high score board. Every character and prop is drawn in one shared cartoon style, and every look T-Rexy unlocks fits him, even in his ship's cockpit.",
+   "output": "dist/mini-game-survival-v7.html",
    "home": "https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ",
    "qr": {
     "colors": {
@@ -1919,7 +1944,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     }
    ],
    "source": "games/mini-game-survival",
-   "fileCount": 49
+   "fileCount": 51
   },
   {
    "id": "starward",
@@ -2652,26 +2677,121 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     chords: [[0,4,7],[-5,-1,2],[-3,0,4],[-7,-3,0]], bass: [1,0,1,0,1,0,2,0], hat: [0,1,0,1,0,1,0,1], kick: [1,0,0,0,1,0,0,0]
   };
 })(window.Kit = window.Kit || {});
+/* ==== assets/style/ink.js ==== */
+/**
+ * @file assets/style/ink.js
+ * @about The Glitch Nebula cartoon style in one place, so every character and prop is drawn the same way: dark ink outlines, flat colors with one shadow tone and one shine, big shiny eyes with two highlights, rosy blush, see-through glass with a rim and a shine, and yellow sparkles and stars with ink edges. T-Rexy and his family, Nova, the ship, and T-Rexy's looks all draw with these, and scene code can draw the same sparkle on a canvas.
+ * @provides Kit.art.ink { INK, LINE, FINE, GLASS, mix(a, b, t), shadeOf(color, t), eye(o), blush(o), sparkle(x, y, r), star(x, y, r, fill, line, w), glass(d, o), shine(d, w, opacity), glint(x, y, r), gloss(cx, cy, rx, ry, rotate), crescent(o), canvasSparkle(ctx, x, y, r) }
+ * @requires nothing
+ *
+ * The style rules (the game design guide has the same list):
+ * 1. Living things are outlined in their own darkest color (T-Rexy dark green, Nova dark teal). Gear and machines (hats, the ship,
+ *    the scrap on the crash pad) are outlined in the shared INK. Glow things (portals, pieces, pads, galaxies) have no outline: they're light.
+ * 2. Line weights are for a character about 100 units tall: LINE (2.4) around shapes, FINE (1.4) for details inside them.
+ *    A small character drawn next to a big one gets thicker lines in its own units, so the two match on screen.
+ * 3. Flat colors with exactly one shadow tone (on the bottom and the back, away from the light) and one shine (white, on the top front).
+ * 4. Open eyes are big and white with a dark pupil, a soft purple iris, and two white highlights (a big one up and forward, a small one low and back).
+ * 5. Blush is a soft pink oval under the eye. Sparkles are four-point, yellow, with a thin ink edge. Stars are five-point.
+ * 6. Glass is a pale cyan wash you can see through, an ink outline, and a white shine arc with a little glint.
+ */
+(function (Kit) {
+  "use strict";
+  const art = Kit.art = Kit.art || {};
+  const INK = "#1b1030", LINE = 2.4, FINE = 1.4;
+  const GLASS = { tint: "#c8f4ff", opacity: .16 };
+  const f = n => +(+n).toFixed(2);
+
+  // Mixes two #rrggbb colors: t = 0 gives a, t = 1 gives b.
+  function mix(a, b, t) {
+    const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const A = p(a), B = p(b);
+    return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join("");
+  }
+  // The one shadow tone for a color: the color pushed a little toward the ink.
+  const shadeOf = (color, t = .22) => mix(color, INK, t);
+
+  // A big shiny eye. cx, cy, rx, ry = the white; px, py, pr = the pupil; line, lw = outline color and width;
+  // star: a star-sparkle highlight instead of the two round ones (for excited faces).
+  function eye({ cx = 0, cy = 0, rx = 9.4, ry = 10.2, px = cx + 2.4, py = cy + .4, pr = 6.4, line = INK, lw = 2.2, star = false } = {}) {
+    let s = `<ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="#fff" stroke="${line}" stroke-width="${f(lw)}"/>
+      <circle cx="${f(px)}" cy="${f(py)}" r="${f(pr)}" fill="${INK}"/>
+      <circle cx="${f(px)}" cy="${f(py + pr * .38)}" r="${f(pr * .58)}" fill="#4b3a8a" opacity=".5"/>`;
+    s += star
+      ? `<path d="M${f(px + pr * .31)} ${f(py - pr * .84)} l${f(pr * .17)} ${f(pr * .4)} l${f(pr * .42)} ${f(pr * .14)} l${f(-pr * .42)} ${f(pr * .14)} l${f(-pr * .17)} ${f(pr * .42)} l${f(-pr * .17)} ${f(-pr * .42)} l${f(-pr * .42)} ${f(-pr * .14)} l${f(pr * .42)} ${f(-pr * .14)} Z" fill="#fff"/><circle cx="${f(px - pr * .41)}" cy="${f(py + pr * .44)}" r="${f(pr * .19)}" fill="#fff"/>`
+      : `<circle cx="${f(px + pr * .38)}" cy="${f(py - pr * .42)}" r="${f(pr * .36)}" fill="#fff"/><circle cx="${f(px - pr * .42)}" cy="${f(py + pr * .42)}" r="${f(pr * .17)}" fill="#fff"/>`;
+    return s;
+  }
+  // Rosy blush; marks = three little happy lines on top.
+  function blush({ cx = 0, cy = 0, rx = 5.8, ry = 3.6, color = "#ff8fb1", k = .88, marks = false } = {}) {
+    return `<ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" fill="${color}" opacity="${k}"/>` + (marks
+      ? `<path d="M${f(cx - rx * .5)} ${f(cy - ry * .67)} l${f(-rx * .24)} ${f(ry * .72)} M${f(cx + rx * .05)} ${f(cy - ry * .78)} l${f(-rx * .24)} ${f(ry * .72)} M${f(cx + rx * .6)} ${f(cy - ry * .67)} l${f(-rx * .24)} ${f(ry * .72)}" stroke="#d94f78" stroke-width="${f(rx * .2)}" stroke-linecap="round" opacity=".7"/>` : "");
+  }
+  // A four-point sparkle.
+  const sparkle = (x, y, r = 3.4) => `<path d="M${f(x)} ${f(y - r)} L${f(x + r * .28)} ${f(y - r * .28)} L${f(x + r)} ${f(y)} L${f(x + r * .28)} ${f(y + r * .28)} L${f(x)} ${f(y + r)} L${f(x - r * .28)} ${f(y + r * .28)} L${f(x - r)} ${f(y)} L${f(x - r * .28)} ${f(y - r * .28)} Z" fill="#ffe94a" stroke="#7a5a00" stroke-width="${f(Math.max(.6, r * .24))}" stroke-linejoin="round"/>`;
+  // A five-point star centered at (x, y).
+  const star = (x, y, r, fill = "#ffe94a", line = INK, w = 1.2) => {
+    const pts = [];
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, k = i % 2 ? r * .45 : r; pts.push(`${f(x + Math.cos(a) * k)},${f(y + Math.sin(a) * k)}`); }
+    return `<polygon points="${pts.join(" ")}" fill="${fill}" stroke="${line}" stroke-width="${f(w)}" stroke-linejoin="round"/>`;
+  };
+  // Glass: a pale see-through wash with an ink outline. Add a shine() arc and a glint() on top.
+  const glass = (d, { tint = GLASS.tint, opacity = GLASS.opacity, w = 2.2, line = INK } = {}) =>
+    `<path d="${d}" fill="${tint}" fill-opacity="${opacity}" stroke="${line}" stroke-width="${f(w)}" stroke-linejoin="round"/>`;
+  const shine = (d, w = 2.6, opacity = .8) => `<path d="${d}" fill="none" stroke="#fff" stroke-width="${f(w)}" stroke-linecap="round" opacity="${opacity}"/>`;
+  const glint = (x, y, r = 1.4) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="#fff" opacity=".9"/>`;
+  // The soft shine on a round shape (a head, a hull, a hat).
+  const gloss = (cx, cy, rx, ry, rot = 0) => `<ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" transform="rotate(${f(rot)} ${f(cx)} ${f(cy)})" fill="#fff" opacity=".32"/>`;
+  // A shadow crescent that stays inside an ellipse: the outer edge follows the ellipse from angle a0 to a1 (degrees, 0 = right,
+  // 90 = down), the inner edge follows the same ellipse moved by (dx, dy). Returns path data.
+  function crescent({ cx, cy, rx, ry, a0, a1, dx, dy, n = 18 }) {
+    const pt = (a, ox = 0, oy = 0) => { const r = a * Math.PI / 180; return `${f(cx + ox + Math.cos(r) * rx)} ${f(cy + oy + Math.sin(r) * ry)}`; };
+    const out = [], back = [];
+    for (let i = 0; i <= n; i++) out.push(pt(a0 + (a1 - a0) * i / n));
+    for (let i = n; i >= 0; i--) { // the inner edge, kept inside the outer ellipse
+      const a = a0 + (a1 - a0) * i / n, r = a * Math.PI / 180;
+      let x = cx + dx + Math.cos(r) * rx, y = cy + dy + Math.sin(r) * ry;
+      const k = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+      if (k > 1) { const s = 1 / Math.sqrt(k); x = cx + (x - cx) * s; y = cy + (y - cy) * s; }
+      back.push(`${f(x)} ${f(y)}`);
+    }
+    return `M${out.join(" L")} L${back.join(" L")} Z`;
+  }
+  // The same four-point sparkle, for canvas scenes. r = size in pixels.
+  function canvasSparkle(ctx, x, y, r) {
+    ctx.save(); ctx.beginPath();
+    [[0, -r], [r * .28, -r * .28], [r, 0], [r * .28, r * .28], [0, r], [-r * .28, r * .28], [-r, 0], [-r * .28, -r * .28]].forEach(([a, b], i) => i ? ctx.lineTo(x + a, y + b) : ctx.moveTo(x + a, y + b));
+    ctx.closePath(); ctx.fillStyle = "#ffe94a"; ctx.fill();
+    ctx.lineWidth = Math.max(1, r * .2); ctx.lineJoin = "round"; ctx.strokeStyle = "#7a5a00"; ctx.stroke(); ctx.restore();
+  }
+
+  art.ink = { INK, LINE, FINE, GLASS, mix, shadeOf, eye, blush, sparkle, star, glass, shine, glint, gloss, crescent, canvasSparkle };
+})(window.Kit = window.Kit || {});
 /* ==== assets/characters/trexy.js ==== */
 /**
  * @file assets/characters/trexy.js
- * @about T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks: hats (space helmet, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink).
- * @provides Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options) }
- * @requires nothing
+ * @about T-Rexy, a cute cartoony green T-Rex with a big head, a big eye, two tiny teeth, and famously tiny arms. Also draws his family (same shape, different colors and accessories). Poses for standing, running, hopping, and sitting. Big shiny eyes and a little brow that shows his mood, with faces for happy, excited (star-sparkle eyes), determined, blinking, worried (with a sweat drop), surprised, thinking, dizzy, and sleepy. Plus unlockable looks, each fitted to his head and body: hats (a space helmet that holds his whole head, wizard hat, DJ headphones, glitch crown, party hat, star shades), things on his back (rocket backpack with a strap, super cape), and colors (galaxy purple, golden, ocean blue, bubblegum pink). Drawn in the shared Glitch Nebula style (assets/style/ink.js), and he can sit in a cockpit as a pilot.
+ * @provides Kit.art.trexy { COLORS, LOOKS, g(options), svg(options, size), url(options, size), isTall(options), view(options), headBox(options), headView(options, aspect), pilot(options) }
+ * @requires assets/style/ink.js
  *
  * options = { pose: stand | run1 | run2 | hop | sit,
  *             face: smile | happy | excited | determined | blink | worried | surprised | think | dizzy | sleepy,
  *             who: trexy | mom | dad | sis (colors), acc: none | flower | glasses | bow | cap | a hat from LOOKS.head,
  *             back: none | a back item from LOOKS.back, skin: a color from LOOKS.skin (overrides who), flip: true to face left }
- * Drawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 54, y from -94 to 2).
+ * Drawing space: facing right, feet at y = 0, about 100 units tall (x from -58 to 60, y from -94 to 4). The sit pose reaches y = 9, so it's
+ * for scenes drawn with g() (the memory pictures), not for svg() pictures.
  * Tall hats reach up to y = -124: for those, isTall(options) is true and svg() makes the picture 130 units tall instead of 100
  * (same width, extra room on top), so draw it 1.3 times taller to keep T-Rexy the same size.
- * svg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL.
+ * svg() returns a standalone <svg> (for images and canvas drawing); url() returns it as a data URL; view() is its viewBox.
+ * The picture is 122 units wide and centered on his body, so he doesn't jump sideways when he turns around (flip).
+ * headBox() is the box around his head and whatever he wears on it ({ x, y, w, h }, in drawing units); headView() turns it into a
+ * viewBox for a head portrait (aspect = width / height, 1.2 by default). pilot() gives { g, box } for a ship's cockpit:
+ * his markup and the head box the ship fits into its canopy (assets/ship/glitch-ship.js).
  * LOOKS = { head: { id: name }, back: { id: name }, skin: { id: name } }, the names shown to players.
  */
 (function (Kit) {
   "use strict";
   const art = Kit.art = Kit.art || {};
+  const ink = art.ink, INK = ink.INK;
   const COLORS = {
     trexy: { body: "#5ee35b", belly: "#dcfca0", bump: "#3cbf48", line: "#12452c", cheek: "#ff8fb1" },
     mom: { body: "#3fd6b0", belly: "#cffff1", bump: "#26ad8d", line: "#0f4038", cheek: "#ff8fb1" },
@@ -2689,12 +2809,14 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   };
   const TALL = new Set(["helmet", "wizard", "headphones", "crown", "party"]);
   const isTall = (o = {}) => TALL.has(o.acc);
-  // A five-point star centered at (x, y).
-  const star = (x, y, r, fill, line = "#1b1030", w = 1.2) => {
-    const pts = [];
-    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, k = i % 2 ? r * .45 : r; pts.push(`${(x + Math.cos(a) * k).toFixed(1)},${(y + Math.sin(a) * k).toFixed(1)}`); }
-    return `<polygon points="${pts.join(" ")}" fill="${fill}" stroke="${line}" stroke-width="${w}" stroke-linejoin="round"/>`;
-  };
+  const { star, sparkle } = ink;
+
+  // The space helmet: a fishbowl sized to his whole head, snout and all, closed by a collar ring at his neck.
+  const HELMET = { cx: 23, cy: -69, rx: 36, ry: 30, collar: -45 };
+  const helmetArc = (() => {
+    const { cx, cy, rx, ry, collar } = HELMET, dx = rx * Math.sqrt(1 - ((collar - cy) / ry) ** 2);
+    return { x0: +(cx - dx).toFixed(2), x1: +(cx + dx).toFixed(2) };
+  })();
 
   function leg(x, angle, c, far) {
     const fill = far ? c.bump : c.body;
@@ -2706,24 +2828,17 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     const L = c.line;
     const low = m => `<g transform="translate(0 1.8)">${m}</g>`; // the eye and brow sit a little low, leaving room for the brow to rise
     const brow = d => low(`<path d="${d}" fill="none" stroke="${L}" stroke-width="2.6" stroke-linecap="round"/>`);
-    const cheek = (k = .88, marks = false) => `<ellipse cx="33.5" cy="-60" rx="5.8" ry="3.6" fill="${c.cheek}" opacity="${k}"/>` +
-      (marks ? `<path d="M30.6 -62.4 l-1.4 2.6 M33.8 -62.8 l-1.4 2.6 M37 -62.4 l-1.4 2.6" stroke="#d94f78" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>` : "");
-    const eye = ({ rx = 9.4, ry = 10.2, px = 22.4, py = -69.6, pr = 6.4, star = false } = {}) => low(
-      `<ellipse cx="20" cy="-70" rx="${rx}" ry="${ry}" fill="#fff" stroke="${L}" stroke-width="2.2"/>
-       <circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/>
-       <circle cx="${px}" cy="${(py + pr * .38).toFixed(1)}" r="${(pr * .58).toFixed(1)}" fill="#4b3a8a" opacity=".5"/>` +
-      (star ? `<path d="M${px + 2} ${py - 5.4} l1.1 2.6 l2.7 .9 l-2.7 .9 l-1.1 2.7 l-1.1 -2.7 l-2.7 -.9 l2.7 -.9 Z" fill="#fff"/><circle cx="${px - 2.6}" cy="${py + 2.8}" r="1.2" fill="#fff"/>`
-        : `<circle cx="${(px + pr * .38).toFixed(1)}" cy="${(py - pr * .42).toFixed(1)}" r="${(pr * .36).toFixed(1)}" fill="#fff"/><circle cx="${(px - pr * .42).toFixed(1)}" cy="${(py + pr * .42).toFixed(1)}" r="${(pr * .17).toFixed(1)}" fill="#fff"/>`));
+    const cheek = (k = .88, marks = false) => ink.blush({ cx: 33.5, cy: -60, color: c.cheek, k, marks });
+    const eye = ({ rx = 9.4, ry = 10.2, px = 22.4, py = -69.6, pr = 6.4, star = false } = {}) => low(ink.eye({ cx: 20, cy: -70, rx, ry, px, py, pr, line: L, star }));
     const closed = (d = "M12 -70 Q20 -63.8 28 -70") => low(`<path d="${d}" fill="none" stroke="${L}" stroke-width="3" stroke-linecap="round"/>`);
     const teeth = `<path d="M33 -53.5 l2.2 3.6 l2.2 -3.9 Z M40 -54.6 l2 3.4 l2 -3.7 Z" fill="#fff" stroke="${L}" stroke-width=".8"/>`;
     const smile = `<path d="M27 -55 Q38 -49.5 49 -57" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
     const open = `<path d="M27 -56 Q38 -45 50 -58 Q38 -51 27 -56 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>`;
-    const sparkle = (x, y, r = 3.4) => `<path d="M${x} ${y - r} L${x + r * .28} ${y - r * .28} L${x + r} ${y} L${x + r * .28} ${y + r * .28} L${x} ${y + r} L${x - r * .28} ${y + r * .28} L${x - r} ${y} L${x - r * .28} ${y - r * .28} Z" fill="#ffe94a" stroke="#7a5a00" stroke-width=".8"/>`;
     switch (f) {
       case "happy": return `${closed("M12.5 -69 Q20 -78 27.5 -69")}${brow("M13.5 -83.4 Q19.5 -86.8 25.5 -84.8")}${cheek(.95, true)}${open}${teeth}`;
       case "excited": return `${eye({ rx: 9.8, ry: 10.6, pr: 6.6, star: true })}${brow("M14 -84 Q20 -87.6 26 -85.4")}${cheek(.95, true)}
         <path d="M26.5 -57 Q38 -41 51.5 -59 Q38 -52.5 26.5 -57 Z" fill="#7a1f3d" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M34 -50.5 Q39.5 -46.2 45 -51 Q39.5 -52.8 34 -50.5 Z" fill="#ff7aa0"/>${teeth}${sparkle(1, -88)}${sparkle(-5, -76, 2.2)}`;
+        <path d="M34 -50.5 Q39.5 -46.2 45 -51 Q39.5 -52.8 34 -50.5 Z" fill="#ff7aa0"/>${teeth}${sparkle(2.5, -87)}${sparkle(-4.4, -75.6, 2.2)}`;
       case "determined": return `${eye({ px: 24.4, py: -69, pr: 6 })}${low(`
         <path d="M11.2 -73.6 Q20 -78 28.8 -73.6 A9.4 10.2 0 0 0 11.2 -73.6 Z" fill="${c.body}"/>
         <path d="M28.8 -73.6 A9.4 10.2 0 0 0 11.2 -73.6" fill="none" stroke="${L}" stroke-width="2.2"/>
@@ -2732,7 +2847,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
       case "blink": return `${closed()}${brow("M13 -82.6 Q19.5 -85.6 26 -83.2")}${cheek()}${smile}${teeth}`;
       case "worried": return `${eye({ px: 19.4, py: -67.4, pr: 5.6 })}${brow("M12 -81.6 Q19 -83 27 -86.2")}${cheek(.6)}
         <path d="M29 -54 q3.5 -3 7 0 t7 0 t6 -1" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M2.5 -88 Q-1.2 -81.6 2.5 -79.6 Q6.2 -81.6 2.5 -88 Z" fill="#8fe6ff" stroke="#1b4a6a" stroke-width="1"/>`;
+        <path d="M2.5 -88 Q-1.2 -81.6 2.5 -79.6 Q6.2 -81.6 2.5 -88 Z" fill="#8fe6ff" stroke="#1b4a6a" stroke-width="1"/><circle cx="1.6" cy="-82.4" r=".8" fill="#fff"/>`;
       case "surprised": return `${eye({ rx: 10.2, ry: 10.9, px: 21, py: -70, pr: 4.4 })}${brow("M14 -84.2 Q20 -87.8 26.5 -85.6")}${cheek(.7)}
         <ellipse cx="40" cy="-53" rx="3.8" ry="4.8" fill="#7a1f3d" stroke="${L}" stroke-width="1.8"/>`;
       case "think": return `${eye({ px: 24.2, py: -74, pr: 5.4 })}${brow("M14 -82.8 Q20.5 -86.8 26.5 -85.6")}${cheek(.6)}<path d="M33 -55.5 L45 -56.5" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>`;
@@ -2743,54 +2858,75 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     }
   }
 
+  // Hats and other things worn on the head, all outlined in the shared ink, each with one shadow tone and one shine.
   function acc(a) {
     switch (a) {
-      case "flower": return `<g transform="translate(6,-88)">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-5" rx="3.6" ry="5.4" fill="#ff7ac8" transform="rotate(${r})" stroke="#7a1f5a" stroke-width="1"/>`).join("")}<circle r="3" fill="#ffe94a" stroke="#7a5a00" stroke-width="1"/></g>`;
-      case "glasses": return `<g fill="none" stroke="#1b1030" stroke-width="2.4"><circle cx="20" cy="-70" r="11"/><path d="M31 -71 Q36 -74 41 -71"/><path d="M9 -71 L0 -74"/></g>`;
-      case "bow": return `<g transform="translate(4,-86) rotate(-12)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#ff5fa2" stroke="#7a1f3d" stroke-width="1.4" stroke-linejoin="round"/><circle r="2.6" fill="#ffd1e6" stroke="#7a1f3d" stroke-width="1.2"/></g>`;
-      case "helmet": return `<g><circle cx="21" cy="-67" r="31" fill="#bfefff" fill-opacity=".18" stroke="#e8fbff" stroke-width="2.6"/>
-        <circle cx="21" cy="-67" r="31" fill="none" stroke="#1b1030" stroke-width="1" opacity=".5"/>
-        <path d="M0 -84 A25 25 0 0 1 18 -95" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".85"/>
-        <path d="M2 -40 Q20 -32 40 -40" fill="none" stroke="#d9dde8" stroke-width="6" stroke-linecap="round"/><path d="M2 -40 Q20 -32 40 -40" fill="none" stroke="#1b1030" stroke-width="1.4" opacity=".5"/>
-        <path d="M21 -98 V-106" stroke="#d9dde8" stroke-width="2.4"/><circle cx="21" cy="-108" r="3" fill="#ff3ec8" stroke="#1b1030" stroke-width="1.2"/></g>`;
-      case "wizard": return `<g><path d="M1 -87 Q9 -103 3 -122 Q20 -112 31 -90 Z" fill="#7b4ff0" stroke="#1b1030" stroke-width="2" stroke-linejoin="round"/>
-        ${star(3, -122, 4.6, "#ffe94a")}${star(15, -101, 3.2, "#ffe94a")}${star(22, -92, 2.4, "#3ef2ff")}
-        <ellipse cx="16" cy="-87" rx="22" ry="5.5" transform="rotate(-8 16 -87)" fill="#6b3fd6" stroke="#1b1030" stroke-width="2"/></g>`;
-      case "headphones": return `<g><path d="M3 -72 Q4 -101 36 -88" fill="none" stroke="#1b1030" stroke-width="7" stroke-linecap="round"/>
-        <path d="M3 -72 Q4 -101 36 -88" fill="none" stroke="#ff3ec8" stroke-width="3.6" stroke-linecap="round"/>
-        <rect x="-5" y="-77" width="13" height="18" rx="5.5" fill="#ff3ec8" stroke="#1b1030" stroke-width="2"/><rect x="-2" y="-73" width="7" height="10" rx="3" fill="#3ef2ff"/>
-        <path d="M-14 -96 v-10 l8 -2 v10" fill="none" stroke="#3ef2ff" stroke-width="2" stroke-linecap="round"/><circle cx="-16" cy="-96" r="2.6" fill="#3ef2ff"/><circle cx="-8" cy="-98" r="2.6" fill="#3ef2ff"/></g>`;
-      case "crown": return `<g transform="rotate(-7 17 -88)"><path d="M3 -86 L3 -101 L10 -93 L17 -106 L24 -93 L31 -101 L31 -86 Z" fill="#ffd43b" stroke="#7a5a00" stroke-width="2" stroke-linejoin="round"/>
-        <rect x="3" y="-89" width="28" height="4" fill="#ffb800" stroke="#7a5a00" stroke-width="1.4"/>
-        <circle cx="10" cy="-87" r="1.8" fill="#ff3ec8"/><circle cx="17" cy="-87" r="1.8" fill="#3ef2ff"/><circle cx="24" cy="-87" r="1.8" fill="#5cffb0"/><circle cx="17" cy="-106" r="2" fill="#fff"/></g>`;
-      case "party": return `<g transform="rotate(10 18 -88)"><path d="M8 -87 L18 -114 L28 -87 Z" fill="#ffe94a" stroke="#1b1030" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M11 -95 L25 -95 M14 -103 L22 -103" stroke="#ff3ec8" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="-115" r="4.2" fill="#3ef2ff" stroke="#1b1030" stroke-width="1.6"/></g>`;
-      case "shades": return `<g>${star(20, -70, 12.5, "#1b1030", "#ff3ec8", 2.4)}<path d="M15 -75 l4 -3" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/><path d="M8 -73 L-1 -76" stroke="#ff3ec8" stroke-width="2.6" stroke-linecap="round"/><path d="M32 -71 Q37 -74 42 -71" fill="none" stroke="#ff3ec8" stroke-width="2.4"/></g>`;
-      case "cap": return `<g><path d="M-6 -80 Q6 -98 30 -86 Q14 -84 -2 -74 Z" fill="#4f6bff" stroke="#1b1030" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -80 Q-14 -76 -16 -68" fill="none" stroke="#4f6bff" stroke-width="4" stroke-linecap="round"/><circle cx="-16" cy="-66" r="4" fill="#fff" stroke="#1b1030" stroke-width="1.6"/></g>`;
+      case "flower": return `<g transform="translate(6,-84.8)">${[0, 72, 144, 216, 288].map(r => `<ellipse cx="0" cy="-5" rx="3.6" ry="5.4" fill="#ff7ac8" transform="rotate(${r})" stroke="#7a1f5a" stroke-width="1"/>`).join("")}<circle r="3" fill="#ffe94a" stroke="#7a5a00" stroke-width="1"/><circle cx="-.8" cy="-.9" r=".9" fill="#fff" opacity=".8"/></g>`;
+      case "glasses": return `<g fill="none" stroke="${INK}" stroke-width="2.4"><circle cx="20" cy="-70" r="11"/><path d="M31 -71 Q36 -74 41 -71"/><path d="M9 -71 L0 -74"/></g>${ink.shine("M13 -75 Q15 -78 18 -79", 1.4, .7)}`;
+      case "bow": return `<g transform="translate(4,-86) rotate(-12)"><path d="M0 0 L-10 -6 L-10 6 Z M0 0 L10 -6 L10 6 Z" fill="#ff5fa2" stroke="#7a1f3d" stroke-width="1.4" stroke-linejoin="round"/><path d="M-8.4 -3.4 L-8.4 1" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".6"/><circle r="2.6" fill="#ffd1e6" stroke="#7a1f3d" stroke-width="1.2"/></g>`;
+      case "helmet": {
+        const { cx, cy, rx, ry, collar } = HELMET, { x0, x1 } = helmetArc;
+        const bubble = `M${x0} ${collar} A${rx} ${ry} 0 1 1 ${x1} ${collar} Q${cx} ${collar + 4} ${x0} ${collar} Z`;
+        const arc = (a0, a1, k) => { const p = a => [cx + Math.cos(a * Math.PI / 180) * (rx - k), cy + Math.sin(a * Math.PI / 180) * (ry - k)].map(n => n.toFixed(1)).join(" ");
+          return `M${p(a0)} A${rx - k} ${ry - k} 0 0 1 ${p(a1)}`; };
+        return `<g>${ink.glass(bubble, { w: 2.4 }).replace("<path", '<path data-part="helmet"')}
+          ${ink.shine(arc(196, 246, 4.5), 3.4, .85)}${ink.glint(cx - 3, cy - ry + 6.4, 1.8)}${ink.shine(arc(18, 44, 4), 1.8, .4)}
+          <path d="M${x0 - 1} ${collar} Q${cx} ${collar + 5} ${x1 + 1} ${collar}" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/>
+          <path d="M${x0 - 1} ${collar} Q${cx} ${collar + 5} ${x1 + 1} ${collar}" fill="none" stroke="#dfe3f2" stroke-width="4.4" stroke-linecap="round"/>
+          <path d="M${x0 + 3} ${collar - .6} Q${cx} ${collar + 3.6} ${x1 - 3} ${collar - .6}" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+          <path d="M${cx} ${cy - ry - .5} V${cy - ry - 10}" stroke="${INK}" stroke-width="4.2" stroke-linecap="round"/><path d="M${cx} ${cy - ry - 1} V${cy - ry - 10}" stroke="#dfe3f2" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="${cx}" cy="${cy - ry - 13}" r="3.6" fill="#ff3ec8" stroke="${INK}" stroke-width="1.6"/>${ink.glint(cx - 1.1, cy - ry - 14.2, 1)}</g>`;
+      }
+      case "wizard": return `<g><path d="M1 -86 Q9 -102 4 -118 Q20 -110 31 -89 Z" fill="#7b4ff0" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M24 -92 Q15 -106 6.4 -115 Q18 -109 27.5 -91 Z" fill="${ink.shadeOf("#7b4ff0", .25)}" opacity=".7"/>${ink.shine("M6 -92 Q9 -101 7 -109", 1.8, .5)}
+        ${star(4, -118, 4.2, "#ffe94a")}${star(13, -101, 3.2, "#ffe94a")}${star(21, -93, 2.4, "#3ef2ff")}
+        <ellipse cx="16" cy="-86" rx="22" ry="5.5" transform="rotate(-8 16 -86)" fill="#6b3fd6" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M-2 -85.6 Q15 -91.6 34 -91" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".45"/></g>`;
+      case "headphones": return `<g><path d="M1.5 -73 C-1 -92 12 -103 27 -88.6" fill="none" stroke="${INK}" stroke-width="7.4" stroke-linecap="round"/>
+        <path d="M1.5 -73 C-1 -92 12 -103 27 -88.6" fill="none" stroke="#ff3ec8" stroke-width="3.8" stroke-linecap="round"/>
+        <path d="M2.4 -84 C4 -93 10 -97.6 17 -97.6" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>
+        <rect x="-4.5" y="-78" width="13" height="18" rx="5.5" fill="#ff3ec8" stroke="${INK}" stroke-width="2.2"/><rect x="-1.5" y="-74" width="7" height="10" rx="3" fill="#3ef2ff" stroke="${INK}" stroke-width="1"/>
+        <path d="M-2.4 -75.6 v6" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>
+        <g transform="translate(-15,-97) rotate(-10)"><path d="M3 0 V-11 L11 -13 V-2" fill="none" stroke="${INK}" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 0 V-11 L11 -13 V-2" fill="none" stroke="#3ef2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0.6" cy="0" r="3" fill="#3ef2ff" stroke="${INK}" stroke-width="1.4"/><circle cx="8.6" cy="-2" r="3" fill="#3ef2ff" stroke="${INK}" stroke-width="1.4"/></g></g>`;
+      case "crown": return `<g transform="rotate(-7 17 -86)"><path d="M3 -84 L3 -99 L10 -91 L17 -104 L24 -91 L31 -99 L31 -84 Z" fill="#ffd43b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M24 -91 L31 -99 L31 -84 L24 -84 Z" fill="#e0a91f" opacity=".75"/>${ink.shine("M6 -88 V-95", 1.4, .7)}
+        <rect x="3" y="-87" width="28" height="4" fill="#ffb800" stroke="${INK}" stroke-width="1.4"/>
+        <circle cx="10" cy="-85" r="1.8" fill="#ff3ec8"/><circle cx="17" cy="-85" r="1.8" fill="#3ef2ff"/><circle cx="24" cy="-85" r="1.8" fill="#5cffb0"/>${sparkle(17, -108, 2.4)}</g>`;
+      case "party": return `<g transform="rotate(10 18 -87)"><path d="M8 -86 L18 -113 L28 -86 Z" fill="#ffe94a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M18 -113 L28 -86 L22 -86 Z" fill="#e0b81f" opacity=".7"/>
+        <path d="M11 -94 L25 -94 M14 -102 L22 -102" stroke="#ff3ec8" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="-114" r="4.2" fill="#3ef2ff" stroke="${INK}" stroke-width="1.6"/>${ink.glint(16.8, -115.4, 1.1)}</g>`;
+      case "shades": return `<g><path d="M8 -73 L-1 -76" stroke="${INK}" stroke-width="4.6" stroke-linecap="round"/><path d="M8 -73 L-1 -76" stroke="#ff3ec8" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M32 -71 Q37 -74 42 -71" fill="none" stroke="${INK}" stroke-width="4.4" stroke-linecap="round"/><path d="M32 -71 Q37 -74 42 -71" fill="none" stroke="#ff3ec8" stroke-width="2.2" stroke-linecap="round"/>
+        ${star(20, -70, 12.5, INK, INK, 5.2)}${star(20, -70, 12.5, "#1b1030", "#ff3ec8", 2.4)}<path d="M15 -75 l4 -3" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/></g>`;
+      case "cap": return `<g><path d="M-6 -80 Q6 -98 30 -86 Q14 -84 -2 -74 Z" fill="#4f6bff" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M2 -88 Q10 -93 20 -91" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>
+        <path d="M-6 -80 Q-14 -76 -16 -68" fill="none" stroke="${INK}" stroke-width="6" stroke-linecap="round"/><path d="M-6 -80 Q-14 -76 -16 -68" fill="none" stroke="#4f6bff" stroke-width="3.2" stroke-linecap="round"/><circle cx="-16" cy="-66" r="4" fill="#fff" stroke="${INK}" stroke-width="1.6"/></g>`;
       default: return "";
     }
   }
 
-  // Things worn on his back, drawn behind him.
+  // Things worn on his back. The pack and cape are drawn behind him; a strap crosses his chest in front.
   function back(b, pose) {
     switch (b) {
       case "rocket": {
         const flame = `<path d="M-4.5 15 Q0 ${pose === "hop" ? 33 : 27} 4.5 15 Z" fill="#ff9a3c"/><path d="M-2.2 15 Q0 ${pose === "hop" ? 26 : 22} 2.2 15 Z" fill="#ffe94a"/>`;
-        return `<g transform="translate(-27,-50) rotate(-16) scale(1.35)">${flame}<path d="M-6 12 L-11 18 L-6 8 Z M6 12 L11 18 L6 8 Z" fill="#ff3ec8" stroke="#1b1030" stroke-width="1.4" stroke-linejoin="round"/>
-          <rect x="-6" y="-10" width="12" height="25" rx="5" fill="#e8ecff" stroke="#1b1030" stroke-width="2"/><path d="M-6 -6 Q0 -21 6 -6 Z" fill="#ff3ec8" stroke="#1b1030" stroke-width="1.8" stroke-linejoin="round"/>
-          <circle cx="0" cy="2" r="3.2" fill="#3ef2ff" stroke="#1b1030" stroke-width="1.4"/><path d="M-6 9 H6" stroke="#1b1030" stroke-width="1.2"/></g>
-          <path d="M-14 -52 Q-8 -40 -16 -26" fill="none" stroke="#1b1030" stroke-width="3" stroke-linecap="round"/>`;
+        return `<g transform="translate(-24,-43) rotate(-14) scale(1.35)">${flame}<path d="M-6 12 L-11 18 L-6 8 Z M6 12 L11 18 L6 8 Z" fill="#ff3ec8" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="-6" y="-10" width="12" height="25" rx="5" fill="#e8ecff" stroke="${INK}" stroke-width="1.8"/><path d="M2 -8 Q5 -2 5 8 Q5 12 3 13.6 L3 -8 Z" fill="#c4c9ea" opacity=".8"/>
+          <path d="M-6 -6 Q0 -21 6 -6 Z" fill="#ff3ec8" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle cx="0" cy="2" r="3.2" fill="#3ef2ff" stroke="${INK}" stroke-width="1.3"/>${ink.glint(-1, 1, .9)}<path d="M-6 9 H6" stroke="${INK}" stroke-width="1.1"/>${ink.shine("M-3.6 -3 V6", 1.2, .7)}</g>`;
       }
       case "cape": {
         const d = pose === "hop" ? "M0 -55 Q-22 -66 -50 -58 Q-44 -48 -54 -38 Q-34 -36 -18 -26 Q-6 -40 0 -55 Z"
           : pose === "run1" || pose === "run2" ? "M0 -55 Q-24 -60 -48 -50 Q-41 -42 -50 -31 Q-32 -31 -16 -23 Q-6 -38 0 -55 Z"
-          : "M0 -55 Q-20 -54 -34 -36 Q-30 -26 -38 -14 Q-24 -18 -14 -20 Q-6 -38 0 -55 Z";
-        return `<path d="${d}" fill="#e8364f" stroke="#1b1030" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -50 Q-20 -48 -30 -40" fill="none" stroke="#ff8a9c" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>
-          ${star(-24, -42, 4.5, "#ffe94a", "#7a1020", 1)}`;
+          : "M0 -55 Q-24 -54 -38 -34 Q-33 -24 -42 -10 Q-27 -15 -15 -18 Q-6 -38 0 -55 Z";
+        return `<path d="${d}" fill="#e8364f" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -50 Q-20 -48 -30 -40" fill="none" stroke="#ff8a9c" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>
+          ${star(pose === "stand" || pose === "sit" ? -26 : -24, pose === "stand" || pose === "sit" ? -34 : -42, 4.5, "#ffe94a", "#7a1020", 1)}`;
       }
       default: return "";
     }
   }
+  // The rocket backpack's strap, over his shoulder and across his chest (drawn in front of his body, under his arm).
+  const strap = b => b === "rocket" ? `<path d="M-17 -41 Q-2 -38 14 -30" fill="none" stroke="${INK}" stroke-width="5.4" stroke-linecap="round"/><path d="M-17 -41 Q-2 -38 14 -30" fill="none" stroke="#ff3ec8" stroke-width="2.8" stroke-linecap="round"/>` : "";
 
   // The whole dinosaur, as SVG markup with no <svg> wrapper.
   function g(o = {}) {
@@ -2802,44 +2938,68 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
       hop: [leg(-6, -38, c, true), leg(5, -48, c)],
       sit: [`<ellipse cx="-2" cy="-6" rx="16" ry="7" fill="${c.bump}" stroke="${L}" stroke-width="2.4"/>`, `<ellipse cx="14" cy="-4" rx="9" ry="4.5" fill="${c.body}" stroke="${L}" stroke-width="2.4"/>`]
     }[pose] || [];
-    const lift = pose === "sit" ? 8 : pose === "hop" ? -3 : 0;
+    const lift = { sit: 8, hop: -3, run1: -2.2, run2: -1.8 }[pose] || 0; // a little bob up mid-stride keeps his toes in the picture
     const tail = pose === "hop" ? "M-12 -36 C-30 -42 -46 -44 -58 -38 C-48 -32 -34 -26 -12 -22 Z" : "M-12 -36 C-30 -36 -46 -30 -58 -16 C-50 -14 -34 -18 -12 -21 Z";
+    const tailShade = pose === "hop" ? "M-14 -24.4 C-30 -27 -44 -31 -54 -36.4 C-46 -30.6 -32 -25.6 -14 -22.6 Z" : "M-14 -23 C-30 -20 -44 -17 -54.6 -16.6 C-48 -14.8 -34 -18 -14 -21.2 Z";
     const arm = pose === "hop"
       ? `<path d="M14 -40 q6 -6 11 -9" fill="none" stroke="${L}" stroke-width="6.4" stroke-linecap="round"/><path d="M14 -40 q6 -6 11 -9" fill="none" stroke="${c.body}" stroke-width="3.6" stroke-linecap="round"/>`
       : `<path d="M15 -37 q7 0 9 5" fill="none" stroke="${L}" stroke-width="6.4" stroke-linecap="round"/><path d="M15 -37 q7 0 9 5" fill="none" stroke="${c.body}" stroke-width="3.6" stroke-linecap="round"/>
          <path d="M24 -32 l1.6 2.6 M22.4 -31 l.4 3" stroke="${L}" stroke-width="1.4" stroke-linecap="round"/>`;
+    // One shadow tone (on his back and under his tail) and one shine (on top of his head), like everything else in the game.
+    const shade = ink.crescent({ cx: 0, cy: -31, rx: 21, ry: 22, a0: 95, a1: 215, dx: 4, dy: -3.4 });
     const body = `<g transform="translate(0,${lift})">
       ${back(o.back, pose)}
       ${legs[0]}
       <path d="${tail}" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="${tailShade}" fill="${c.bump}" opacity=".55"/>
       <ellipse cx="0" cy="-31" rx="21" ry="22" fill="${c.body}" stroke="${L}" stroke-width="2.4"/>
+      <path d="${shade}" fill="${c.bump}" opacity=".5"/>
       <ellipse cx="7" cy="-28" rx="12" ry="15" fill="${c.belly}"/>
       <path d="M2 -36 q5 2 10 0 M1 -29 q6 2 12 0 M2 -22 q5 2 10 0" fill="none" stroke="${c.bump}" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
       ${legs[1]}
+      ${strap(o.back)}
       <circle cx="-8" cy="-60" r="3.6" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
       <circle cx="-12" cy="-51" r="3.4" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
       <circle cx="-15" cy="-42" r="3.2" fill="${c.bump}" stroke="${L}" stroke-width="1.8"/>
-      <path d="M-6 -58 C-8 -80 12 -91 30 -85 C46 -80 53 -71 51 -60 C50 -50 41 -46 25 -46 C9 -46 -4 -46 -6 -58 Z" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
+      <g data-part="head"><path d="M-6 -58 C-8 -80 12 -91 30 -85 C46 -80 53 -71 51 -60 C50 -50 41 -46 25 -46 C9 -46 -4 -46 -6 -58 Z" fill="${c.body}" stroke="${L}" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M-3.4 -55 C-1 -49.6 8 -48.6 24 -48.6 C36 -48.6 44 -50 47.6 -54.6 C45 -48.6 38 -47.2 25 -47.2 C9 -47.2 -1.6 -47.6 -3.4 -55 Z" fill="${c.bump}" opacity=".45"/>
       <ellipse cx="44" cy="-71" rx="1.8" ry="1.3" fill="${L}"/>
-      <ellipse cx="7" cy="-81.5" rx="6.4" ry="2.6" transform="rotate(-26 7 -81.5)" fill="#fff" opacity=".3"/>
-      ${face(o.face, c)}
-      ${acc(o.acc)}
+      ${ink.gloss(7, -81.5, 6.4, 2.6, -26)}
+      ${face(o.face, c)}</g>
+      <g data-part="hat">${acc(o.acc)}</g>
       ${arm}
     </g>`;
     return o.flip ? `<g transform="scale(-1,1)">${body}</g>` : body;
   }
 
-  const svg = (o = {}, size = 120) => { const hh = isTall(o) ? 130 : 100; return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * hh / 116)}" viewBox="${o.flip ? "-58" : "-62"} ${4 - hh} 116 ${hh}">${g(o)}</svg>`; };
+  // The head and whatever is on it, as a box in drawing units (not flipped).
+  const HEAD_BOX = {
+    none: [-9, -94, 64, 50], cap: [-21, -99, 76, 55], flower: [-9, -97, 64, 53], bow: [-9, -98, 64, 54], glasses: [-9, -94, 64, 50],
+    helmet: [-14.5, -117, 76, 77], wizard: [-9, -124, 64, 80], headphones: [-17, -113, 72, 69], crown: [-9, -112, 64, 68], party: [-9, -120, 64, 76], shades: [-9, -94, 64, 50]
+  };
+  function headBox(o = {}) { const [x, y, w, h] = HEAD_BOX[o.acc] || HEAD_BOX.none; return { x, y, w, h }; }
+  // A viewBox around the head (for portraits and closet buttons), padded to the given width-to-height shape.
+  function headView(o = {}, aspect = 1.2) {
+    const b = headBox(o); let { x, y, w, h } = b;
+    if (w / h < aspect) { const nw = h * aspect; x -= (nw - w) / 2; w = nw; } else { const nh = w / aspect; y -= (nh - h) / 2; h = nh; }
+    if (o.flip) x = -x - w;
+    return [x, y, w, h].map(n => +n.toFixed(1)).join(" ");
+  }
+  // In a cockpit: T-Rexy standing tall in his seat, and the box the ship fits into its canopy.
+  const pilot = (o = {}) => ({ g: g({ ...o, pose: "stand", back: "", flip: false }), box: headBox(o) });
+
+  const view = (o = {}) => `${o.flip ? -60 : -62} ${4 - (isTall(o) ? 130 : 100)} 122 ${isTall(o) ? 130 : 100}`;
+  const svg = (o = {}, size = 120) => { const hh = isTall(o) ? 130 : 100; return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${Math.round(size * hh / 122)}" viewBox="${view(o)}">${g(o)}</svg>`; };
   const url = (o, size) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg(o, size));
 
-  art.trexy = { COLORS, LOOKS, g, svg, url, isTall };
+  art.trexy = { COLORS, LOOKS, g, svg, url, isTall, view, headBox, headView, pilot, HELMET };
 })(window.Kit = window.Kit || {});
 /* ==== assets/characters/nova.js ==== */
 /**
  * @file assets/characters/nova.js
- * @about Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all.
+ * @about Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all. Drawn in the shared Glitch Nebula style (assets/style/ink.js): the same shiny eyes, blush, shadow tone, and shine as T-Rexy, with lines a little thicker for her size so the two match on screen.
  * @provides Kit.art.nova { SHAPES, HINGE, COLORS, g(options), shadow(fill, jawDegrees), svg(options, size), url(options, size), path2d() }
- * @requires nothing
+ * @requires assets/style/ink.js
  *
  * options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }
  * Drawing space: facing right, feet at y = 0, about 62 units tall (x from -60 to 52, y from -62 to 1).
@@ -2850,6 +3010,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 (function (Kit) {
   "use strict";
   const art = Kit.art = Kit.art || {};
+  const ink = art.ink;
   const f = n => +n.toFixed(2);
 
   // The sail: an arch of spines along the back, from the hips (x0) to the shoulders (x1).
@@ -2885,25 +3046,25 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 
   function face(f) {
     const L = C.line;
-    const eye = (pr = 2.6, py = -38.4, px = 32.4) => `<ellipse cx="31.6" cy="-38.6" rx="4.4" ry="5" fill="#fff" stroke="${L}" stroke-width="1.5"/><circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/><circle cx="${px + 1}" cy="${py - 1.4}" r="1" fill="#fff"/>`;
-    const smile = `<path d="M28.6 -31 Q30.6 -29.4 32.4 -30.6" fill="none" stroke="${L}" stroke-width="1.4" stroke-linecap="round"/>`;
+    const eye = (pr = 3.3, py = -38.4, px = 32.8) => ink.eye({ cx: 31.6, cy: -38.8, rx: 5.2, ry: 5.8, px, py, pr, line: L, lw: 1.7 });
+    const smile = `<path d="M28.6 -31 Q30.6 -29.4 32.4 -30.6" fill="none" stroke="${L}" stroke-width="1.6" stroke-linecap="round"/>`;
     switch (f) {
-      case "happy": return `<path d="M27.6 -38.4 Q31.6 -43.4 35.6 -38.4" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>${smile}`;
-      case "worried": return `${eye(2.4, -37.8)}<path d="M27.4 -45 Q31.4 -46.6 35.4 -44.2" fill="none" stroke="${L}" stroke-width="1.5" stroke-linecap="round"/>`;
-      case "surprised": return eye(1.9, -38.6, 31.8);
+      case "happy": return `<path d="M27.4 -38.2 Q31.6 -43.8 35.8 -38.2" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>${smile}`;
+      case "worried": return `${eye(2.8, -37.6)}<path d="M27.6 -46.2 Q31.4 -47.6 35.2 -45.6" fill="none" stroke="${L}" stroke-width="1.6" stroke-linecap="round"/>`;
+      case "surprised": return eye(2.4, -38.8, 31.8);
       default: return `${eye()}${smile}`;
     }
   }
 
   const lanternMarkup = () => `<g transform="translate(27,-5)">
       <circle r="15" fill="url(#novaGlow)"/>
-      <path d="M0 -10 V-6" stroke="${C.line}" stroke-width="1.4"/>
-      <rect x="-5" y="-6" width="10" height="11" rx="3" fill="#fff8d6" stroke="${C.line}" stroke-width="1.5"/>
+      <path d="M0 -10 V-6" stroke="${ink.INK}" stroke-width="1.6"/>
+      <rect x="-5" y="-6" width="10" height="11" rx="3" fill="#fff8d6" stroke="${ink.INK}" stroke-width="1.7"/>
       <path d="M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2 Z" fill="#ffd43b" transform="translate(0,-.5)"/>
     </g>`;
 
   function g(o = {}) {
-    const L = C.line, sw = `stroke="${L}" stroke-width="1.8" stroke-linejoin="round"`;
+    const L = C.line, sw = `stroke="${L}" stroke-width="2.3" stroke-linejoin="round"`;
     const open = o.face === "surprised" ? 14 : 0;
     const stripes = sailTop.tips.map(([x, y], i) => {
       const bx = SAIL.x0 + (x - SAIL.x0) * .98 + 1, by = SAIL.y0 + (SAIL.y1 - SAIL.y0) * ((x - SAIL.x0) / (SAIL.x1 - SAIL.x0)) - 1.5;
@@ -2923,7 +3084,8 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
       ${open ? `<path d="M28.4 -31 L49 -31.8 L46 -27 Q36 -24 29 -27 Z" fill="${C.mouth}"/>` : ""}
       <g transform="rotate(${open} ${HINGE[0]} ${HINGE[1]})"><path d="${SHAPES.jaw}" fill="${C.body}" ${sw}/></g>
       <circle cx="48.4" cy="-36" r=".9" fill="${L}"/>
-      <ellipse cx="37" cy="-33.4" rx="2.6" ry="1.7" fill="${C.cheek}" opacity=".85"/>
+      ${ink.blush({ cx: 37, cy: -33.4, rx: 2.8, ry: 1.8, color: C.cheek, k: .85 })}
+      ${ink.gloss(30.2, -45.2, 2.8, 1, -16)}
       <path d="M26 -45.6 Q30 -48.4 34 -45.6" fill="none" stroke="${C.bodyDark}" stroke-width="1.2" stroke-linecap="round"/>
       ${face(o.face)}
       ${o.lantern === false ? "" : lanternMarkup()}
@@ -2945,18 +3107,23 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
 /* ==== assets/ship/glitch-ship.js ==== */
 /**
  * @file assets/ship/glitch-ship.js
- * @about A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines, a pilot can peek out of the cockpit, and the ship can wake up with a face on its nose.
- * @provides Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg(config, options), box(inner, cls), url(config, options, size), partIcons }
- * @requires nothing
+ * @about A side-view spaceship built from four parts, each with its own style choices: cockpit (bubble, dino head, crystal), wings (fern leaf, bat, lightning), thrusters (one, two, three), and a glitch core in a neon color. Five neon paint jobs. Missing parts can show as dashed outlines. The cockpit is a real little cabin (a seat, a glowing dashboard, see-through glass), and a pilot sits inside it, sized to fit the canopy and never poking out. The ship can wake up with a face on its nose. Drawn in the shared Glitch Nebula style (assets/style/ink.js).
+ * @provides Kit.art.ship { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, CANOPY, svg(config, options), box(inner, cls), url(config, options, size), partIcons }
+ * @requires assets/style/ink.js
  *
  * config  = { cockpit, wings, thrusters, core, paint } (any can be missing)
- * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames, pilot: markup for a head in the cockpit,
+ * options = { ghost: draw missing parts dashed, hl: part key to highlight, flame: engine flames,
+ *             pilot: { g, box } (a character's markup and the box around its head, like Kit.art.trexy.pilot(): the ship scales the
+ *                    head to fill its canopy, sits it on the seat, and clips it to the glass), or plain markup drawn as is,
+ *             pilotScale: the largest the pilot may be drawn (in ship units per pilot unit), so a pilot can match riders drawn beside the ship,
  *             face: awake | blink | happy (eyes and a smile on the nose, for a ship that has come alive) }
- * Drawing space: facing right, centered on 0,0, viewBox -64 -42 128 84.
+ * Drawing space: facing right, centered on 0,0, viewBox -64 -42 128 84. CANOPY gives each cockpit's glass outline and the
+ * room inside it ({ d, x0, x1, floor, top }).
  */
 (function (Kit) {
   "use strict";
   const art = Kit.art = Kit.art || {};
+  const ink = art.ink, LINE = ink.INK;
   const PARTS = {
     cockpit: { name: "Cockpit", options: [["bubble", "Bubble dome"], ["dino", "Dino head"], ["crystal", "Crystal"]] },
     wings: { name: "Wings", options: [["fern", "Fern leaf"], ["bat", "Bat wings"], ["bolt", "Lightning"]] },
@@ -2973,7 +3140,12 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
   };
   const PAINT_ORDER = ["lime", "magenta", "cyan", "orange", "purple"];
   const CORES = { pink: ["#ffd1f3", "#ff3ec8"], cyan: ["#d6fcff", "#21d9ff"], lime: ["#efffd0", "#8cf21f"], gold: ["#fff6c2", "#ffc21a"] };
-  const LINE = "#140a2e";
+  // Each cockpit's glass, and the room inside it: x0 to x1 across, from the floor (the top of the hull) up to the top.
+  const CANOPY = {
+    bubble: { d: "M-6 -19.6 C-6 -48 33.5 -48 33.5 -17.5 Z", x0: -3, x1: 31, floor: -19.5, top: -38.6, shine: "M-.6 -27 Q1.4 -37.4 10.6 -39.6", glint: [18.4, -40.2] },
+    dino: { d: "M-4 -19.6 C-4 -46.4 29 -46.4 29 -19 Z", x0: -1, x1: 27, floor: -19.5, top: -37.6, shine: "M1.4 -27 Q3.4 -36.2 11.6 -38.4", glint: [17.6, -38.8] },
+    crystal: { d: "M-5 -19.6 L5 -41 L24 -41 L33 -19.6 Z", x0: -2, x1: 31, floor: -19.5, top: -39, shine: "M.6 -25 L7 -38.6", glint: [11.6, -38.8] }
+  };
 
   function svg(c, o = {}) {
     const P = PAINTS[c.paint] || { hull: "#cfc8ff", trim: "#5b4bb0", wing: "#a99be0" }, hull = P.hull, trim = P.trim, wf = P.wing;
@@ -2988,46 +3160,62 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     const nz = { one: [0], two: [-8, 8], three: [-11, 0, 11] }[c.thrusters] || [];
     const nh = { one: 9, two: 5.5, three: 4.2 }[c.thrusters] || 6;
     if (o.flame && c.thrusters) s += `<g class="sflame">` + nz.map(y => `<path d="M-44 ${y - nh * .8} C-58 ${y - nh * .6} -66 ${y} -74 ${y} C-66 ${y} -58 ${y + nh * .6} -44 ${y + nh * .8} Z" fill="${core[1]}"/><path d="M-44 ${y - nh * .45} C-52 ${y - nh * .3} -57 ${y} -62 ${y} C-57 ${y} -52 ${y + nh * .3} -44 ${y + nh * .45} Z" fill="${core[0]}"/>`).join("") + `</g>`;
-    s += part("thrusters", c.thrusters, nz.map(y => `<path d="M-32 ${y - nh} L-45 ${y - nh - 2} L-45 ${y + nh + 2} L-32 ${y + nh} Z" fill="#4a4470" ${S}/><rect x="-47" y="${y - nh - 3}" width="4" height="${nh * 2 + 6}" rx="1.5" fill="${trim}" ${S}/>`).join(""),
+    s += part("thrusters", c.thrusters, nz.map(y => `<path d="M-32 ${y - nh} L-45 ${y - nh - 2} L-45 ${y + nh + 2} L-32 ${y + nh} Z" fill="#4a4470" ${S}/><path d="M-33.5 ${y - nh + 1.4} L-43 ${y - nh - .2}" stroke="#8f88c4" stroke-width="1.4" stroke-linecap="round"/><rect x="-47" y="${y - nh - 3}" width="4" height="${nh * 2 + 6}" rx="1.5" fill="${trim}" ${S}/>`).join(""),
       `<path d="M-32 -9 L-45 -11 L-45 11 L-32 9 Z" ${G}/>`);
 
-    // Wings (under and behind the hull)
+    // Wings (under and behind the hull), each with its shadow tone along the back edge
+    const ws = ink.shadeOf(wf, .2);
     const wing = {
-      fern: `<path d="M-2 10 C-6 30 -26 42 -52 40 C-44 28 -30 14 -14 7 Z" fill="${wf}" ${S}/><path d="M-6 14 L-46 38 M-14 19 L-18 30 M-22 25 L-26 35 M-18 16 L-28 19 M-28 24 L-38 26" stroke="${LINE}" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
+      fern: `<path d="M-2 10 C-6 30 -26 42 -52 40 C-44 28 -30 14 -14 7 Z" fill="${wf}" ${S}/><path d="M-50.6 39.4 C-42 28 -30 15.6 -14.6 9.2 C-24 16 -34 26 -43 38.6 Z" fill="${ws}" opacity=".7"/>
+             <path d="M-6 14 L-46 38 M-14 19 L-18 30 M-22 25 L-26 35 M-18 16 L-28 19 M-28 24 L-38 26" stroke="${LINE}" stroke-width="1.6" stroke-linecap="round" opacity=".55"/>
              <path d="M-2 -18 C-8 -32 -22 -38 -36 -36 C-28 -28 -20 -22 -12 -17 Z" fill="${wf}" ${S}/>`,
-      bat: `<path d="M0 8 L-48 38 Q-40 28 -33 35 Q-28 25 -20 30 Q-17 20 -8 21 Z" fill="${wf}" ${S}/><path d="M-4 -18 L-36 -38 Q-29 -30 -24 -33 Q-20 -25 -13 -25 Z" fill="${wf}" ${S}/>`,
-      bolt: `<path d="M2 8 L-18 19 L-9 21 L-42 40 L-7 24 L-16 21 L6 12 Z" fill="${wf}" ${S}/><path d="M-2 -18 L-18 -27 L-11 -28 L-34 -40 L-6 -29 L-13 -27 L2 -20 Z" fill="${wf}" ${S}/>`
+      bat: `<path d="M0 8 L-48 38 Q-40 28 -33 35 Q-28 25 -20 30 Q-17 20 -8 21 Z" fill="${wf}" ${S}/><path d="M-44 36.6 Q-38 29.6 -33 33.6 Q-29 26.4 -21.6 29.4 Q-19 23 -10 22 L-5 13 Z" fill="${ws}" opacity=".6"/><path d="M-2 -19 C-10 -30 -26 -40 -38 -39 Q-31 -33 -32 -27 Q-25 -30 -22 -24 Q-15 -27 -12 -21 Z" fill="${wf}" ${S}/>`,
+      bolt: `<path d="M4 9 L-16 17 L-8 19.5 L-40 40 L-2 24.5 L-11 22 L9 14 Z" fill="${wf}" ${S}/><path d="M-1 -19 L-16 -28 L-9 -29.5 L-34 -41 L-3 -31 L-10 -29 L5 -21 Z" fill="${wf}" ${S}/>`
     };
     s += part("wings", c.wings, wing[c.wings] || "", `<path d="M-2 10 C-6 30 -26 42 -52 40 C-44 28 -30 14 -14 7 Z" ${G}/>`);
 
-    // Hull, with a trim stripe
+    // Hull: one shadow tone along the bottom, a trim stripe, and a shine along the top
     s += `<path d="M-34 -10 C-34 -18 -26 -20 -16 -20 L20 -20 C30 -20 37 -11 39 0 C37 11 30 18 20 18 L-16 18 C-26 18 -34 16 -34 8 Z" fill="${hull}" ${S}/>`;
-    s += `<path d="M-30 6 H34" stroke="${trim}" stroke-width="4" stroke-linecap="round"/><path d="M-24 -14 H12" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>`;
+    s += `<path d="M38.4 4 C36 12.4 30 17 20 17 L-16 17 C-25 17 -32.6 15 -33 8 L-33 5 C-31 10.6 -25 12.4 -16 12.4 L20 12.4 C28 12.4 34 10 38.4 4 Z" fill="${ink.shadeOf(hull, .2)}" opacity=".75"/>`;
+    s += `<path d="M-30 6 H34" stroke="${trim}" stroke-width="4" stroke-linecap="round"/>${ink.shine("M-24 -14.6 H10", 3, .5)}${ink.glint(14.4, -14.6, 1.5)}`;
 
     // Glitch core: a glowing porthole
-    s += part("core", c.core, `<circle cx="-10" cy="-3" r="8.5" fill="${core[1]}" opacity=".35"/><circle cx="-10" cy="-3" r="6" fill="${core[1]}" ${S}/><circle cx="-10" cy="-3" r="2.6" fill="${core[0]}"/>`,
+    s += part("core", c.core, `<circle cx="-10" cy="-3" r="8.5" fill="${core[1]}" opacity=".35"/><circle cx="-10" cy="-3" r="6" fill="${core[1]}" ${S}/><circle cx="-10" cy="-3" r="2.6" fill="${core[0]}"/>${ink.glint(-12.2, -5.4, 1.2)}`,
       `<circle cx="-10" cy="-3" r="6" ${G}/>`);
 
-    // Cockpit, with an optional pilot
-    const pilot = o.pilot || "";
-    const cockpit = {
-      bubble: `${pilot}<path d="M2 -19 C4 -38 28 -38 32 -17 Z" fill="#bff6ff" fill-opacity=".55" ${S}/><path d="M9 -27 Q14 -33 21 -33" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`,
-      dino: `${pilot}<path d="M4 -19 C6 -34 24 -34 28 -19 Z" fill="#bff6ff" fill-opacity=".55" ${S}/>
-             <path d="M30 -16 C42 -22 56 -18 59 -7 C60 2 54 7 46 7 L38 6 C38 0 36 -10 30 -16 Z" fill="${hull}" ${S}/>
-             <circle cx="46" cy="-11" r="3.4" fill="#fff" ${S}/><circle cx="47" cy="-11" r="1.7" fill="${LINE}"/>
-             <path d="M40 6 l2.6 4.4 l2.6 -4.4 l2.6 4.4 l2.6 -4.4" fill="#fff" stroke="${LINE}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="56" cy="-9" r="1" fill="${LINE}"/>`,
-      crystal: `${pilot}<path d="M3 -19 L11 -36 L25 -36 L33 -19 Z" fill="#e7c9ff" fill-opacity=".6" ${S}/><path d="M11 -36 L15 -19 M25 -36 L21 -19 M7 -27 H29" stroke="#fff" stroke-width="1.4" opacity=".75"/>`
+    // Cockpit: a little cabin under the glass, with a seat, a glowing dashboard, and the pilot (if any) clipped inside
+    const C = CANOPY[c.cockpit] || CANOPY.bubble;
+    const cockpit = id => {
+      const K = CANOPY[id], clip = `shipCab-${id}`;
+      let pil = "";
+      if (o.pilot && typeof o.pilot === "object") {
+        const b = o.pilot.box, sink = b.h * .12, k = Math.min((K.x1 - K.x0) / b.w, (K.floor - K.top) / (b.h - sink), o.pilotScale || Infinity);
+        const tx = (K.x0 + K.x1) / 2 - .5 - (b.x + b.w / 2) * k, ty = K.floor + sink * k - (b.y + b.h) * k;
+        pil = `<g data-part="pilot" transform="translate(${tx.toFixed(2)},${ty.toFixed(2)}) scale(${k.toFixed(4)})">${o.pilot.g}</g>`;
+      } else if (o.pilot) pil = o.pilot;
+      const midX = (K.x0 + K.x1) / 2;
+      return `<defs><clipPath id="${clip}"><path d="${K.d}"/></clipPath></defs>
+        <g clip-path="url(#${clip})"><path d="${K.d}" fill="#2a185c"/><rect x="-4" y="${K.floor - 5}" width="40" height="6" fill="#1d1048"/>
+          <path d="M${K.x0 - 1} ${K.floor} V${K.top + 6} Q${K.x0 - 1} ${K.top + 2} ${K.x0 + 3} ${K.top + 3} Q${K.x0 + 6.4} ${K.top + 4} ${K.x0 + 6.4} ${K.top + 8} V${K.floor} Z" fill="#3a2478" stroke="${LINE}" stroke-width="1.2"/>
+          ${pil}
+          <path d="M${midX + 4} ${K.floor + 1} L${midX + 6} ${K.floor - 3.6} Q${midX + 10} ${K.floor - 5.2} ${K.x1 + 1.4} ${K.floor - 3} L${K.x1 + 3} ${K.floor + 1} Z" fill="#3a2478" stroke="${LINE}" stroke-width="1.2"/>
+          <circle cx="${midX + 8.4}" cy="${K.floor - 2.2}" r=".9" fill="#3ef2ff"/><circle cx="${midX + 11}" cy="${K.floor - 2.4}" r=".9" fill="#ff3ec8"/><circle cx="${midX + 13.4}" cy="${K.floor - 2.2}" r=".9" fill="#5cffb0"/></g>
+        ${ink.glass(K.d, { opacity: .2, w: 2 }).replace("<path", '<path data-part="canopy"')}${id === "crystal" ? `<path d="M5 -41 L10 -19.6 M24 -41 L19 -19.6" stroke="#fff" stroke-width="1.2" opacity=".35"/>` : ""}
+        ${ink.shine(K.shine, 2.4, .85)}${ink.glint(K.glint[0], K.glint[1], 1.3)}`;
     };
-    s += part("cockpit", c.cockpit, cockpit[c.cockpit] || "", `<path d="M2 -19 C4 -38 28 -38 32 -17 Z" ${G}/>`);
+    const nose = `<path d="M30 -16 C42 -22 56 -18 59 -7 C60 2 54 7 46 7 L38 6 C38 0 36 -10 30 -16 Z" fill="${hull}" ${S}/><path d="M37 -15 Q48 -18 54 -12" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+             ${ink.eye({ cx: 46, cy: -11, rx: 3.6, ry: 3.8, px: 47, py: -10.8, pr: 2, lw: 1.6 })}
+             <path d="M40 6 l2.6 4.4 l2.6 -4.4 l2.6 4.4 l2.6 -4.4" fill="#fff" stroke="${LINE}" stroke-width="1.4" stroke-linejoin="round"/><circle cx="56" cy="-9" r="1" fill="${LINE}"/>`;
+    s += part("cockpit", c.cockpit, cockpit(c.cockpit in CANOPY ? c.cockpit : "bubble") + (c.cockpit === "dino" ? nose : ""), `<path d="${C.d}" ${G}/>`);
 
     // A face on the nose, for a ship that has come alive
     if (o.face) {
       const eye = (cx, rx) => o.face === "awake"
-        ? `<ellipse cx="${cx}" cy="-7" rx="${rx}" ry="${rx * 1.2}" fill="#fff" stroke="${LINE}" stroke-width="1.6"/><circle cx="${cx + rx * .35}" cy="-6.4" r="${rx * .55}" fill="#1b1030"/><circle cx="${cx + rx * .55}" cy="-7.8" r="${rx * .2}" fill="#fff"/>`
+        ? ink.eye({ cx, cy: -7, rx, ry: rx * 1.2, px: cx + rx * .35, py: -6.4, pr: rx * .6, lw: 1.6 })
         : o.face === "blink" ? `<path d="M${cx - rx} -6 Q${cx} -3.6 ${cx + rx} -6" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`
         : `<path d="M${cx - rx} -5 Q${cx} -11 ${cx + rx} -5" fill="none" stroke="${LINE}" stroke-width="2.2" stroke-linecap="round"/>`;
       s += eye(21, 4.2) + eye(31, 3.4);
-      s += `<ellipse cx="17" cy="1" rx="3" ry="1.8" fill="#ff8fb1" opacity=".8"/>`;
+      s += ink.blush({ cx: 17, cy: 1, rx: 3, ry: 1.8, k: .8 });
       s += o.face === "happy" ? `<path d="M21 9 Q28 18 35 8 Z" fill="#7a1f3d" ${S}/>` : `<path d="M21 10 Q28 15 34 9" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`;
     }
     return s;
@@ -3043,7 +3231,7 @@ input[type=range]{width:100%;accent-color:#ffcb5e}
     cockpit: `<svg viewBox="-16 -16 32 32"><path d="M-12 8 C-10 -12 10 -12 12 8 Z" class="pi"/></svg>`
   };
 
-  art.ship = { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, svg, box, url, partIcons };
+  art.ship = { PARTS, PART_ORDER, PAINTS, PAINT_ORDER, CORES, CANOPY, svg, box, url, partIcons };
 })(window.Kit = window.Kit || {});
 /* ==== assets/music/glitch-hub.js ==== */
 /**
@@ -3341,7 +3529,7 @@ const shipCfg = { cockpit: "dino", wings: "fern", thrusters: "two", core: "pink"
 const shipField = (key, label, opts) => `<label>${esc(label)}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}"${shipCfg[key] === v ? " selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
 $("#shipControls").innerHTML = SH.PART_ORDER.map(k => shipField(k, SH.PARTS[k].name, [["", "Not found yet"], ...SH.PARTS[k].options])).join("")
   + shipField("paint", "Paint", SH.PAINT_ORDER.map(p => [p, SH.PAINTS[p].label]));
-const pilot = `<g transform="translate(13,-14) scale(.27)">${TX.g({ face: "happy" })}</g>`;
+const pilot = TX.pilot({ face: "smile" });
 function drawShip() { $("#shipArt").innerHTML = SH.svg(shipCfg, { flame: true, ghost: true, pilot }); }
 $("#shipControls").addEventListener("change", e => { const s = e.target.closest("select"); if (!s) return; shipCfg[s.dataset.k] = s.value || undefined; drawShip(); });
 drawShip();

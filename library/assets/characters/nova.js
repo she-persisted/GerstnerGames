@@ -1,8 +1,8 @@
 /**
  * @file assets/characters/nova.js
- * @about Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all.
+ * @about Nova, a teeny baby Spinosaurus with a coral sail, a long snout, and a glowing star lantern. Her outline is one solid dinosaur shape (tail, spiny sail, snout, legs, and claws), plus a jaw that can open. Filled solid black and made huge, that same outline is the giant shadow everyone calls Shadowspine, toothy grin and all. Drawn in the shared Glitch Nebula style (assets/style/ink.js): the same shiny eyes, blush, shadow tone, and shine as T-Rexy, with lines a little thicker for her size so the two match on screen.
  * @provides Kit.art.nova { SHAPES, HINGE, COLORS, g(options), shadow(fill, jawDegrees), svg(options, size), url(options, size), path2d() }
- * @requires nothing
+ * @requires assets/style/ink.js
  *
  * options = { face: smile | happy | worried | surprised, lantern: true (default) | false, flip: true to face left }
  * Drawing space: facing right, feet at y = 0, about 62 units tall (x from -60 to 52, y from -62 to 1).
@@ -13,6 +13,7 @@
 (function (Kit) {
   "use strict";
   const art = Kit.art = Kit.art || {};
+  const ink = art.ink;
   const f = n => +n.toFixed(2);
 
   // The sail: an arch of spines along the back, from the hips (x0) to the shoulders (x1).
@@ -48,25 +49,25 @@
 
   function face(f) {
     const L = C.line;
-    const eye = (pr = 2.6, py = -38.4, px = 32.4) => `<ellipse cx="31.6" cy="-38.6" rx="4.4" ry="5" fill="#fff" stroke="${L}" stroke-width="1.5"/><circle cx="${px}" cy="${py}" r="${pr}" fill="#1b1030"/><circle cx="${px + 1}" cy="${py - 1.4}" r="1" fill="#fff"/>`;
-    const smile = `<path d="M28.6 -31 Q30.6 -29.4 32.4 -30.6" fill="none" stroke="${L}" stroke-width="1.4" stroke-linecap="round"/>`;
+    const eye = (pr = 3.3, py = -38.4, px = 32.8) => ink.eye({ cx: 31.6, cy: -38.8, rx: 5.2, ry: 5.8, px, py, pr, line: L, lw: 1.7 });
+    const smile = `<path d="M28.6 -31 Q30.6 -29.4 32.4 -30.6" fill="none" stroke="${L}" stroke-width="1.6" stroke-linecap="round"/>`;
     switch (f) {
-      case "happy": return `<path d="M27.6 -38.4 Q31.6 -43.4 35.6 -38.4" fill="none" stroke="${L}" stroke-width="2.2" stroke-linecap="round"/>${smile}`;
-      case "worried": return `${eye(2.4, -37.8)}<path d="M27.4 -45 Q31.4 -46.6 35.4 -44.2" fill="none" stroke="${L}" stroke-width="1.5" stroke-linecap="round"/>`;
-      case "surprised": return eye(1.9, -38.6, 31.8);
+      case "happy": return `<path d="M27.4 -38.2 Q31.6 -43.8 35.8 -38.2" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/>${smile}`;
+      case "worried": return `${eye(2.8, -37.6)}<path d="M27.6 -46.2 Q31.4 -47.6 35.2 -45.6" fill="none" stroke="${L}" stroke-width="1.6" stroke-linecap="round"/>`;
+      case "surprised": return eye(2.4, -38.8, 31.8);
       default: return `${eye()}${smile}`;
     }
   }
 
   const lanternMarkup = () => `<g transform="translate(27,-5)">
       <circle r="15" fill="url(#novaGlow)"/>
-      <path d="M0 -10 V-6" stroke="${C.line}" stroke-width="1.4"/>
-      <rect x="-5" y="-6" width="10" height="11" rx="3" fill="#fff8d6" stroke="${C.line}" stroke-width="1.5"/>
+      <path d="M0 -10 V-6" stroke="${ink.INK}" stroke-width="1.6"/>
+      <rect x="-5" y="-6" width="10" height="11" rx="3" fill="#fff8d6" stroke="${ink.INK}" stroke-width="1.7"/>
       <path d="M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2 Z" fill="#ffd43b" transform="translate(0,-.5)"/>
     </g>`;
 
   function g(o = {}) {
-    const L = C.line, sw = `stroke="${L}" stroke-width="1.8" stroke-linejoin="round"`;
+    const L = C.line, sw = `stroke="${L}" stroke-width="2.3" stroke-linejoin="round"`;
     const open = o.face === "surprised" ? 14 : 0;
     const stripes = sailTop.tips.map(([x, y], i) => {
       const bx = SAIL.x0 + (x - SAIL.x0) * .98 + 1, by = SAIL.y0 + (SAIL.y1 - SAIL.y0) * ((x - SAIL.x0) / (SAIL.x1 - SAIL.x0)) - 1.5;
@@ -86,7 +87,8 @@
       ${open ? `<path d="M28.4 -31 L49 -31.8 L46 -27 Q36 -24 29 -27 Z" fill="${C.mouth}"/>` : ""}
       <g transform="rotate(${open} ${HINGE[0]} ${HINGE[1]})"><path d="${SHAPES.jaw}" fill="${C.body}" ${sw}/></g>
       <circle cx="48.4" cy="-36" r=".9" fill="${L}"/>
-      <ellipse cx="37" cy="-33.4" rx="2.6" ry="1.7" fill="${C.cheek}" opacity=".85"/>
+      ${ink.blush({ cx: 37, cy: -33.4, rx: 2.8, ry: 1.8, color: C.cheek, k: .85 })}
+      ${ink.gloss(30.2, -45.2, 2.8, 1, -16)}
       <path d="M26 -45.6 Q30 -48.4 34 -45.6" fill="none" stroke="${C.bodyDark}" stroke-width="1.2" stroke-linecap="round"/>
       ${face(o.face)}
       ${o.lantern === false ? "" : lanternMarkup()}
