@@ -25,7 +25,8 @@ What's in `library/`:
 
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
-| Mini Game Survival | **Home page, always the newest version** (now v4, 2026-10-17: checkpoints always on, Hard needs every memory piece, obstacles on the beat, PERFECT hops, unlockable looks for T-Rexy) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v4.html` |
+| Mini Game Survival | **Home page, always the newest version** (now v5, 2026-10-17: a cuter, more expressive T-Rexy) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v5.html` |
+| Mini Game Survival | v4 (2026-10-17), checkpoints always on, Hard needs every memory piece, obstacles on the beat, PERFECT hops, unlockable looks for T-Rexy | https://claude.ai/artifact/CqvjvxnbGtkFK8WTWmjDGj (archive) | `library/dist/mini-game-survival-v4.html` |
 | Mini Game Survival | v3 (2026-10-17), every memory piece catchable, holes for missing pieces with keep going or run it again, L and R through the story, hints only when stuck, a recorded villain laugh | https://claude.ai/artifact/3YVkf9GKU7fJYfuCKcc3QD (archive) | `library/dist/mini-game-survival-v3.html` |
 | Mini Game Survival | v2 (2026-10-17), easier ramping runs, double hop, Easy and Hard, upbeat music, NASA-style backgrounds, question library, end clip | https://claude.ai/artifact/Q71rK4DCGwZmRv5DLi8KRr (archive) | `library/dist/mini-game-survival-v2.html` |
 | Mini Game Survival | v1 (2026-10-17), first version | https://claude.ai/artifact/PJ8MRLvskRBh1zZxwKidph (archive) | `library/dist/mini-game-survival-v1.html` |
