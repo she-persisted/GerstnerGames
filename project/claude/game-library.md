@@ -26,7 +26,7 @@ What's in `library/`:
 | Game | Version | Page | Source in the repo |
 |---|---|---|---|
 | Mini Game Survival | **Home page, always the newest version** (now v9, 2026-10-18: Mad Scientist, Surfer Dino, and Punk Rock Biker outfits, 15 looks in all) | https://claude.ai/artifact/EgGFe2mgXPPY7S47QGoWNJ | `library/games/mini-game-survival/`, built to `library/dist/mini-game-survival-v9.html` |
-| Mini Game Survival | v8 (2026-10-18), a new look for every mini game finished, a closet that only shows slots reachable this game | V8ARCHIVE (archive) | `library/dist/mini-game-survival-v8.html` |
+| Mini Game Survival | v8 (2026-10-18), a new look for every mini game finished, a closet that only shows slots reachable this game | https://claude.ai/artifact/NXZgUCv8hqzvAenwzgbH2k (archive) | `library/dist/mini-game-survival-v8.html` |
 | Mini Game Survival | v7 (2026-10-18), hints off the play area, a helmet that fits, T-Rexy in the cockpit, one drawing style, shooting stars on the story screens | https://claude.ai/artifact/SXRFA56G3LR1pbmY3usGYs (archive) | `library/dist/mini-game-survival-v7.html` |
 | Mini Game Survival | v6 (2026-10-17), cute dino noises, phone play, a crashed ship fixed part by part, new questions every game | https://claude.ai/artifact/9hyKGAdHeH6CQKJo1t5Tay (archive) | `library/dist/mini-game-survival-v6.html` |
 | Mini Game Survival | v5 (2026-10-17), a cuter, more expressive T-Rexy | https://claude.ai/artifact/SMosBkiXuSCP4u4ynQ9NGn (archive) | `library/dist/mini-game-survival-v5.html` |
